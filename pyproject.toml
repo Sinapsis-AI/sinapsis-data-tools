@@ -1,0 +1,72 @@
+[project]
+name = "sinapsis-data-tools"
+version = "0.1.0"
+description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
+authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
+dependencies = [
+    "numpy>=1.26.4",
+    "sinapsis>=0.1.1",
+]
+
+requires-python = ">=3.10"
+readme = "README.md"
+license = { file = "LICENSE" }
+
+[project.optional-dependencies]
+
+all = [
+    "sinapsis-data-writers[all]",
+    "sinapsis-data-readers[all]",
+    "sinapsis-data-visualization[all]",
+    "sinapsis-generic-data-tools",
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+exclude = ["packages/*.egg-info"]
+
+
+[tool.uv.sources]
+sinapsis-data-writers = { workspace = true }
+sinapsis-data-readers = { workspace = true }
+sinapsis-data-visualization = { workspace = true }
+sinapsis-generic-data-tools = { workspace = true }
+
+[tool.ruff]
+lint.select = [
+    "ARG",
+    "ANN",
+    "BLE",
+    "C4",
+    "E",
+    "F",
+    "FIX",
+    "FLY",
+    "I",
+    "PERF",
+    "PIE",
+    "RUF",
+    "RSE",
+    "SIM",
+    "SLOT",
+    "T10",
+    "T20",
+    "TD",
+    "TID",
+]
+lint.ignore = ['ANN401']
+line-length = 120
+show-fixes = true
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3",
+    "pre-commit>=4.0.1",
+]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = { find = { where = ["packages"] } }
+license-files = []

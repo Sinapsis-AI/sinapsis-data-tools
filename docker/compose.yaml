@@ -1,0 +1,20 @@
+services:
+  sinapsis-data-tools: &default
+    image: sinapsis-data-tools:base
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      ssh:
+        - default
+    environment:
+      PYTHONPATH: /lib/python3.10/:/app/.venv/lib/python3.10/site-packages
+      LD_LIBRARY_PATH: /app/.venv/lib/python3.10/site-packages/nvidia/cublas/lib
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    volumes:
+      - "~/.cache/sinapsis/:/root/.cache/sinapsis"

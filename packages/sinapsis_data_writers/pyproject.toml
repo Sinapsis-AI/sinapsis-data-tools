@@ -1,0 +1,32 @@
+[project]
+name = "sinapsis-data-writers"
+version = "0.1.0"
+description = "Templates to write DataContainer content to file."
+authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
+
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "sinapsis>=0.1.1",
+]
+
+[project.optional-dependencies]
+pydub = ["pydub>=0.25.1"]
+soundfile = ["soundfile>=0.12.1"]
+pdf-image-writer = ["pdf2image>=1.17.0"]
+all = ["sinapsis-data-writers[pdf-image-writer,pydub,soundfile,opencv,ffmpeg]"]
+opencv = [
+    "opencv-python-headless>=4.11.0.86",
+]
+ffmpeg = [
+    "ffmpeg-python>=0.2.0",
+]
+
+[tool.uv.sources]
+sinapsis-data-writers = { workspace = true }
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools]
+license-files = []

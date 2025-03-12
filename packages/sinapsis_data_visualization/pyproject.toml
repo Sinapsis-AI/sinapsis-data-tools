@@ -1,0 +1,24 @@
+[project]
+name = "sinapsis-data-visualization"
+version = "0.1.0"
+description = "Templates to perform visualization of data distributions and image annotations."
+authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
+
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "sinapsis>=0.1.1",
+]
+
+[project.optional-dependencies]
+visualization-matplotlib = ["matplotlib>=3.9.2"]
+all = ["sinapsis-data-visualization[visualization-matplotlib]"]
+
+[tool.uv.sources]
+sinapsis-data-visualization = { workspace = true }
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools]
+license-files = []
