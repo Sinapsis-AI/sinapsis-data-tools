@@ -6,6 +6,8 @@ from typing import Literal
 
 import ffmpeg
 import numpy as np
+from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
+from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
 
 from sinapsis_data_writers.templates.video_writers.base_video_writer import BaseVideoWriter
 
@@ -52,14 +54,13 @@ class VideoWriterFFMPEG(BaseVideoWriter):
             ffmpeg.input(
                 "pipe:",
                 format="rawvideo",
-                pix_fmt="rgb24",
+                pix_fmt="rgb24" if self.color_space != ImageColor.GRAY else "gray",
                 s=f"{self.attributes.width}x{self.attributes.height}",
             )
             .output(
                 self.attributes.destination_path,
                 pix_fmt="yuv420p",
                 framerate=self.attributes.fps,
-                hwaccel="cuda",
                 vcodec=self.attributes.codec,
             )
             .overwrite_output()
@@ -68,14 +69,16 @@ class VideoWriterFFMPEG(BaseVideoWriter):
 
         return video_writer
 
-    def add_frame_to_video(self, frame: np.ndarray) -> None:
+    def add_frame_to_video(self, image_packet: ImagePacket) -> None:
         """Adds a frame to the ffmpeg video object.
 
         Args:
-            frame (np.ndarray): The frame to be added.
+            image_packet (ImagePacket): The frame to be added.
         """
         if self.video_writer is not None:
-            self.video_writer.stdin.write(frame.astype(np.uint8).tobytes())
+            if image_packet.color_space != ImageColor.GRAY:
+                image_packet = convert_color_space(image_packet, ImageColor.RGB)
+            self.video_writer.stdin.write(image_packet.content.astype(np.uint8).tobytes())
         else:
             self.logger.error("Video writer is not initialized.")
 

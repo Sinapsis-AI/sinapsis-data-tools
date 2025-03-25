@@ -3,7 +3,8 @@
 from typing import Literal
 
 import cv2
-import numpy as np
+from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
+from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
 
 from sinapsis_data_writers.templates.video_writers.base_video_writer import BaseVideoWriter
 
@@ -54,20 +55,22 @@ class VideoWriterCV2(BaseVideoWriter):
             fourcc,
             self.attributes.fps,
             (self.attributes.width, self.attributes.height),
+            self.color_space != ImageColor.GRAY,
         )
 
-    def add_frame_to_video(self, frame: np.ndarray) -> None:
+    def add_frame_to_video(self, image_packet: ImagePacket) -> None:
         """Adds a frame to the OpenCV video writer.
         Args:
-            frame (np.ndarray): The frame to be added.
+            image_packet (ImagePacket): The frame to be added.
 
         Raises:
             ValueError: If the frame dimensions do not match the expected dimensions.
         """
         if self.video_writer is not None:
-            if self.validate_frame_dims(frame):
-                frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-                self.video_writer.write(frame)
+            if self.validate_frame_dims(image_packet.content):
+                if image_packet.color_space != ImageColor.GRAY:
+                    image_packet = convert_color_space(image_packet, ImageColor.BGR)
+                self.video_writer.write(image_packet.content)
             else:
                 self.logger.warning(
                     f"""Dimensions provided ({self.attributes.height}, {self.attributes.width})

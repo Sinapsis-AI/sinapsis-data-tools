@@ -3,10 +3,10 @@ from pathlib import Path
 from typing import Literal
 
 import cv2
-import numpy as np
-from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
+from sinapsis_core.data_containers.data_packet import DataContainer, ImageColor, ImagePacket
 from sinapsis_core.template_base import Template, TemplateAttributes
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
 
 
 class ImageSaver(Template):
@@ -85,7 +85,7 @@ class ImageSaver(Template):
         """
         return image.annotations is not None
 
-    def save_image(self, img_destination: Path, image: np.ndarray) -> str:
+    def save_image(self, img_destination: Path, image_packet: ImagePacket) -> str:
         """Saves an image to the specified path.
 
         Args:
@@ -101,9 +101,10 @@ class ImageSaver(Template):
                 img_destination = img_destination.with_suffix(f".{self.attributes.extension}")
 
             path_to_save = str(img_destination)
-            if image is not None and image.size > 0:  # Check if image is valid
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-                cv2.imwrite(str(img_destination.absolute()), image)
+            if image_packet.content is not None and image_packet.content.size > 0:  # Check if image is valid
+                if image_packet.color_space != ImageColor.GRAY:
+                    image_packet = convert_color_space(image_packet, ImageColor.BGR)
+                cv2.imwrite(str(img_destination.absolute()), image_packet.content)
                 self.logger.debug(f"Saved image to: {img_destination.absolute()}")
                 return path_to_save
             else:
@@ -170,7 +171,7 @@ class ImageSaver(Template):
             # Save the full image if specified
             path_to_source = None
             if self.attributes.save_full_image:
-                path_to_source = self.save_image(img_destination, image_packet.content)
+                path_to_source = self.save_image(img_destination, image_packet)
 
             # Save bounding box crops if specified and annotations exist
             if self.attributes.save_bbox_crops and image_packet.annotations:

@@ -4,7 +4,7 @@ import abc
 from typing import Any, Literal
 
 import numpy as np
-from sinapsis_core.data_containers.data_packet import DataContainer
+from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base.template import Template, TemplateAttributes, TemplateAttributeType
 
 
@@ -56,6 +56,7 @@ class BaseVideoWriter(Template, abc.ABC):
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.video_writer = None
+        self.color_space = None
 
         if self.attributes.codec not in self.get_supported_codecs():
             raise ValueError(
@@ -74,11 +75,11 @@ class BaseVideoWriter(Template, abc.ABC):
         """
 
     @abc.abstractmethod
-    def add_frame_to_video(self, frame: np.ndarray) -> None:
+    def add_frame_to_video(self, image_packet: ImagePacket) -> None:
         """Adds a frame to the video writer.
 
         Args:
-            frame (np.ndarray): The frame to be added to the video.
+            image_packet (ImagePacket): The image packet to be added to the video.
         """
 
     @abc.abstractmethod
@@ -94,7 +95,10 @@ class BaseVideoWriter(Template, abc.ABC):
         Returns:
             bool: True if dimensions match, False otherwise.
         """
-        height, width, _ = frame.shape
+        if len(frame.shape) == 2:
+            height, width = frame.shape
+        else:
+            height, width, _ = frame.shape
         match: bool = height == self.attributes.height and width == self.attributes.width
         return match
 
@@ -105,7 +109,12 @@ class BaseVideoWriter(Template, abc.ABC):
             container (DataContainer): The data container containing images.
         """
         if self.video_writer is None and container.images:
-            height, width, _ = container.images[0].content.shape
+            first_image = container.images[0]
+            if len(first_image.shape) == 2:
+                height, width = first_image.shape
+            else:
+                height, width, _ = first_image.shape
+            self.color_space = first_image.color_space
             self.attributes.height = height
             self.attributes.width = width
             self.video_writer = self.make_video_writer()
@@ -120,8 +129,8 @@ class BaseVideoWriter(Template, abc.ABC):
             DataContainer: The processed data container.
         """
         self.init_if_needed(container)
-        for image in container.images:
-            self.add_frame_to_video(image.content)
+        for image_packet in container.images:
+            self.add_frame_to_video(image_packet)
 
         if not container.images:
             self.video_writer_is_done()
