@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-generic-data-tools"
-version = "0.1.0"
+version = "0.1.1"
 description = "Collection of generic data tools"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
@@ -9,11 +9,24 @@ license = { file = "LICENSE" }
 
 requires-python = ">=3.10"
 dependencies = [
+    "requests>=2.32.3",
     "sinapsis>=0.1.1",
 ]
-
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 [tool.setuptools]
 license-files = []
+
+
+
+[[tool.uv.index]]
+name = "sinapsis"
+url = "https://pypi.sinapsis.tech/"
+
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-data-tools.git"

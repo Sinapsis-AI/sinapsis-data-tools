@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-tools"
-version = "0.1.0"
+version = "0.1.1"
 description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 dependencies = [
@@ -70,3 +70,14 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = { find = { where = ["packages"] } }
 license-files = []
+
+[[tool.uv.index]]
+name = "sinapsis"
+url = "https://pypi.sinapsis.tech/"
+
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-data-tools.git"
