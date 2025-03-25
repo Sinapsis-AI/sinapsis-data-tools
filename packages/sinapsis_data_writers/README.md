@@ -7,16 +7,15 @@
 </a>
 
 <br>
-Sinapsis Data Tools
+Sinapsis Data Writer
 <br>
 </h1>
 
-<h4 align="center"> Mono repo with packages to read, write, process data, including images, audios, videos, bytes objects. The packages
-can be easily extensible to handle other types of data.</h4>
+<h4 align="center"> Package to write data of all formats, from the DataContainer in a specified location</h4>
 
 <p align="center">
 <a href="#installation">🐍 Installation</a> •
-<a href="#packages">📦 Packages</a> •
+<a href="#features">🚀 Features</a> •
 <a href="#usage">📚 Usage example</a> •
 <a href="#documentation">📙 Documentation</a> •
 <a href="#license">🔍 License</a>
@@ -36,15 +35,14 @@ Install using your package manager of choice. We encourage the use of <code>uv</
 Example with <code>uv</code>:
 
 ```bash
-  uv pip install sinapsis-data-readers --extra-index-url https://pypi.sinapsis.tech
+  uv pip install sinapsis-data-writers --extra-index-url https://pypi.sinapsis.tech
 ```
  or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-data-readers --extra-index-url https://pypi.sinapsis.tech
+  pip install sinapsis-data-writers --extra-index-url https://pypi.sinapsis.tech
 ```
 
 
-**Change the name of the package for the one you want to install**.
 
 > [!IMPORTANT]
 > Templates in each package may require extra dependencies. For development, we recommend installing the package with all the optional dependencies:
@@ -53,22 +51,13 @@ Example with <code>uv</code>:
 with <code>uv</code>:
 
 ```bash
-  uv pip install sinapsis-data-readers[all] --extra-index-url https://pypi.sinapsis.tech
+  uv pip install sinapsis-data-writers[all] --extra-index-url https://pypi.sinapsis.tech
 ```
  or with raw <code>pip</code>:
 ```bash
-  pip install sinapsis-data-readers[all] --extra-index-url https://pypi.sinapsis.tech
+  pip install sinapsis-data-writers[all] --extra-index-url https://pypi.sinapsis.tech
 ```
 
-
-**Change the name of the package accordingly**.
-
-> [!TIP]
-> You can also install all the packages within this project:
->
-```bash
-  uv pip install sinapsis-data-tools[all] --extra-index-url https://pypi.sinapsis.tech
-```
 > [!NOTE]
 > Some templates also need system dependencies (e.g., ffmpeg). The installation
 > depends on your OS. For Linux:
@@ -77,24 +66,8 @@ with <code>uv</code>:
 apt-get install -y ffmpeg
 ```
 
-<h2 id="packages">📦 Packages</h2>
-<details id='packages'><summary><strong><span style="font-size: 1.0em;"> Packages summary</span></strong></summary>
+<h2 id="features">🚀 Features</h2>
 
-
-- **Sinapsis Data Readers**
-    - **Audio Readers**\
-    _Read audio files from several formats using Pydub, Soundfile, among others._
-    - **Dataset Readers**\
-    _Read and manipulate tabular datasets from the scikit libraries, among others._
-    - **Image Readers**\
-    _Read and manipulate images from COCO, paths in CSVs, whole folders, etc._
-    - **Text Readers**\
-    _Read text data from a simple string and other sources._
-    - **Video Readers**\
-    _Read videoframes using CV2, Dali, FFMPEG, Torch, among others._
-
-- **Sinapsis Data Visualization**\
-_Visualize data distributions and manifolds, as well as draw all kinds of annotations on images, such as bounding boxes, keypoints, labels, oriented bounding boxes, segmentation masks, etc._
 - **Sinapsis Data Writers**\
 _Write data to many kinds of files._
     - **Annotation Writers**\
@@ -107,18 +80,12 @@ _Write data to many kinds of files._
     _Save to video files using CV2 or FFMPEG, among others._
 - **Sinapsis Generic Data Tools**\
 _Wide range of miscellaneous tools to manipulate your data._
-</details>
 
 > [!TIP]
 > Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
 
-> [!TIP] 
-> Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
-
 > [!TIP]
-> Run the docker image ```docker run -it --gpus all sinapsis-data-tools:base bash```
-> You need to activate the environment inside the image
-> source ```.venv/bin/activate```
+> Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
 
 For example, for ***ImageSaver*** use ```sinapsis info --example-template-config ImageSaver``` to produce the following example config:
 
@@ -179,13 +146,14 @@ templates:
     save_mask_crops: false
     min_bbox_dim: 5
 ```
-
+</details>
 To run, simply use:
 
 ```bash
 sinapsis run name_of_the_config.yml
 ```
-</details>
+
+**NOTE**: Make sure to update the `data_dir` attribute in the `FolderImageDatasetCV2`, and the `save_dir` and `root_dir` attributes in the `ImageSaver` templates to actual directories
 
 <h2 id="documentation">📙 Documentation</h2>
 
