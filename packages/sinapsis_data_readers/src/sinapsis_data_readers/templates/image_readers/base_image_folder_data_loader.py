@@ -34,7 +34,6 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
     class AttributesBaseModel(_BaseDataReader.AttributesBaseModel):
         __doc__ = f"""
         {base_attributes_documentation()}
-        color_space (ImageColor) : The color space of the image. Defaults to RGB
         label_path_index: int = -2
                 for datasets that rely on the dirname as the ground truth. The image file path will
                 be split as 'data_label = data_file_path.ext.split(os.sep)[label_path_index]'.
@@ -42,7 +41,6 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
                 weather the data is a ground truth or not.
         """
 
-        color_space: ImageColor = ImageColor.RGB
         label_path_index: int = -2
         is_ground_truth: bool = False
 
@@ -60,7 +58,7 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
         has been read using the _get_reader_method
         This method also checks the integrity of the image
         """
-        data_packet.content = self.get_reader_method()(data_packet.source, self.attributes.color_space)
+        data_packet.content = self.get_reader_method()(data_packet.source)
         if data_packet.content is None:
             raise ContentNotSetException(f"Failed to load {data_packet.source}, please check file and its integrity")
 
@@ -80,7 +78,7 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
             image_packet = ImagePacket(
                 content=img_content,
                 source=img_path,
-                color_space=self.attributes.color_space,
+                color_space=ImageColor.RGB,
                 annotations=[
                     ImageAnnotations(
                         label_str=image_label,

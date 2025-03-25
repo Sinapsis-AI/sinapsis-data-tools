@@ -147,7 +147,6 @@ class CocoDetectionDatasetCV2(CocoImageDatasetBaseCV2):
             shuffle_data: false
             samples_to_load: -1
             load_on_init: false
-            color_space: 1
             label_path_index: -2
             is_ground_truth: false
             annotations_path: '/path/to/annotations/file.json'
@@ -226,7 +225,6 @@ class CocoSegmentationDatasetCV2(CocoDetectionDatasetCV2):
             shuffle_data: false
             samples_to_load: -1
             load_on_init: false
-            color_space: 1
             label_path_index: -2
             is_ground_truth: false
             annotations_path: '/path/to/annotations/file.json'
@@ -237,7 +235,7 @@ class CocoSegmentationDatasetCV2(CocoDetectionDatasetCV2):
         Args:
             image_annotations (list[dict[str, Any]]): ImageAnnotations dictionary for individual image
         Returns:
-           list[ImageAnnotations] : Update list of ImageAnnotations with segmentation objects.
+           list[ImageAnnotations]: Update list of ImageAnnotations with segmentation objects.
         """
         annotations = super().get_annotations(image_annotations)
 
@@ -253,8 +251,8 @@ class CocoSegmentationDatasetCV2(CocoDetectionDatasetCV2):
                 annotations[i].segmentation = segmentation
         return annotations
 
+    @staticmethod
     def get_binary_mask(
-        self,
         mask_coords: dict[Any, Any] | list[list[float]],
         height: int,
         width: int,
@@ -332,7 +330,6 @@ class CocoKeypointsDatasetCV2(CocoDetectionDatasetCV2):
             shuffle_data: false
             samples_to_load: -1
             load_on_init: false
-            color_space: 1
             label_path_index: -2
             is_ground_truth: false
             annotations_path: '/path/to/annotations/file.json'

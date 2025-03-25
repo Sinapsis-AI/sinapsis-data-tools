@@ -126,7 +126,7 @@ class CSVImageDataset(_BaseDataReader):
         image_packets: list[ImagePacket] = []
         # Iterate through the data points (only up to the specified number of samples)
         for idx, data_point in enumerate(self.data_points.values[: self.attributes.samples_to_load]):
-            label = data_point[0]  # First column is the label
+            label = data_point[0]  # The first column is the label
             value = data_point[1:,]  # Remaining columns are the image data
 
             # Create an ImagePacket for this data point
@@ -138,12 +138,10 @@ class CSVImageDataset(_BaseDataReader):
                 id=label,
             )
 
-            # Optionally process the content of the packet
             if self.attributes.load_on_init:
                 try:
                     self.read_packet_content(image_packet)
                 except ContentNotSetException:
-                    # Skip this image if content can't be read
                     continue
 
             image_packets.append(image_packet)
