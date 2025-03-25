@@ -51,7 +51,7 @@ with <code>uv</code>:
 
 
 <h2 id="features">🚀 Features</h2>
-<details id='packages'><summary><strong><span style="font-size: 1.0em;"> Packages summary</span></strong></summary>
+
 
 
 > [!TIP]
@@ -61,7 +61,7 @@ with <code>uv</code>:
 > Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
 
 For example, for ***ImageSaver*** use ```sinapsis info --example-template-config ImageSaver``` to produce the following example config:
-
+<details id='packages'><summary><strong><span style="font-size: 1.0em;"> Config</span></strong></summary>
 
 ```yaml
 agent:
