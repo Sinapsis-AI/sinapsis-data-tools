@@ -5,7 +5,7 @@ import abc
 from functools import wraps
 from inspect import getdoc
 from pathlib import Path
-from typing import Any, Literal, Type, TypeVar
+from typing import Any, Literal, Type, TypeAlias, TypeVar
 
 from numpy import ndarray
 from sinapsis_core.data_containers.data_packet import (
@@ -22,34 +22,32 @@ from sinapsis_core.template_base import (
 
 from sinapsis_data_readers.helpers.file_path_helpers import parse_file_paths
 
-NotSet = tuple[None, Literal[0]]
+NotSet = (None, 0)
+NotSetType: TypeAlias = tuple[None, Literal[0]]
 
 
 class BaseVideoReaderAttributes(TemplateAttributes):
-    """Attributes for base class of Video Readers
-    video_file_path (str) :  path to the video
-    batch_size (PositiveInt) : Size of the batch of frames
-    video_source (int | source | None) : source of the video
-    color_space (ImageColor) : color space of the frames in the video
-    device (Literal) : device to be used for loading the video
+    """Attributes for base class of Video Readers.
+
+    Attributes:
+        video_file_path (str | list[str]): Path or list of paths to the video(s).
+        batch_size (int): Number of frames in the batch. Default is 1.
+        video_source (int | str | None): Source of the video. Default is a UUID string.
+        device (Literal["cpu", "gpu"]): Device to be used for loading the video. Default is "cpu".
+        loop_forever (bool): Whether to loop the video indefinitely. Default is False.
     """
 
     video_file_path: str | list[str]
     batch_size: int = 1
     video_source: int | str | None = str(get_uuid())
-    color_space: ImageColor = ImageColor.RGB
     device: Literal["cpu", "gpu"] = "cpu"
     loop_forever: bool = False
 
 
 class BaseVideoReader(Template):
-    """
-    Base template for Video Reader templates.
+    """Base template for Video Reader templates.
     This template already implements process_frames and make_image_packets
     methods to add the frames as ImagePacket to the DataContainer
-
-
-
     """
 
     AttributesBaseModel = BaseVideoReaderAttributes
@@ -65,27 +63,26 @@ class BaseVideoReader(Template):
             self.logger.warning("Unable to open video")
 
     @abc.abstractmethod
-    def make_video_reader(self) -> tuple[Any, int] | NotSet:
-        """
-        Method to instantiate the reader depending on the library used
+    def make_video_reader(self) -> tuple[Any, int]:
+        """Method to instantiate the reader depending on the library used
         Returns:
             tuple[Any, int]: The reader object and the number of frames
             If the video can't be processed or open, the method will return NotSet type
         """
 
-    def reset_state(self) -> None:
+    def reset_state(self, template_name: str | None = None) -> None:
         """
         Reinitialize the video reader, by first closing any hanging processes.
         Sets the flag has_reset to True
         """
+        _ = template_name
         self.close_video_reader()
         self.video_reader = None
         super().reset_state()
         self.has_reset = True
 
     def loop_forever(self, container: DataContainer) -> None:
-        """
-        Iterates over the video frames over and over while there is still data
+        """Iterates over the video frames over and over while there is still data
         to process. This flag is set through the attributes
         """
         self.logger.debug("All frames processed. Restaring video reader...")
@@ -98,8 +95,7 @@ class BaseVideoReader(Template):
 
     @abc.abstractmethod
     def _read_video_frames(self) -> list[ImagePacket]:
-        """
-        Abstract method to read the frames of the video and assign to ImagePacket
+        """Abstract method to read the frames of the video and assign to ImagePacket
 
         Returns:
             list[ImagePacket]: List of frames, each of them packed in an ImagePacket
@@ -140,13 +136,12 @@ class BaseVideoReader(Template):
         return ImagePacket(
             content=frame,
             source=self.attributes.video_source,
-            color_space=self.attributes.color_space,
+            color_space=ImageColor.RGB,
             id=f"{self.attributes.video_source}_{frame_index}",
         )
 
     def process_frames(self, container: DataContainer) -> None:
-        """
-         Reads frames and adds them to DataContainer as ImagePackets
+        """Reads frames and adds them to DataContainer as ImagePackets
         Args:
             container (DataContainer): container to be updated
         """

@@ -7,25 +7,20 @@ import nvidia.dali.fn as fn
 from nvidia.dali import pipeline_def
 from nvidia.dali.pipeline import DataNode, Pipeline
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
-from nvidia.dali.types import DALIImageType
-from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
+from sinapsis_core.data_containers.data_packet import ImagePacket
 from sinapsis_core.utils.logging_utils import sinapsis_logger
 
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
+    BaseVideoReaderAttributes,
     NotSet,
+    NotSetType,
     multi_video_wrapper,
 )
 
-image_color_mapping: dict = {
-    ImageColor.RGB: DALIImageType.RGB,
-    ImageColor.BGR: DALIImageType.BGR,
-    ImageColor.GRAY: DALIImageType.GRAY,
-}
-
 
 @pipeline_def
-def video_pipe(filenames: list[str], device: str, random_shuffle: bool, color_enum: ImageColor) -> DataNode:
+def video_pipe(filenames: list[str], device: str, random_shuffle: bool) -> DataNode:
     """Pipeline for reading video files using NVIDIA DALI.
 
     This pipeline reads video files from the specified list of filenames
@@ -36,7 +31,6 @@ def video_pipe(filenames: list[str], device: str, random_shuffle: bool, color_en
         will be read by the pipeline.
         device (str): which device to use for data reading (e.g., cpu or gpu)
         random_shuffle (bool): flag to shuffle the data frames to be read.
-        color_enum (ImageColor): color space in which videos are read
 
     Returns:
         DataNode: A DataNode containing the video frames. The output is
@@ -51,7 +45,6 @@ def video_pipe(filenames: list[str], device: str, random_shuffle: bool, color_en
             initial_fill=1024 * 5,
             prefetch_queue_depth=500,
             read_ahead=True,
-            image_type=image_color_mapping[color_enum],
         )
         video = cast(DataNode, video)
     except RuntimeError as e:
@@ -84,22 +77,22 @@ class VideoReaderDali(BaseVideoReader):
             video_file_path: '/path/to/video/file'
             batch_size: 1
             video_source: 4d2a355f-cda4-4742-9042-8e6ee842d1cf
-            color_space: 1
             device: gpu
             loop_forever: false
     """
 
-    class AttributesBaseModel(BaseVideoReader.AttributesBaseModel):
-        """ Attributes for the VideoReaderDali
-            device (Literal["gpu"]): Device to read the video. Dali only supports GPU
-            num_threads (int): number of GPU threads used by the pipeline
-            random_shuffle (bool): Determines whether to randomly shuffle data
+    class AttributesBaseModel(BaseVideoReaderAttributes):
+        """Attributes for the VideoReaderDali
+        device (Literal["gpu"]): Device to read the video. Dali only supports GPU
+        num_threads (int): number of GPU threads used by the pipeline
+        random_shuffle (bool): Determines whether to randomly shuffle data
         """
-        device: Literal["gpu"]
+
+        device: Literal["gpu"] = "gpu"
         num_threads: int = 64
         random_shuffle: bool = False
 
-    def make_video_reader(self) -> tuple[DALIGenericIterator | Pipeline, int] | NotSet:
+    def make_video_reader(self) -> tuple[DALIGenericIterator | Pipeline, int] | NotSetType:
         """Creates a dali pipeline for reading video files.
 
         This method initializes the video reading pipeline using the provided
@@ -120,7 +113,6 @@ class VideoReaderDali(BaseVideoReader):
                 seed=12345,
                 device=self.attributes.device,
                 random_shuffle=self.attributes.random_shuffle,
-                color_enum=self.attributes.color_space,
             )
             pipe.build()
         except RuntimeError as e:
@@ -131,7 +123,8 @@ class VideoReaderDali(BaseVideoReader):
 
     def close_video_reader(self) -> None:
         """Method to delete the Pipeline from memory"""
-        del self.video_reader
+        if self.video_reader:
+            del self.video_reader
 
     def _read_video_frames(self) -> list[ImagePacket]:
         """Reads video frames from the dali pipeline.
@@ -181,7 +174,6 @@ class VideoReaderDaliPytorch(VideoReaderDali):
             video_file_path: '`replace_me:str | list[str]`'
             batch_size: 1
             video_source: 33147f07-26a9-4495-b7e1-3246afe32779
-            color_space: 1
             device: 'gpu'
             loop_forever: false
             num_threads: 64
@@ -189,7 +181,7 @@ class VideoReaderDaliPytorch(VideoReaderDali):
 
     """
 
-    def make_video_reader(self) -> tuple[DALIGenericIterator | Pipeline, int] | NotSet:
+    def make_video_reader(self) -> tuple[DALIGenericIterator | Pipeline, int] | NotSetType:
         """Creates a generic  dali iterator for reading video files.
 
         This method calls the parent class's make_video_reader method to initialize
@@ -204,7 +196,7 @@ class VideoReaderDaliPytorch(VideoReaderDali):
         pipelines, num_frames = super().make_video_reader()
 
         if pipelines is None:
-            return pipelines, 0
+            return NotSet
         pipelines = cast(Pipeline, pipelines)
         return DALIGenericIterator([pipelines], ["data"], auto_reset=False), num_frames
 

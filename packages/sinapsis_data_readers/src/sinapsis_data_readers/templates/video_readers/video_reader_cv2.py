@@ -7,6 +7,7 @@ from sinapsis_core.data_containers.data_packet import ImagePacket
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
     NotSet,
+    NotSetType,
     multi_video_wrapper,
 )
 
@@ -31,13 +32,12 @@ class VideoReaderCV2(BaseVideoReader):
             video_file_path: '/path/to/video/file'
             batch_size: 1
             video_source: 4d2a355f-cda4-4742-9042-8e6ee842d1cf
-            color_space: 1
             device: cpu
             loop_forever: false
 
     """
 
-    def make_video_reader(self) -> NotSet | tuple[cv2.VideoCapture, int]:
+    def make_video_reader(self) -> tuple[cv2.VideoCapture, int] | NotSetType:
         """Attempts to open the video file specified in `self.attributes.video_file_path`
         and retrieves the total number of frames in the video.
 
@@ -73,7 +73,7 @@ class VideoReaderCV2(BaseVideoReader):
             if not ret_status:
                 break
 
-            frame = cv2.cvtColor(frame, cv2.IMREAD_COLOR)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             video_frames.append(self._make_image_packet(frame, frame_index=self.frame_count + idx))
         return video_frames
 
@@ -83,7 +83,8 @@ class VideoReaderCV2(BaseVideoReader):
         Closes the video file and releases any resources associated with the video reader.
         This method should be called when video reading is complete to avoid memory leaks.
         """
-        self.video_reader.release()
+        if self.video_reader:
+            self.video_reader.release()
 
 
 @multi_video_wrapper

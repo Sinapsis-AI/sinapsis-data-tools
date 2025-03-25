@@ -24,7 +24,7 @@ _template_lookup = {
     "LazyAudioReaderSoundfile": f"{_root_lib_path}.audio_readers.audio_reader_soundfile",
     "MultiVideoReaderCV2": f"{_root_lib_path}.video_readers.video_reader_cv2",
     "MultiVideoReaderDali": f"{_root_lib_path}.video_readers.video_reader_dali",
-    "MultiVideoReaderDaliPytorch": f"{_root_lib_path}.video_readers.video_reader_dali",
+    "MultiVideoReaderPytorch": f"{_root_lib_path}.video_readers.video_reader_dali",
     "MultiVideoReaderFFMPEG": f"{_root_lib_path}.video_readers.video_reader_ffmpeg",
     "MultiVideoReaderTorchCodec": f"{_root_lib_path}.video_readers.video_reader_torchcodec",
     "TabularDatasetSplitter": f"{_root_lib_path}.datasets_readers.dataset_splitter",

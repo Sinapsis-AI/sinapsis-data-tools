@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from torchcodec.decoders import SimpleVideoDecoder
 
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
     NotSet,
+    NotSetType,
     multi_video_wrapper,
 )
 
@@ -31,12 +33,11 @@ class VideoReaderTorchCodec(BaseVideoReader):
             video_file_path: '/path/to/video/file'
             batch_size: 1
             video_source: 4d2a355f-cda4-4742-9042-8e6ee842d1cf
-            color_space: 1
             device: gpu
             loop_forever: false
     """
 
-    def make_video_reader(self) -> tuple[SimpleVideoDecoder, int]:
+    def make_video_reader(self) -> tuple[SimpleVideoDecoder, int] | NotSetType:
         """Initialize the video decoder and retrieve the total number of frames.
 
         This method attempts to create an instance of SimpleVideoDecoder with
