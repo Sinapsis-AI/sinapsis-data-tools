@@ -56,7 +56,7 @@ with <code>uv</code>:
 > [!TIP]
 > Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
 
-For example, for ***ColorConversion*** use ```sinapsis info --example-template-config ImageSaver``` to produce the following example config:
+For example, for ***ColorConversion*** use ```sinapsis info --example-template-config ImageColorConversion``` to produce the following example config:
 
 
 ```yaml
@@ -66,8 +66,8 @@ templates:
 -   template_name: InputTemplate
     class_name: InputTemplate
     attributes: {}
--   template_name: ColorConversion
-    class_name: ColorConversion
+-   template_name: ImageColorConversion
+    class_name: ImageColorConversion
     template_input: InputTemplate
     attributes:
         target_color_space: 2
@@ -95,8 +95,8 @@ templates:
     load_on_init: true
     label_path_index: 0
     is_ground_truth: false
-- template_name: ColorConversion
-  class_name: ColorConversion
+- template_name: ImageColorConversion
+  class_name: ImageColorConversion
   template_input: FolderImageDatasetCV2
   attributes:
         target_color_space: 2
