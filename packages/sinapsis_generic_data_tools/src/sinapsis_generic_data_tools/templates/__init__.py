@@ -5,6 +5,7 @@ from typing import Callable
 _root_lib_path = "sinapsis_generic_data_tools.templates"
 
 _template_lookup = {
+    "ImageColorConversion": f"{_root_lib_path}.image_color_conversion",
     "MaskNonROIs": f"{_root_lib_path}.mask_non_roi",
     "PacketBufferQueue": f"{_root_lib_path}.packet_buffer_queue",
 }
