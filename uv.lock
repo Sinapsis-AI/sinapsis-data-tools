@@ -1619,7 +1619,7 @@ dev = [
 
 [[package]]
 name = "sinapsis-data-visualization"
-version = "0.1.1"
+version = "0.1.0"
 source = { editable = "packages/sinapsis_data_visualization" }
 dependencies = [
     { name = "sinapsis" },
