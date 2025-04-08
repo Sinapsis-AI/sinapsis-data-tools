@@ -17,7 +17,7 @@ from sinapsis_data_readers.templates.base_file_data_loader import (
     example_documentation,
 )
 
-SUPPORTED_IMAGE_TYPES: list[str] = [".jpg", ".jpeg", ".png", ".gif", ".tiff", ".JPEG"]
+SUPPORTED_IMAGE_TYPES: list[str] = [".jpg", ".jpeg", ".png", ".gif", ".tiff"]
 
 
 class ImageBaseDataReader(_BaseDataReader, abc.ABC):
@@ -111,7 +111,7 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
         data_items = [
             img_path if not return_as_str else str(img_path.resolve())
             for img_path in Path(self.attributes.data_dir).glob(self.attributes.pattern)
-            if img_path.suffix in SUPPORTED_IMAGE_TYPES
+            if img_path.suffix.lower() in SUPPORTED_IMAGE_TYPES
         ]
 
         if self.attributes.samples_to_load >= 0:

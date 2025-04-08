@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-writers"
-version = "0.1.1"
+version = "0.1.2"
 description = "Templates to write DataContainer content to file."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
@@ -9,6 +9,7 @@ license = { file = "LICENSE" }
 requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",
+    "sinapsis-generic-data-tools",
 ]
 
 [project.optional-dependencies]
@@ -25,6 +26,7 @@ ffmpeg = [
 
 [tool.uv.sources]
 sinapsis-data-writers = { workspace = true }
+sinapsis-generic-data-tools = { workspace = true }
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
