@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-tools"
-version = "0.1.2"
+version = "0.2.0"
 description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 dependencies = [
@@ -15,6 +15,7 @@ license = { file = "LICENSE" }
 [project.optional-dependencies]
 
 all = [
+    "sinapsis-data-analysis",
     "sinapsis-data-writers[all]",
     "sinapsis-data-readers[all]",
     "sinapsis-data-visualization[all]",
@@ -27,6 +28,7 @@ exclude = ["packages/*.egg-info"]
 
 
 [tool.uv.sources]
+sinapsis-data-analysis = { workspace = true }
 sinapsis-data-writers = { workspace = true }
 sinapsis-data-readers = { workspace = true }
 sinapsis-data-visualization = { workspace = true }
@@ -69,7 +71,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = { find = { where = ["packages"] } }
-license-files = []
+
 
 [[tool.uv.index]]
 name = "sinapsis"
