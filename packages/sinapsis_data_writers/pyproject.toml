@@ -5,7 +5,7 @@ description = "Templates to write DataContainer content to file."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",
@@ -30,8 +30,7 @@ sinapsis-generic-data-tools = { workspace = true }
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
-[tool.setuptools]
-license-files = []
+
 
 
 [[tool.uv.index]]

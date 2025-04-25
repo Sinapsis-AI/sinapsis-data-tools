@@ -5,7 +5,7 @@ description = "Collection of generic data tools"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
 readme = "README.md"
-license = { file = "LICENSE" }
+license-files = ["LICENSE"]
 
 requires-python = ">=3.10"
 dependencies = [
@@ -15,10 +15,6 @@ dependencies = [
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
-[tool.setuptools]
-license-files = []
-
-
 
 [[tool.uv.index]]
 name = "sinapsis"
