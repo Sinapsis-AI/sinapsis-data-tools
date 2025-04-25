@@ -1,0 +1,48 @@
+agent:
+  name: sklearn_nn_models_agent
+  description: agent to train a MLPClassifier using the load_breast_cancer dataset
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: load_breast_cancerWrapper
+  class_name: load_breast_cancerWrapper
+  template_input: InputTemplate
+  attributes:
+    split_dataset: true
+    train_size: 0.8
+    load_breast_cancer:
+      return_X_y: false
+      as_frame: true
+
+- template_name: MLPClassifierWrapper
+  class_name: MLPClassifierWrapper
+  template_input: load_breast_cancerWrapper
+  attributes:
+    generic_field_key: load_breast_cancerWrapper
+    model_save_path: "artifacts/mlp_classifier.joblib"
+    mlpclassifier_init:
+      hidden_layer_sizes: [100, 50]
+      activation: 'relu'
+      solver: 'adam'
+      alpha: 0.0001
+      batch_size: 'auto'
+      learning_rate: 'constant'
+      learning_rate_init: 0.001
+      max_iter: 200
+      shuffle: true
+      random_state: 42
+      tol: 0.0001
+      verbose: false
+      warm_start: false
+      momentum: 0.9
+      nesterovs_momentum: true
+      early_stopping: false
+      validation_fraction: 0.1
+      beta_1: 0.9
+      beta_2: 0.999
+      epsilon: 0.00000001
+      n_iter_no_change: 10
+      max_fun: 15000

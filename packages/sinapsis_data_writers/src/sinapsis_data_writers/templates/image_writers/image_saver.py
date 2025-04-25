@@ -101,8 +101,8 @@ class ImageSaver(Template):
                 img_destination = img_destination.with_suffix(f".{self.attributes.extension}")
 
             path_to_save = str(img_destination)
-            if image_packet.content is not None and image_packet.content.size > 0:  # Check if image is valid
-                if image_packet.color_space != ImageColor.GRAY:
+            if image_packet.content is not None and image_packet.content.size > 0:
+                if image_packet.color_space is not None and image_packet.color_space != ImageColor.GRAY:
                     image_packet = convert_color_space(image_packet, ImageColor.BGR)
                 cv2.imwrite(str(img_destination.absolute()), image_packet.content)
                 self.logger.debug(f"Saved image to: {img_destination.absolute()}")
@@ -110,7 +110,7 @@ class ImageSaver(Template):
             else:
                 self.logger.warning(f"Attempted to save an invalid image: {img_destination}")
                 return ""
-        except (FileNotFoundError, PermissionError, OSError) as e:
+        except OSError as e:
             self.logger.error(f"File system error while saving image to {img_destination}: {e}")
             return ""
 

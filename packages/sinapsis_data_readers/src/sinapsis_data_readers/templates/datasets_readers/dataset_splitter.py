@@ -129,7 +129,7 @@ class DatasetSplitterBase(Template):
         x_data, y_data = self.extract_x_y_from_packet(packet)
 
         custom_dataset = self.store_data_in_data_splitter(x_data, y_data)
-        container.set_generic_data(container, custom_dataset)
+        self._set_generic_data(container, custom_dataset)
         return container
 
 
@@ -212,16 +212,16 @@ class TabularDatasetSplitter(DatasetSplitterBase):
         generic_data_target_key: str = "target"  # labels
         generic_data_feature_key: str = "data"  # arrays
 
-    def extract_x_y_from_packet(self, packets: list[Packet] | dict) -> tuple[ArrayDataFrameType, StringDataFrameType]:
+    def extract_x_y_from_packet(self, packets: list[Packet] | dict) -> tuple[StringDataFrameType, ArrayDataFrameType]:
         packet = cast(dict, packets)
         dataframe: pd.DataFrame | None = packet.get(self.attributes.generic_data_extract_key, None)
-        target: pd.DataFrame
-        feature: pd.DataFrame
-        if dataframe:
-            target = dataframe.get(self.attributes.generic_dataset_target_key)
-            feature = dataframe.get(self.attributes.generic_dataset_feature_key)
+        target: pd.DataFrame = pd.DataFrame()
+        feature: pd.DataFrame = pd.DataFrame()
+        if isinstance(dataframe, pd.DataFrame):
+            target = dataframe.get(self.attributes.generic_data_target_key)
+            feature = dataframe.get(self.attributes.generic_data_feature_key)
 
-        return target, feature
+        return feature, target
 
     @staticmethod
     def return_data_splitter_object(
