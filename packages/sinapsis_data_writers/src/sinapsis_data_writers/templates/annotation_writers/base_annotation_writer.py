@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Literal, cast
 
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from sinapsis_data_readers.helpers.coco_dataclasses import CocoJsonKeys
 
@@ -173,7 +174,7 @@ class BaseAnnotationWriter(Template):  # type:ignore
 
     def execute(self, container: DataContainer) -> DataContainer:
         """Executes the annotation process by processing all images and saving annotations.
-        
+
         Args:
             container (DataContainer): The container holding image packets.
 

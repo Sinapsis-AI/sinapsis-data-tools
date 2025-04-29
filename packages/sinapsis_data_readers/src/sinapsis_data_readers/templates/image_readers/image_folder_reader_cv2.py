@@ -16,8 +16,6 @@ def read_image_file(file_path: str | PosixPath | bytes) -> np.ndarray:
 
     Args:
         file_path (str | PosixPath | bytes): either the file path in disk or the bytes object
-        color_space (ImageColor) :  color space for the image
-
     Returns:
         np.ndarray: the image as a numpy array
     """

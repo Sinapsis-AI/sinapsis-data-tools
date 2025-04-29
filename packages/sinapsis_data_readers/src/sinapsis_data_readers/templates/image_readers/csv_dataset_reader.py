@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import ImagePacket
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_data_readers.templates.base_file_data_loader import (
     ContentNotSetException,

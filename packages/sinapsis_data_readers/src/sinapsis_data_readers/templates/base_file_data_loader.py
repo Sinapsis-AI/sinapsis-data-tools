@@ -3,8 +3,8 @@ import abc
 from typing import Generator
 
 from sinapsis_core.data_containers.data_packet import DataContainer, Packet
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )
@@ -162,7 +162,7 @@ class _BaseDataReader(Template, abc.ABC):
 
     def append_packets_to_container(self, container: DataContainer) -> None:
         """Method to add an extra data packet to the container
-        
+
         Args:
             container (DataContainer): container where data is to be appended
         """

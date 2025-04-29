@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )

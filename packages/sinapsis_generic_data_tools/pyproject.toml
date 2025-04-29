@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-generic-data-tools"
-version = "0.1.1"
+version = "0.1.2"
 description = "Collection of generic data tools"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
@@ -15,6 +15,7 @@ dependencies = [
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
 
 [[tool.uv.index]]
 name = "sinapsis"

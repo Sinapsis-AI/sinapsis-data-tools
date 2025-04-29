@@ -10,7 +10,6 @@ _ADDITIONAL_TEMPLATE_MODULES = [
     f"{_root_lib_path}.sklearn_manifold",
     f"{_root_lib_path}.sklearn_train",
     f"{_root_lib_path}.xgboost_train",
-    f"{_root_lib_path}.xgboost_inference",
 ]
 _template_lookup: dict = {
     "SKLearnInference": f"{_root_lib_path}.sklearn_inference",

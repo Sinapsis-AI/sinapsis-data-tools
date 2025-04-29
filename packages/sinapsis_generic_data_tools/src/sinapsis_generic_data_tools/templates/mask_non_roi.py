@@ -7,7 +7,8 @@ import numpy as np
 from pydantic import BaseModel, ConfigDict, computed_field
 from sinapsis_core.data_containers.annotations import KeyPoint
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base.template import Template, TemplateAttributes
+from sinapsis_core.template_base.base_models import TemplateAttributes
+from sinapsis_core.template_base.template import Template
 
 
 class RegionOfInterest(BaseModel):
@@ -71,7 +72,7 @@ class MaskNonROIs(Template):
         """
         Removed non-region of interest areas in an image, keeping only
         the regions specified in the attributes.
-        
+
         Args:
             image (np.ndarray): image to be masked
             use_bitwise (bool): Flag to indicate if using cv2.bitwise_and

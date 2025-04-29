@@ -4,7 +4,6 @@ from typing import Literal
 
 import numpy as np
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
-
 from sinapsis_data_visualization.helpers.annotation_drawer_tools import (
     draw_annotation_rectangle,
     draw_extra_labels,
@@ -128,7 +127,7 @@ class LabelDrawer(BaseAnnotationDrawer):
     def get_label_ann_str(self, annotation: ImageAnnotations) -> str:
         """
         Returns the annotation as string, appending confidence score if needed.
-        
+
         Args:
             annotation (ImageAnnotations): Annotation object in the ImagePacket to
             extract the label from

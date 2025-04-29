@@ -3,10 +3,8 @@ from sinapsis_core.data_containers.data_packet import (
     DataContainer,
     ImageColor,
 )
-from sinapsis_core.template_base import (
-    Template,
-    TemplateAttributes,
-)
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes
 
 from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
 

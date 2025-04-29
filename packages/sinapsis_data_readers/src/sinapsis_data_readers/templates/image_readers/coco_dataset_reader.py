@@ -15,7 +15,7 @@ from sinapsis_core.data_containers.annotations import (
     Segmentation,
 )
 from sinapsis_core.data_containers.data_packet import ImagePacket
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_data_readers.helpers.coco_dataclasses import (
     CocoAnnotationsKeys,

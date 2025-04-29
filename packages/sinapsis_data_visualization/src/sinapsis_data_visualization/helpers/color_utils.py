@@ -4,7 +4,6 @@ import math
 import random
 
 from matplotlib import colors
-
 from sinapsis_data_visualization.helpers.annotation_drawer_types import RGB_TYPE
 
 

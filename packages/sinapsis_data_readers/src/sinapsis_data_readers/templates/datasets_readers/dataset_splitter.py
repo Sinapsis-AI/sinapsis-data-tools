@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket, Packet
-from sinapsis_core.template_base import Template, TemplateAttributes
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes
 from sklearn.model_selection import train_test_split
 
 ArrayDataFrameType = Union[list[np.ndarray], pd.DataFrame]

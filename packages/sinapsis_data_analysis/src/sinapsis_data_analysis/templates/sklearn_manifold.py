@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel, ConfigDict
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import Template, TemplateAttributes
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
     WrapperEntryConfig,

@@ -24,7 +24,6 @@ class AudioReaderPydub(_AudioBaseReader):
     When reading from bytes, it retains the data in byte format.
     When reading from a file, it converts the audio data to a NumPy array.
 
-
     Usage example:
 
         agent:
@@ -128,7 +127,7 @@ class LazyAudioReaderPydub(AudioReaderPydub):
     def get_file_path_from_generic_data(self, container: DataContainer) -> None:
         """Method to retrieve the file path from the genetic data field of DataContainer.
         The method extracts the file path from the generic field and sets as attribute
-        
+
         Args:
             container (DataContainer): The DataContainer to extract the file path from
         """

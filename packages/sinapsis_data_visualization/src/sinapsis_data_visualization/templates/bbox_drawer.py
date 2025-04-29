@@ -3,7 +3,6 @@
 import cv2
 import numpy as np
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
-
 from sinapsis_data_visualization.helpers.color_utils import RGB_TYPE
 from sinapsis_data_visualization.templates.label_drawer import LabelDrawer
 

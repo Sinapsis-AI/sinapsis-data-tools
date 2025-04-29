@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import TemplateAttributes
+from sinapsis_core.template_base.base_models import TemplateAttributes
 from sinapsis_core.template_base.dynamic_template import BaseDynamicWrapperTemplate
 from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import TabularDatasetSplit
 from sklearn.base import is_classifier, is_regressor

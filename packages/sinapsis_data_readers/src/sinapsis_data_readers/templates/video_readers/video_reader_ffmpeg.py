@@ -5,7 +5,7 @@ import subprocess
 import ffmpeg
 import numpy as np
 from sinapsis_core.data_containers.data_packet import ImagePacket
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,

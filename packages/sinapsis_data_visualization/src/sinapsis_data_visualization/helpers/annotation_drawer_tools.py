@@ -4,7 +4,6 @@ from typing import cast
 import cv2
 import numpy as np
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
-
 from sinapsis_data_visualization.helpers.annotation_drawer_types import (
     TextInstanceProperties,
     TextStyle,
@@ -70,7 +69,7 @@ def get_dynamic_text_properties(image: np.ndarray) -> tuple[float, float]:
 
 def get_numeric_str(label: str, numeric_val: float | int) -> str:
     """Writes numeric value of label as string
-    
+
     Args:
         label (str): label of the annotation
         numeric_val (float|int): numeric_val to convert to string

@@ -85,7 +85,7 @@ class ExecuteNTimesAudioReaderSoundfile(AudioReaderSoundfile):
 class LazyAudioReaderSoundfile(AudioReaderSoundfile):
     """Reads audio data from a file path using Soundfile.
 
-    This class utilizes the Soundfile library to read audio data from a specified file path.
+    This class uses the Soundfile library to read audio data from a specified file path.
     It returns the audio data wrapped in an AudioPacket, which includes additional metadata
     such as sample rate and source information.
 
@@ -108,7 +108,7 @@ class LazyAudioReaderSoundfile(AudioReaderSoundfile):
     def get_file_path_from_generic_data(self, container: DataContainer) -> None:
         """Method to retrieve the file path from the genetic data field of DataContainer.
         The method extracts the file path from the generic field and sets as attribute
-        
+
         Args:
             container (DataContainer): The DataContainer to extract the file path from
         """

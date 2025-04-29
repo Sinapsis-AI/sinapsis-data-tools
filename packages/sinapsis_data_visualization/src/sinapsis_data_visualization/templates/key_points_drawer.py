@@ -3,7 +3,6 @@
 import cv2
 import numpy as np
 from sinapsis_core.data_containers.annotations import ImageAnnotations, KeyPoint
-
 from sinapsis_data_visualization.helpers.annotation_drawer_types import (
     KeyPointAppearance,
 )

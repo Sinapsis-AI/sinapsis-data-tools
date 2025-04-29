@@ -7,8 +7,8 @@ from typing import Literal, Type
 
 from pydantic.dataclasses import dataclass
 from sinapsis_core.data_containers.data_packet import DataContainer, Packet
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )

@@ -25,7 +25,7 @@ can be easily extensible to handle other types of data.</h4>
 <h2 id="installation">🐍 Installation</h2>
 
 This mono repo consists of different packages to handle data:
-
+* <code>sinapsis-data-analysis</code>
 * <code>sinapsis-data-readers</code>
 * <code>sinapsis-data-visualization</code>
 * <code>sinapsis-data-writers</code>
@@ -112,7 +112,7 @@ _Wide range of miscellaneous tools to manipulate your data._
 > [!TIP]
 > Use CLI command ``` sinapsis info --all-template-names``` to show a list with all the available Template names installed with Sinapsis Data Tools.
 
-> [!TIP] 
+> [!TIP]
 > Use CLI command ```sinapsis info --example-template-config TEMPLATE_NAME``` to produce an example Agent config for the Template specified in ***TEMPLATE_NAME***.
 
 > [!TIP]

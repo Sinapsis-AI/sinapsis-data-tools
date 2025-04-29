@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base import Template, TemplateAttributes
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes
 
 
 class TextInputAttributes(TemplateAttributes):
@@ -35,7 +36,7 @@ class TextInput(Template):
       class_name: TextInput
       template_input: InputTemplate
       attributes:
-        source: null
+        source: local
         text: 'text to be added to the TextPacket'
 
 

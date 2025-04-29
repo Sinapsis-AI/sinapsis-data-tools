@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from torchcodec.decoders import SimpleVideoDecoder
 

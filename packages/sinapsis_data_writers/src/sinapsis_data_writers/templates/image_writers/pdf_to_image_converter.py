@@ -4,9 +4,11 @@
 from pathlib import Path
 from typing import Literal
 
+import numpy as np
 from pdf2image import convert_from_path
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 
@@ -79,7 +81,7 @@ class PDFToImage(Template):
         )
         for image in images_from_path:
             image_packet = ImagePacket(
-                content=image,
+                content=np.asarray(image),
                 embedding=[],
             )
             img_list.append(image_packet)

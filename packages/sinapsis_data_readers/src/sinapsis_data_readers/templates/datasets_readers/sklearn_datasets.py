@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.data_containers.data_packet import DataContainer, TimeSeriesPacket
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
     WrapperEntryConfig,
@@ -56,10 +57,12 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
         """Attributes for the template
         split_dataset (bool): flag to indicate if dataset should be split
         train_size (float): size of the train sample if the dataset is split.
+        store_as_time_series: Flag to store the dataset as a TimeSeries packet
         """
 
         split_dataset: bool = True
         train_size: float = 1
+        store_as_time_series: bool = False
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -100,12 +103,16 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
     def execute(self, container: DataContainer) -> DataContainer:
         sklearn_dataset = self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())
         dataset = self.parse_results(sklearn_dataset)
+        if self.attributes.store_as_time_series:
+            time_series_packet = TimeSeriesPacket(content=dataset)
+            container.time_series.append(time_series_packet)
 
         if self.attributes.split_dataset:
             split_dataset = self.split_dataset(dataset, split_size=self.attributes.train_size)
             self._set_generic_data(container, split_dataset)
-        if sklearn_dataset:
+        if sklearn_dataset and not self.attributes.split_dataset:
             self._set_generic_data(container, dataset)
+
         return container
 
 

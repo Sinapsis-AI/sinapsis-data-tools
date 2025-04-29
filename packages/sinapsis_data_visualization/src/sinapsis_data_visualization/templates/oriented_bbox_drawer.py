@@ -7,7 +7,6 @@ from sinapsis_core.data_containers.annotations import (
     ImageAnnotations,
     OrientedBoundingBox,
 )
-
 from sinapsis_data_visualization.helpers.color_utils import RGB_TYPE
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
 
@@ -52,7 +51,7 @@ class OrientedBBoxDrawer(BBoxDrawer):
         Appends the method to draw the oriented bbox on the image, to
         the drawing_strategies list.
         """
-        self.drawing_strategies.append(self.draw_bbox_strategy)
+        self.drawing_strategies.append(self.draw_oriented_bbox_strategy)
 
     @staticmethod
     def draw_oriented_bbox(

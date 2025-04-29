@@ -10,13 +10,12 @@ import numpy as np
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
-
 from sinapsis_data_visualization.helpers.plot_distributions import (
     plot_distribution,
     plot_map,
