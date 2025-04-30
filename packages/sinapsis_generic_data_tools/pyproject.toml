@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-generic-data-tools"
-version = "0.1.2"
+version = "0.1.3"
 description = "Collection of generic data tools"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
