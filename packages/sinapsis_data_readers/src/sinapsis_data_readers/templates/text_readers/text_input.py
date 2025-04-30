@@ -2,7 +2,7 @@
 
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
 
 
 class TextInputAttributes(TemplateAttributes):
@@ -44,6 +44,7 @@ class TextInput(Template):
 
     PACKET_ATT_NAME = "texts"
     AttributesBaseModel = TextInputAttributes
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.TEXT)
 
     def execute(self, container: DataContainer) -> DataContainer:
         """

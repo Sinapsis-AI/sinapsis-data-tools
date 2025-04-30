@@ -8,7 +8,12 @@ from typing import Literal, cast
 
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from sinapsis_data_readers.helpers.coco_dataclasses import CocoJsonKeys
 
@@ -39,6 +44,8 @@ class BaseAnnotationWriter(Template):  # type:ignore
         save_dir: str
         output_file: str = "annotations"
         extension: Literal["json", "txt"] = "json"
+
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initialize the annotation writer and prepared to accumulate annotations."""

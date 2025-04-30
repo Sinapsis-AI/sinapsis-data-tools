@@ -8,8 +8,10 @@ from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 from sinapsis_data_visualization.helpers.color_utils import (
     RGB_TYPE,
@@ -31,6 +33,7 @@ class BaseAnnotationDrawer(Template, abc.ABC):
     """
 
     COLOR_MAP = build_color_map()
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
 
     class AttributesBaseModel(TemplateAttributes):
         """

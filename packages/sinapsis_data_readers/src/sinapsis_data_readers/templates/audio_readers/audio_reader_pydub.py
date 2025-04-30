@@ -7,6 +7,7 @@ from typing import cast
 import numpy as np
 from pydub import AudioSegment
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
+from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 from sinapsis_core.template_base.multi_execute_template import (
     execute_template_n_times_wrapper,
 )
@@ -56,6 +57,8 @@ class AudioReaderPydub(_AudioBaseReader):
 
         sample_rate_khz: int = 16
         from_bytes: bool = True
+
+    UIProperties = UIPropertiesMetadata(category="Pydub", output_type=OutputTypes.AUDIO)
 
     def read_file(self) -> AudioPacket | None:
         """Reads audio data from a file path or bytes and returns an AudioPacket.

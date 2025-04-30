@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import xgboost as xgb
 from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import WrapperEntryConfig
 from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
@@ -56,7 +57,7 @@ class XGBoostModelsTraining(SKLearnLinearModelsTrain):
         ],
     )
 
-    CATEGORY = "XGBoost"
+    UIProperties = UIPropertiesMetadata(category="XGBoost")
 
 
 def __getattr__(name: str) -> Template:

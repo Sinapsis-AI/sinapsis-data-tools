@@ -4,10 +4,7 @@ from typing import Any
 import pandas as pd
 from sinapsis_core.data_containers.data_packet import DataContainer, TimeSeriesPacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import (
-    TemplateAttributes,
-    TemplateAttributeType,
-)
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
     WrapperEntryConfig,
@@ -57,7 +54,7 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
         signature_from_doc_string=True,
         exclude_module_atts=EXCLUDE_MODULES,
     )
-    CATEGORY = "SKTime"
+    UIProperties = UIPropertiesMetadata(category="SKTime")
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes for the SKTimeDatasets template

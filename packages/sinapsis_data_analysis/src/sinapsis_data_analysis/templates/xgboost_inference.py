@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from sinapsis_core.template_base.base_models import UIPropertiesMetadata
+
 from sinapsis_data_analysis.templates.sklearn_inference import SKLearnInference
 
 
@@ -24,3 +26,5 @@ class XGBoostInference(SKLearnInference):
         generic_field_key: 'generic_dataset'
 
     """
+
+    UIProperties = UIPropertiesMetadata(category="XGBoost")

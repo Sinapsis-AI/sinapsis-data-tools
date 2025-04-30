@@ -5,7 +5,12 @@ from typing import Any, Literal
 
 import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sinapsis_core.template_base.template import Template
 
 
@@ -39,6 +44,7 @@ class BaseVideoWriter(Template, abc.ABC):
     {base_documentation()}
 
     """
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO)
 
     class AttributesBaseModel(TemplateAttributes):
         __doc__ = f"""

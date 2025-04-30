@@ -8,7 +8,12 @@ import numpy as np
 from pdf2image import convert_from_path
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 
@@ -33,6 +38,8 @@ class PDFToImage(Template):
             file_format: png
             dpi: 200
     """
+
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
 
     class AttributesBaseModel(TemplateAttributes):
         """

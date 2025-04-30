@@ -43,7 +43,7 @@ Example with <code>uv</code>:
 **Sinapsis Data Analysis** provides a variety of templates for machine learning workflows:
 
 <details>
-<summary><strong><span style="font-size: 1.25em;">Scikit-Learn Models for training</span></strong></summary>
+<summary><strong><span style="font-size: 1.25em;">Scikit-Learn Models</span></strong></summary>
 
 The following model types are supported:
 
@@ -58,7 +58,7 @@ Each template uses the same base attributes:
 </details>
 
 <details>
-<summary><strong><span style="font-size: 1.25em;">XGBoost Models for training</span></strong></summary>
+<summary><strong><span style="font-size: 1.25em;">XGBoost Models</span></strong></summary>
 
 XGBoost model templates include:
 - XGBClassifier

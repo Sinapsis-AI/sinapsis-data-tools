@@ -16,8 +16,10 @@ from sinapsis_core.data_containers.data_packet import (
 )
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 
 from sinapsis_data_readers.helpers.file_path_helpers import parse_file_paths
@@ -51,6 +53,7 @@ class BaseVideoReader(Template):
     """
 
     AttributesBaseModel = BaseVideoReaderAttributes
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

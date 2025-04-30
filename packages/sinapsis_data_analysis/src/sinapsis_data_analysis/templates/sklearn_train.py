@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import joblib
 from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import WrapperEntryConfig
 from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
@@ -47,7 +48,7 @@ class SKLearnLinearModelsTrain(MLBaseTraining):
         force_init_as_method=False,
     )
 
-    CATEGORY = "SKLearn"
+    UIProperties = UIPropertiesMetadata(category="SKLearn")
 
     def _save_model_implementation(self) -> None:
         """

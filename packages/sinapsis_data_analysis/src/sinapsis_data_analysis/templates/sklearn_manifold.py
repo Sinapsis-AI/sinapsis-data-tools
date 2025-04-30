@@ -6,7 +6,7 @@ import pandas as pd
 from pydantic import BaseModel, ConfigDict
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes
+from sinapsis_core.template_base.base_models import TemplateAttributes, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
     WrapperEntryConfig,
@@ -47,7 +47,7 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         force_init_as_method=False,
     )
 
-    CATEGORY = "SKLearn"
+    UIProperties = UIPropertiesMetadata(category="SKLearn")
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes for the SKLearnManifold template.

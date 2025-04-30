@@ -12,8 +12,10 @@ from pydantic.dataclasses import dataclass
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from sinapsis_data_visualization.helpers.plot_distributions import (
@@ -108,6 +110,8 @@ class DataDistributionVisualization(Template):
 
 
     """
+
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
 
     class AttributesBaseModel(PlotAttributes):
         """
