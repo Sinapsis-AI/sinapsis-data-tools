@@ -14,7 +14,7 @@ dependencies = [
 [project.optional-dependencies]
 nvidia-dali = ["nvidia-dali-cuda120>=1.43.0"]
 torch-codec = [
-    "torch>=2.6.0",
+    "torch>=2.4.0",
     "torchcodec>=0.0.3",
 ]
 sklearn-datasets = ["pandas>=2.2.3", "scikit-learn>=1.5.2"]
@@ -34,9 +34,6 @@ ffmpeg = [
 
 [tool.uv.sources]
 sinapsis-data-readers = { workspace = true }
-torch = [
-  { index = "pytorch-cu124", marker = "sys_platform == 'linux'" },
-]
 [[tool.uv.index]]
 name = "pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
