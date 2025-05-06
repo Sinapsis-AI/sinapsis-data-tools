@@ -2,7 +2,7 @@
 
 import io
 import os
-from typing import cast
+from typing import Literal, cast
 
 import numpy as np
 from pydub import AudioSegment
@@ -50,13 +50,17 @@ class AudioReaderPydub(_AudioBaseReader):
             sample_rate_khz (int):
                 Sample rate in khz for the processed audio. Defaults to 16hkz.
             from_bytes (bool):
-                Flag to determine if the file is in bytes. Defaults to True
+                Flag to determine if the file is in bytes. Defaults to True.
+            audio_reader_format (Literal["wav", "raw", "pcm"] | None)
+                Format of the source audio file, if not provided will be automatically detected.
+                Defaults to None.
 
 
         """
 
         sample_rate_khz: int = 16
         from_bytes: bool = True
+        audio_reader_format: Literal["wav", "raw", "pcm"] | None = None
 
     UIProperties = UIPropertiesMetadata(category="Pydub", output_type=OutputTypes.AUDIO)
 
@@ -79,7 +83,7 @@ class AudioReaderPydub(_AudioBaseReader):
         else:
             audio_file_path: str = cast(str, self.attributes.audio_file_path)
             if os.path.exists(audio_file_path):
-                audio_segment = AudioSegment.from_file(audio_file_path, format="wav")
+                audio_segment = AudioSegment.from_file(audio_file_path, format=self.attributes.audio_reader_format)
 
             else:
                 self.logger.error("Invalid audio file path: %s", audio_file_path)

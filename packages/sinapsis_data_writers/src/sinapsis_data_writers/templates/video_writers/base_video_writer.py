@@ -32,6 +32,9 @@ def base_attributes_documentation() -> str:
             The frames per second for the video. Defaults to 1.
         codec (Literal["mp4v", "avc1"]):
             The codec used for video encoding. Defaults to "mp4v".
+        save_image_batch (bool):
+            Flag to release video writer after all images in container have been
+            added to video. Defaults to False.
     """
 
 
@@ -59,6 +62,7 @@ class BaseVideoWriter(Template, abc.ABC):
         width: int = -1
         fps: int = 1
         codec: Literal["mp4v", "avc1", "hevc_cuvid", "h264_cuvid", "hevc", "h264_nvenc", "hevc_nvenc"]
+        save_image_batch: bool = False
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -138,6 +142,10 @@ class BaseVideoWriter(Template, abc.ABC):
         self.init_if_needed(container)
         for image_packet in container.images:
             self.add_frame_to_video(image_packet)
+
+        if self.attributes.save_image_batch:
+            self.video_writer_is_done()
+            return container
 
         if not container.images:
             self.video_writer_is_done()
