@@ -30,10 +30,10 @@ class AudioReaderToBytes(_AudioBaseReader):
     def read_file(self) -> AudioPacket | None:
         """
         Reads an audio file from the specified path and converts it into an `AudioPacket`.
-        
+
         Returns:
             AudioPacket: An `AudioPacket` object containing the audio data.
-            
+
         Raises:
             FileNotFoundError: If the specified audio file does not exist.
             IOError: If there is an error reading the audio file.

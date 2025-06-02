@@ -19,6 +19,7 @@ _template_lookup = {
     "ExecuteNTimesLazyAudioReaderPydub": f"{_root_lib_path}.audio_readers.audio_reader_pydub",
     "ExecuteNTimesLazyAudioReaderSoundfile": f"{_root_lib_path}.audio_readers.audio_reader_soundfile",
     "FolderImageDatasetCV2": f"{_root_lib_path}.image_readers.image_folder_reader_cv2",
+    "FolderImageDatasetKornia": f"{_root_lib_path}.image_readers.image_folder_reader_kornia",
     "ImageDatasetSplitter": f"{_root_lib_path}.datasets_readers.dataset_splitter",
     "LazyAudioReaderPydub": f"{_root_lib_path}.audio_readers.audio_reader_pydub",
     "LazyAudioReaderSoundfile": f"{_root_lib_path}.audio_readers.audio_reader_soundfile",

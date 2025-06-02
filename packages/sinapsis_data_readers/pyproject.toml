@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-readers"
-version = "0.1.9"
+version = "0.1.10"
 description = "Templates to read data in different formats"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
@@ -30,6 +30,11 @@ opencv = [
 ]
 ffmpeg = [
     "ffmpeg-python>=0.2.0",
+]
+kornia = [
+    "kornia>=0.8.1",
+    "kornia-rs>=0.1.9",
+    "pillow>=11.2.1",
 ]
 
 [tool.uv.sources]

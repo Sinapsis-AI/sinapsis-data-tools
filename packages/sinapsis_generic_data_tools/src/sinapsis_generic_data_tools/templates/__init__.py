@@ -8,6 +8,7 @@ _template_lookup = {
     "ImageColorConversion": f"{_root_lib_path}.image_color_conversion",
     "MaskNonROIs": f"{_root_lib_path}.mask_non_roi",
     "PacketBufferQueue": f"{_root_lib_path}.packet_buffer_queue",
+    "SourceHistoryAggregator": f"{_root_lib_path}.source_history_aggregator",
 }
 
 

@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-tools"
-version = "0.2.5"
+version = "0.2.7"
 description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 dependencies = [
@@ -13,7 +13,11 @@ readme = "README.md"
 license-files = ["LICENSE"]
 
 [project.optional-dependencies]
+gradio-app = [
+    "sinapsis[webapp]>=0.2.3",
+    "pandas>=2.2.3",
 
+]
 all = [
     "sinapsis-data-analysis",
     "sinapsis-data-writers[all]",
