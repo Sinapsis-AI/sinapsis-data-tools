@@ -36,15 +36,18 @@ def convert_color_space(image_packet: ImagePacket, desired_color_space: ImageCol
     """
     current_color_space = image_packet.color_space
 
+    if current_color_space is None:
+        sinapsis_logger.debug("No color conversion was performed due to current color space being None.")
+        return image_packet
+
     if current_color_space == desired_color_space:
         return image_packet
 
     if isinstance(image_packet.content, ndarray):
         return convert_color_space_cv(image_packet, current_color_space, desired_color_space)
-    elif isinstance(image_packet.content, torch.Tensor):
+    if isinstance(image_packet.content, torch.Tensor):
         return convert_color_space_torch(image_packet, current_color_space, desired_color_space)
-    else:
-        raise TypeError(f"Unsupported content type: {type(image_packet.content)}")
+    raise TypeError(f"Unsupported content type: {type(image_packet.content)}")
 
 
 def convert_color_space_cv(
