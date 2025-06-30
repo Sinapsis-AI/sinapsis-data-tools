@@ -5,12 +5,14 @@ from typing import Callable
 _root_lib_path = "sinapsis_data_visualization.templates"
 
 _template_lookup = {
-    "DataDistributionVisualization": f"{_root_lib_path}.data_distribution_visualization_template",
+    "DataDistributionVisualization": f"{_root_lib_path}.data_distribution_visualization",
     "LabelDrawer": f"{_root_lib_path}.label_drawer",
     "BBoxDrawer": f"{_root_lib_path}.bbox_drawer",
     "KeyPointsDrawer": f"{_root_lib_path}.key_points_drawer",
     "OrientedBBoxDrawer": f"{_root_lib_path}.oriented_bbox_drawer",
     "SegmentationMaskDrawer": f"{_root_lib_path}.segmentation_mask_drawer",
+    "TabularDataVisualization": f"{_root_lib_path}.tabular_data_visualization",
+    "PredictionVisualization": f"{_root_lib_path}.prediction_visualization",
 }
 
 

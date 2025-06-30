@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from sinapsis_core.utils.logging_utils import sinapsis_logger
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
 def plot_distribution(
@@ -122,9 +123,113 @@ def plot_cluster(labels: Sequence[str], counts: list[float] | np.ndarray, kwargs
     plt.scatter(counts[:, 0], counts[:, 1], c=labels, **kwargs)
 
 
+def plot_correlation(labels: Sequence[str], counts: list[float] | np.ndarray, kwargs: dict) -> None:
+    """
+    Plots a correlation heatmap for numeric features.
+
+    Args:
+        labels (Sequence[str]): Column names for the correlation matrix
+        counts (list[float] | np.ndarray): Correlation matrix values
+        kwargs (dict): Additional keyword arguments (cmap, etc.)
+    """
+    plt.imshow(counts)
+    plt.colorbar()
+
+    plt.xticks(np.arange(len(labels)), labels, rotation=45, ha="right")
+    plt.yticks(np.arange(len(labels)), labels)
+
+    counts_array = np.asarray(counts)
+    for i in range(len(labels)):
+        for j in range(len(labels)):
+            color = "white" if abs(counts_array[i, j]) > 0.5 else "black"
+            plt.text(j, i, f"{counts_array[i, j]:.2f}", ha="center", va="center", color=color, **kwargs)
+
+
+def plot_categorical_dist(labels: Sequence[str], counts: list[float] | np.ndarray, kwargs: dict) -> None:
+    """
+    Plots a bar chart for categorical data distribution.
+
+    Args:
+        labels (Sequence[str]): Category labels
+        counts (list[float]): Frequency of each category
+        kwargs (dict): Additional keyword arguments (color, etc.)
+    """
+    plt.bar(range(len(labels)), counts, **kwargs)
+    plt.xticks(range(len(labels)), labels, rotation=45, ha="right")
+
+
+def plot_confusion_matrix(labels: Sequence[str], counts: np.ndarray, kwargs: dict) -> None:
+    """
+    Plots a confusion matrix for model evaluation.
+
+    Args:
+        labels (Sequence[str]): Class labels (typically ["0", "1"] for binary classification)
+        counts (np.ndarray): Confusion matrix array
+        kwargs (dict): Additional keyword arguments (cmap, etc.)
+    """
+
+    cmap = kwargs.pop("cmap", plt.cm.Blues)
+    disp = ConfusionMatrixDisplay(confusion_matrix=counts, display_labels=labels)
+    disp.plot(cmap=cmap, **kwargs)
+    plt.tight_layout()
+
+
+def plot_roc_curve(labels: Sequence[str], counts: np.ndarray, kwargs: dict) -> None:
+    """
+    Plots a ROC curve for model evaluation.
+
+    Args:
+        labels (Sequence[str]): Label for the ROC curve
+        counts (np.ndarray): 2D array with columns [fpr, tpr]
+        kwargs (dict): Additional keyword arguments
+    """
+    fpr, tpr = counts[:, 0], counts[:, 1]
+
+    from sklearn.metrics import auc
+
+    roc_auc = auc(fpr, tpr)
+
+    plt.plot(fpr, tpr, lw=2, label=f"{labels[0]} (AUC = {roc_auc:.2f})", **kwargs)
+
+    plt.plot([0, 1], [0, 1], "--", color="gray", lw=1)
+
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.legend(loc="lower right")
+    plt.grid(True, alpha=0.3)
+
+
+def plot_precision_recall_curve(labels: Sequence[str], counts: np.ndarray, kwargs: dict) -> None:
+    """
+    Plots a precision-recall curve for model evaluation.
+
+    Args:
+        labels (Sequence[str]): Label for the PR curve
+        counts (np.ndarray): 2D array with columns [precision, recall]
+        kwargs (dict): Additional keyword arguments
+    """
+    precision, recall = counts[:, 0], counts[:, 1]
+
+    plt.plot(recall, precision, lw=2, label=f"{labels[0]}", **kwargs)
+
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.legend(loc="lower left")
+    plt.grid(True, alpha=0.3)
+
+
 plot_map: dict = {
     "histogram": plot_histogram,
     "pie_chart": plot_piechart,
     "box_plot": plot_boxplot,
     "k_means_clustering": plot_cluster,
+    "correlation": plot_correlation,
+    "categorical_dist": plot_categorical_dist,
+    "confusion_matrix": plot_confusion_matrix,
+    "roc_curve": plot_roc_curve,
+    "precision_recall_curve": plot_precision_recall_curve,
 }

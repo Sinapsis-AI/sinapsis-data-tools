@@ -10,6 +10,7 @@ from nvidia.dali.plugin.pytorch import DALIGenericIterator
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from sinapsis_core.utils.logging_utils import sinapsis_logger
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
     BaseVideoReaderAttributes,
@@ -53,6 +54,10 @@ def video_pipe(filenames: list[str], device: str, random_shuffle: bool) -> DataN
     return video
 
 
+VideoReaderDaliUIProperties = BaseVideoReader.UIProperties
+VideoReaderDaliUIProperties.tags.extend([Tags.NVIDIA, Tags.DALI])
+
+
 class VideoReaderDali(BaseVideoReader):
     """Video input reader using NVIDIA DALI.
 
@@ -80,6 +85,8 @@ class VideoReaderDali(BaseVideoReader):
             device: gpu
             loop_forever: false
     """
+
+    UIProperties = VideoReaderDaliUIProperties
 
     class AttributesBaseModel(BaseVideoReaderAttributes):
         """Attributes for the VideoReaderDali

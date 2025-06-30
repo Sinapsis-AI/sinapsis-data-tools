@@ -3,7 +3,14 @@ from collections import deque
 from typing import Any, Literal
 
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base.template import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
+
+from sinapsis_generic_data_tools.helpers.tags import Tags
 
 
 class SourceHistoryAggregator(Template):
@@ -25,6 +32,10 @@ class SourceHistoryAggregator(Template):
             packet_to_extract_from: texts
             context_max_length: 5
     """
+
+    UIProperties = UIPropertiesMetadata(
+        tags=[Tags.AGGREGATOR, Tags.HISTORY, Tags.QUEUE],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         packet_to_extract_from: Literal["audios", "images", "texts", "generic_data", "time_series", "binary_data"] = (

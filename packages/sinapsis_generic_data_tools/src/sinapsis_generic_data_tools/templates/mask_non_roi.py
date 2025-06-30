@@ -7,8 +7,14 @@ import numpy as np
 from pydantic import BaseModel, ConfigDict, computed_field
 from sinapsis_core.data_containers.annotations import KeyPoint
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base.base_models import TemplateAttributes
-from sinapsis_core.template_base.template import Template
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    UIPropertiesMetadata,
+)
+
+from sinapsis_generic_data_tools.helpers.tags import Tags
 
 
 class RegionOfInterest(BaseModel):
@@ -47,6 +53,11 @@ class MaskNonROIs(Template):
         return_in_generic: false
 
     """
+
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.SEGMENTATION, Tags.MASK, Tags.IMAGE, Tags.ROI],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """

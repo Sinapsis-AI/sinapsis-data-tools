@@ -5,14 +5,17 @@ from typing import cast
 
 import soundfile as sf
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
-from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 from sinapsis_core.template_base.multi_execute_template import (
     execute_template_n_times_wrapper,
 )
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.audio_readers.base_audio_reader import (
     _AudioBaseReader,
 )
+
+AudioReaderSoundfileUIProperties = _AudioBaseReader.UIProperties
+AudioReaderSoundfileUIProperties.tags.extend([Tags.SOUNDFILE])
 
 
 class AudioReaderSoundfile(_AudioBaseReader):
@@ -43,7 +46,7 @@ class AudioReaderSoundfile(_AudioBaseReader):
     """
 
     AttributesBaseModel = _AudioBaseReader.AttributesBaseModel
-    UIProperties = UIPropertiesMetadata(category="Soundfile", output_type=OutputTypes.AUDIO)
+    UIProperties = AudioReaderSoundfileUIProperties
 
     def read_file(self) -> AudioPacket | None:
         """Reads audio data from a file path and returns an AudioPacket.

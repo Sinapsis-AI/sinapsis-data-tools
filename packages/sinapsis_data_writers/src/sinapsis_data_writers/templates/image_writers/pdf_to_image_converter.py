@@ -14,7 +14,9 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
-from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_core.utils.env_var_keys import WORKING_DIR
+
+from sinapsis_data_writers.helpers.tags import Tags
 
 
 class PDFToImage(Template):
@@ -39,7 +41,10 @@ class PDFToImage(Template):
             dpi: 200
     """
 
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.CONVERSION, Tags.IMAGE, Tags.PDF, Tags.PDF2IMAGE, Tags.WRITERS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """
@@ -58,7 +63,7 @@ class PDFToImage(Template):
         """
 
         pdf_path: str
-        output_folder: str = SINAPSIS_CACHE_DIR + "/artifacts"
+        output_folder: str = WORKING_DIR + "/artifacts"
         file_format: Literal["jpeg", "png", "tiff", "ppm"] = "png"
         dpi: int = 200
 

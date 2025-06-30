@@ -18,6 +18,8 @@ from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import (
 )
 from sklearn import manifold
 
+from sinapsis_data_analysis.helpers.tags import Tags
+
 
 class ManifoldResults(BaseModel):
     """Class to store the results of manifold learning.
@@ -47,7 +49,10 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         force_init_as_method=False,
     )
 
-    UIProperties = UIPropertiesMetadata(category="SKLearn")
+    UIProperties = UIPropertiesMetadata(
+        category="SKLearn",
+        tags=[Tags.DATA_ANALYSIS, Tags.DYNAMIC, Tags.MANIFOLD, Tags.SKLEARN, Tags.MODELS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes for the SKLearnManifold template.

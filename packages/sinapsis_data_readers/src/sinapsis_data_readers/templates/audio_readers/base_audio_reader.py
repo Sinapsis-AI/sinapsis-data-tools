@@ -6,12 +6,16 @@ from uuid import uuid4
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
 from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.base_file_data_loader import _BaseDataReader
 
 
 class _AudioBaseReader(_BaseDataReader):
     PACKET_ATT_NAME = "audios"
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.AUDIO)
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.AUDIO,
+        tags=[Tags.AUDIO, Tags.READERS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """

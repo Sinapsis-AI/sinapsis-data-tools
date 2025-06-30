@@ -7,7 +7,9 @@ from sinapsis_core.data_containers.data_packet import DataContainer, ImageColor,
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
-from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
+from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import convert_color_space_cv
+
+from sinapsis_data_writers.helpers.tags import Tags
 
 
 class ImageSaver(Template):
@@ -36,7 +38,10 @@ class ImageSaver(Template):
         min_bbox_dim: 5
     """
 
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.IMAGE, Tags.BBOXES, Tags.MASKS, Tags.SEGMENTATION, Tags.WRITERS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes for the ImageSaver template.
@@ -93,7 +98,7 @@ class ImageSaver(Template):
 
         Args:
             img_destination (Path): Path to save the image.
-            image (np.ndarray): Image to be saved.
+            image_packet (ImagePacket): ImagePacket containing the image to be saved
 
         Returns:
             str: The path where the image was saved.
@@ -106,7 +111,7 @@ class ImageSaver(Template):
             path_to_save = str(img_destination)
             if image_packet.content is not None and image_packet.content.size > 0:
                 if image_packet.color_space is not None and image_packet.color_space != ImageColor.GRAY:
-                    image_packet = convert_color_space(image_packet, ImageColor.BGR)
+                    image_packet = convert_color_space_cv(image_packet, ImageColor.BGR)
                 cv2.imwrite(str(img_destination.absolute()), image_packet.content)
                 self.logger.debug(f"Saved image to: {img_destination.absolute()}")
                 return path_to_save

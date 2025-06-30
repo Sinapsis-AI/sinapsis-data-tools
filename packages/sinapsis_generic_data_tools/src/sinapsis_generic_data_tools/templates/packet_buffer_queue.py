@@ -11,7 +11,10 @@ from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
+
+from sinapsis_generic_data_tools.helpers.tags import Tags
 
 
 @dataclass
@@ -48,6 +51,8 @@ class PacketBufferQueue(Template):
         packet_to_store: 'texts'
 
     """
+
+    UIProperties = UIPropertiesMetadata(tags=[Tags.BUFFER, Tags.QUEUE])
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes of the template

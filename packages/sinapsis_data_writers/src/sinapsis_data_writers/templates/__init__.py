@@ -12,6 +12,7 @@ _template_lookup = {
     "VideoWriterCV2": f"{_root_lib_path}.video_writers.video_writer_cv2",
     "VideoWriterFFMPEG": f"{_root_lib_path}.video_writers.video_writer_ffmpeg",
     "AudioWriterSoundfile": f"{_root_lib_path}.audio_writers.audio_writer_soundfile",
+    "GenericDataJSONWriter": f"{_root_lib_path}.generic_data_writers.generic_data_json_writer",
 }
 
 

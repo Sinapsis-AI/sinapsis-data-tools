@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-visualization"
-version = "0.1.6"
+version = "0.1.7"
 description = "Templates to perform visualization of data distributions and image annotations."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
@@ -8,6 +8,8 @@ readme = "README.md"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
+    "numpy>=2.2.5",
+    "pandas>=2.2.3",
     "sinapsis>=0.1.1",
 ]
 

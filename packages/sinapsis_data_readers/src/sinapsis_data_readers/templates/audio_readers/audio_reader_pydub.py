@@ -7,14 +7,17 @@ from typing import Literal, cast
 import numpy as np
 from pydub import AudioSegment
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
-from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 from sinapsis_core.template_base.multi_execute_template import (
     execute_template_n_times_wrapper,
 )
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.audio_readers.base_audio_reader import (
     _AudioBaseReader,
 )
+
+AudioReaderPydubUIProperties = _AudioBaseReader.UIProperties
+AudioReaderPydubUIProperties.tags.extend([Tags.PYDUB])
 
 
 class AudioReaderPydub(_AudioBaseReader):
@@ -62,7 +65,7 @@ class AudioReaderPydub(_AudioBaseReader):
         from_bytes: bool = True
         audio_reader_format: Literal["wav", "raw", "pcm"] | None = None
 
-    UIProperties = UIPropertiesMetadata(category="Pydub", output_type=OutputTypes.AUDIO)
+    UIProperties = AudioReaderPydubUIProperties
 
     def read_file(self) -> AudioPacket | None:
         """Reads audio data from a file path or bytes and returns an AudioPacket.

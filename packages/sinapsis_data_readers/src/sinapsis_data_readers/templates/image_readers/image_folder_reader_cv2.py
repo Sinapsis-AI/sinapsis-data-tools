@@ -6,6 +6,7 @@ from typing import Callable
 import cv2
 import numpy as np
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.image_readers.base_image_folder_data_loader import (
     ImageBaseDataReader,
 )
@@ -33,6 +34,10 @@ def read_image_file(file_path: str | PosixPath | bytes) -> np.ndarray:
     np_image = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
 
     return np_image
+
+
+FolderImageDatasetCV2UIProperties = ImageBaseDataReader.UIProperties
+FolderImageDatasetCV2UIProperties.tags.extend([Tags.OPENCV, Tags.DATASET])
 
 
 class FolderImageDatasetCV2(ImageBaseDataReader):
@@ -69,6 +74,7 @@ class FolderImageDatasetCV2(ImageBaseDataReader):
     """
 
     IMAGE_READER_METHOD = read_image_file
+    UIProperties = FolderImageDatasetCV2UIProperties
 
     @staticmethod
     def get_reader_method() -> Callable:

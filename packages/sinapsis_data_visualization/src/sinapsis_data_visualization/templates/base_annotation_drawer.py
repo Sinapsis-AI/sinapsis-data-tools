@@ -18,6 +18,7 @@ from sinapsis_data_visualization.helpers.color_utils import (
     build_color_map,
     get_color_rgb_tuple,
 )
+from sinapsis_data_visualization.helpers.tags import Tags
 
 random.seed(0)
 
@@ -33,7 +34,10 @@ class BaseAnnotationDrawer(Template, abc.ABC):
     """
 
     COLOR_MAP = build_color_map()
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.ANNOTATIONS, Tags.DRAWER, Tags.IMAGE, Tags.VISUALIZATION],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """

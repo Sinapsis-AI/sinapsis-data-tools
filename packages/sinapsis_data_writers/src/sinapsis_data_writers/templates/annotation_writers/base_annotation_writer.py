@@ -14,8 +14,10 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
-from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_core.utils.env_var_keys import WORKING_DIR
 from sinapsis_data_readers.helpers.coco_dataclasses import CocoJsonKeys
+
+from sinapsis_data_writers.helpers.tags import Tags
 
 FORMATTED_ANNOTATIONS = list[dict]
 
@@ -40,12 +42,25 @@ class BaseAnnotationWriter(Template):  # type:ignore
             extension (Literal['json', 'txt']): extension of the file.
         """
 
-        root_dir: str = SINAPSIS_CACHE_DIR
+        root_dir: str = WORKING_DIR
         save_dir: str
         output_file: str = "annotations"
         extension: Literal["json", "txt"] = "json"
 
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.IMAGE,
+        tags=[
+            Tags.ANNOTATIONS,
+            Tags.BBOXES,
+            Tags.COCO,
+            Tags.JSON,
+            Tags.KEYPOINTS,
+            Tags.MASKS,
+            Tags.SEGMENTATION,
+            Tags.WRITERS,
+            Tags.TXT,
+        ],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initialize the annotation writer and prepared to accumulate annotations."""

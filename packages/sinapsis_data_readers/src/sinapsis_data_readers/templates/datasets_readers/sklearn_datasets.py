@@ -16,6 +16,7 @@ from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
 from sklearn.model_selection import train_test_split
 
 from sinapsis_data_readers.helpers import sklearn_dataset_subset
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import (
     TabularDatasetSplit,
 )
@@ -51,7 +52,10 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
 
     WrapperEntry = WrapperEntryConfig(wrapped_object=sklearn_dataset_subset, signature_from_doc_string=True)
 
-    UIProperties = UIPropertiesMetadata(category="SKLearn")
+    UIProperties = UIPropertiesMetadata(
+        category="SKLearn",
+        tags=[Tags.DATASET, Tags.DATAFRAMES, Tags.DYNAMIC, Tags.READERS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes for the template

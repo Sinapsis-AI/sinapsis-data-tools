@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
+from pydantic import Field
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_data_visualization.helpers.annotation_drawer_tools import (
     draw_annotation_rectangle,
@@ -22,9 +22,13 @@ from sinapsis_data_visualization.helpers.color_utils import (
     RGB_TYPE,
     darken_or_lighten_color,
 )
+from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.base_annotation_drawer import (
     BaseAnnotationDrawer,
 )
+
+LabelDrawerUIProperties = BaseAnnotationDrawer.UIProperties
+LabelDrawerUIProperties.tags.extend([Tags.LABELS, Tags.CLASSIFICATION])
 
 
 class LabelDrawer(BaseAnnotationDrawer):
@@ -62,6 +66,8 @@ class LabelDrawer(BaseAnnotationDrawer):
 
     """
 
+    UIProperties = LabelDrawerUIProperties
+
     class AttributesBaseModel(BaseAnnotationDrawer.AttributesBaseModel):
         """
         Attributes for Label Annotation Drawer
@@ -82,10 +88,14 @@ class LabelDrawer(BaseAnnotationDrawer):
 
         draw_confidence: bool = True
         draw_extra_labels: bool = True
-        text_style: TextStyle = TextStyle()
+        text_style: dict | TextStyle = Field(default_factory=TextStyle)
         draw_classification_label: bool = False
         classification_label_position: Literal["top_left", "top_right"] = "top_right"
         text_box_to_border_offset: float = 0.01
+
+        def model_post_init(self, _: Any) -> None:
+            if isinstance(self.text_style, dict):
+                self.text_style = TextStyle(**self.text_style)
 
     def set_drawing_strategy(self) -> None:
         """Appends the annotation to be drawn (i.e., label)

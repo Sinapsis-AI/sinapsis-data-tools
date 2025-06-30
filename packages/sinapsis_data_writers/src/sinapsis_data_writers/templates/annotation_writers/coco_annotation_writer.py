@@ -50,7 +50,7 @@ class COCOAnnotationWriter(BaseAnnotationWriter):
       class_name: COCOAnnotationWriter
       template_input: InputTemplate
       attributes:
-        root_dir: $SINAPSIS_CACHE_DIR
+        root_dir: $WORKING_DIR
         save_dir: '/path/to/desired/destination'
         output_file: annotations
         extension: json
@@ -280,7 +280,7 @@ class COCOAnnotationWriter(BaseAnnotationWriter):
     def save_annotations(self, all_annotations: dict[str, Any], folder_name: str) -> None:
         """
         Saves annotations including category definitions.
-        
+
         Args:
             all_annotations (dict[str, Any]): full dictionary of
                 annotations to be saved in the file

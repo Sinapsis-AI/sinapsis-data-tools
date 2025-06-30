@@ -7,7 +7,11 @@ from sinapsis_data_visualization.helpers.annotation_drawer_types import (
     KeyPointAppearance,
 )
 from sinapsis_data_visualization.helpers.color_utils import RGB_TYPE
+from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
+
+KeyPointsDrawerUIProperties = BBoxDrawer.UIProperties
+KeyPointsDrawerUIProperties.tags.extend([Tags.KEYPOINTS])
 
 
 class KeyPointsDrawer(BBoxDrawer):
@@ -47,6 +51,8 @@ class KeyPointsDrawer(BBoxDrawer):
         text_box_to_border_offset: 0.01
 
     """
+
+    UIProperties = KeyPointsDrawerUIProperties
 
     def set_drawing_strategy(self) -> None:
         """

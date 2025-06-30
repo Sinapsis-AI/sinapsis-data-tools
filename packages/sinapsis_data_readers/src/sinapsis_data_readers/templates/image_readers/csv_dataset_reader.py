@@ -6,8 +6,13 @@ import numpy as np
 import pandas as pd
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import ImagePacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.base_file_data_loader import (
     ContentNotSetException,
     _BaseDataReader,
@@ -66,6 +71,9 @@ class CSVImageDataset(_BaseDataReader):
     """
 
     PACKET_ATT_NAME = "images"
+    UIProperties = UIPropertiesMetadata(
+        category="CSV", output_type=OutputTypes.IMAGE, tags=[Tags.CSV, Tags.IMAGE, Tags.DATASET, Tags.READERS]
+    )
 
     class AttributesBaseModel(_BaseDataReader.AttributesBaseModel):  # type:ignore
         """Attributes for the CSV Image template.

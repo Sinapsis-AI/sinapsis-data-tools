@@ -3,7 +3,11 @@
 import numpy as np
 from sinapsis_core.data_containers.annotations import ImageAnnotations, Segmentation
 from sinapsis_data_visualization.helpers.color_utils import RGB_TYPE
+from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
+
+SegmentationMaskDrawerUIProperties = BBoxDrawer.UIProperties
+SegmentationMaskDrawerUIProperties.tags.extend([Tags.SEGMENTATION, Tags.MASKS])
 
 
 class SegmentationMaskDrawer(BBoxDrawer):
@@ -42,6 +46,8 @@ class SegmentationMaskDrawer(BBoxDrawer):
         text_box_to_border_offset: 0.01
         alpha: 0.5
     """
+
+    UIProperties = SegmentationMaskDrawerUIProperties
 
     class AttributesBaseModel(BBoxDrawer.AttributesBaseModel):
         """

@@ -7,7 +7,9 @@ import soundfile
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
-from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_core.utils.env_var_keys import WORKING_DIR
+
+from sinapsis_data_writers.helpers.tags import Tags
 
 
 class AudioWriterSoundfile(Template):
@@ -30,13 +32,17 @@ class AudioWriterSoundfile(Template):
       template_input: InputTemplate
       attributes:
         save_dir: '/path/to/desired/destination'
-        root_dir: $SINAPSIS_CACHE_DIR
+        root_dir: $WORKING_DIR
         extension: wav
 
 
     """
 
-    UIProperties = UIPropertiesMetadata(category="Sounfile", output_type=OutputTypes.AUDIO)
+    UIProperties = UIPropertiesMetadata(
+        category="Soundfile",
+        output_type=OutputTypes.AUDIO,
+        tags=[Tags.AUDIO, Tags.SOUNDFILE, Tags.WRITERS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """
@@ -44,13 +50,13 @@ class AudioWriterSoundfile(Template):
 
         - save_dir (str): Directory where audio files will be saved.
         - root_dir (str): Root directory for saving audio files.
-        Defaults to SINAPSIS_CACHE_DIR.
+        Defaults to WORKING_DIR.
         - extension (Literal["wav", "flac", "aif", "raw"]):
             File format for saving audio files.
         """
 
         save_dir: str
-        root_dir: str = SINAPSIS_CACHE_DIR
+        root_dir: str = WORKING_DIR
         extension: Literal["wav", "flac", "aif", "raw"] = "wav"
 
     @staticmethod

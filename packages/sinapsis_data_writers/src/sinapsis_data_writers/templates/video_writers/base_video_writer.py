@@ -13,6 +13,8 @@ from sinapsis_core.template_base.base_models import (
 )
 from sinapsis_core.template_base.template import Template
 
+from sinapsis_data_writers.helpers.tags import Tags
+
 
 def base_documentation() -> str:
     return """This template handles video writing, allowing the addition of frames
@@ -47,7 +49,10 @@ class BaseVideoWriter(Template, abc.ABC):
     {base_documentation()}
 
     """
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO)
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.VIDEO,
+        tags=[Tags.VIDEO, Tags.WRITERS],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         __doc__ = f"""
@@ -145,6 +150,7 @@ class BaseVideoWriter(Template, abc.ABC):
 
         if self.attributes.save_image_batch:
             self.video_writer_is_done()
+
             return container
 
         if not container.images:

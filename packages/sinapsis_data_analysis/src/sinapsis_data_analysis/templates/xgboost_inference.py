@@ -3,6 +3,7 @@
 
 from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 
+from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.sklearn_inference import SKLearnInference
 
 
@@ -27,4 +28,4 @@ class XGBoostInference(SKLearnInference):
 
     """
 
-    UIProperties = UIPropertiesMetadata(category="XGBoost")
+    UIProperties = UIPropertiesMetadata(category="XGBoost", tags=[Tags.XGBOOST, *SKLearnInference.UIProperties.tags])

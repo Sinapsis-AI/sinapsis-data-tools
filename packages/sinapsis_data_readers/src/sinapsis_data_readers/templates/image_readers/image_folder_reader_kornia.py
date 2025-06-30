@@ -9,6 +9,7 @@ from kornia.io import ImageLoadType, load_image
 from kornia.utils import image_to_tensor
 from PIL import Image
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.image_readers.base_image_folder_data_loader import (
     ImageBaseDataReader,
 )
@@ -34,6 +35,10 @@ def read_image_file(file_path: str | PosixPath | bytes) -> Tensor:
         img_tensor = load_image(file_path, ImageLoadType.RGB32)
 
     return img_tensor.unsqueeze(0)
+
+
+FolderImageDatasetKorniaUIProperties = ImageBaseDataReader.UIProperties
+FolderImageDatasetKorniaUIProperties.tags.extend([Tags.KORNIA, Tags.OPENCV, Tags.DATASET])
 
 
 class FolderImageDatasetKornia(ImageBaseDataReader):
@@ -70,6 +75,7 @@ class FolderImageDatasetKornia(ImageBaseDataReader):
     """
 
     IMAGE_READER_METHOD = read_image_file
+    UIProperties = FolderImageDatasetKorniaUIProperties
 
     @staticmethod
     def get_reader_method() -> Callable:

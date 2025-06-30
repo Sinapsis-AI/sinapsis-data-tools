@@ -4,7 +4,11 @@ import cv2
 import numpy as np
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_data_visualization.helpers.color_utils import RGB_TYPE
+from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.label_drawer import LabelDrawer
+
+BBoxDrawerUIProperties = LabelDrawer.UIProperties
+BBoxDrawerUIProperties.tags.extend([Tags.BBOX])
 
 
 class BBoxDrawer(LabelDrawer):
@@ -41,6 +45,8 @@ class BBoxDrawer(LabelDrawer):
 
 
     """
+
+    UIProperties = BBoxDrawerUIProperties
 
     def set_drawing_strategy(self) -> None:
         """

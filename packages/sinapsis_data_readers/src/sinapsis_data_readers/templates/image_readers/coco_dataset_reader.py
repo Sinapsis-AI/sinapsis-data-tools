@@ -21,12 +21,22 @@ from sinapsis_data_readers.helpers.coco_dataclasses import (
     CocoAnnotationsKeys,
     CocoJsonKeys,
 )
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.base_file_data_loader import (
     base_attributes_documentation,
 )
 from sinapsis_data_readers.templates.image_readers.image_folder_reader_cv2 import (
     FolderImageDatasetCV2,
 )
+
+CocoImageDatasetBaseCV2UIProperties = FolderImageDatasetCV2.UIProperties
+CocoImageDatasetBaseCV2UIProperties.tags.extend([Tags.COCO, Tags.DETECTION])
+
+CocoSegmentationDatasetCV2UIProperties = FolderImageDatasetCV2.UIProperties
+CocoSegmentationDatasetCV2UIProperties.tags.extend([Tags.COCO, Tags.SEGMENTATION])
+
+CocoKeypointsDatasetCV2UIProperties = FolderImageDatasetCV2.UIProperties
+CocoSegmentationDatasetCV2UIProperties.tags.extend([Tags.COCO, Tags.KEYPOINTS])
 
 
 class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
@@ -153,6 +163,8 @@ class CocoDetectionDatasetCV2(CocoImageDatasetBaseCV2):
 
     """
 
+    UIProperties = CocoImageDatasetBaseCV2UIProperties
+
     def get_annotations(self, image_annotations: list[dict[str, Any]]) -> list[ImageAnnotations]:
         """Converts COCO annotations to ImageAnnotations objects.
 
@@ -229,6 +241,8 @@ class CocoSegmentationDatasetCV2(CocoDetectionDatasetCV2):
             is_ground_truth: false
             annotations_path: '/path/to/annotations/file.json'
     """
+
+    UIProperties = CocoSegmentationDatasetCV2UIProperties
 
     def get_annotations(self, image_annotations: list[dict[str, Any]]) -> list[ImageAnnotations]:
         """Process the segmentation annotations and append to the ImageAnnotations object for ImagePackets
@@ -334,6 +348,8 @@ class CocoKeypointsDatasetCV2(CocoDetectionDatasetCV2):
             is_ground_truth: false
             annotations_path: '/path/to/annotations/file.json'
     """
+
+    UIProperties = CocoKeypointsDatasetCV2UIProperties
 
     def get_annotations(self, image_annotations: list[dict[str, Any]]) -> list[ImageAnnotations]:
         annotations = super().get_annotations(image_annotations)

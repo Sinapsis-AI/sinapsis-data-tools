@@ -23,6 +23,7 @@ from sinapsis_core.template_base.base_models import (
 )
 
 from sinapsis_data_readers.helpers.file_path_helpers import parse_file_paths
+from sinapsis_data_readers.helpers.tags import Tags
 
 NotSet = (None, 0)
 NotSetType: TypeAlias = tuple[None, Literal[0]]
@@ -53,7 +54,7 @@ class BaseVideoReader(Template):
     """
 
     AttributesBaseModel = BaseVideoReaderAttributes
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO)
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO, tags=[Tags.READERS, Tags.VIDEO])
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

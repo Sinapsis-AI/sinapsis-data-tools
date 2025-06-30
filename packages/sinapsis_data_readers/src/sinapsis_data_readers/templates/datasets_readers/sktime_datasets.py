@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 from sktime import datasets
 from sktime.split import temporal_train_test_split
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import (
     TabularDatasetSplit,
 )
@@ -54,7 +55,10 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
         signature_from_doc_string=True,
         exclude_module_atts=EXCLUDE_MODULES,
     )
-    UIProperties = UIPropertiesMetadata(category="SKTime")
+    UIProperties = UIPropertiesMetadata(
+        category="SKTime",
+        tags=[Tags.DATASET, Tags.DATAFRAMES, Tags.DYNAMIC, Tags.READERS, Tags.SKTIME],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """Attributes for the SKTimeDatasets template

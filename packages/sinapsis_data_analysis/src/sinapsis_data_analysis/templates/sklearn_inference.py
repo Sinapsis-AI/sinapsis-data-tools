@@ -4,6 +4,7 @@ from typing import Any
 import joblib
 from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 
+from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.ml_base_inference import MLBaseInference
 
 
@@ -14,7 +15,9 @@ class SKLearnInference(MLBaseInference):
     and uses it to make predictions on new data.
     """
 
-    UIProperties = UIPropertiesMetadata(category="SKLearn")
+    UIProperties = UIPropertiesMetadata(
+        category="SKLearn", tags=[Tags.INFERENCE, Tags.SKLEARN, Tags.PREDICTION, Tags.JOBLIB]
+    )
 
     def load_model(self, model_path: str) -> Any:
         """

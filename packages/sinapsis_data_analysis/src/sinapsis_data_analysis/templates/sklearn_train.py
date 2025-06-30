@@ -12,6 +12,7 @@ from sinapsis_data_analysis.helpers.excluded_models import (
     excluded_neighbors_models,
     excluded_tree_models,
 )
+from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.ml_base_training import MLBaseTraining
 
 
@@ -48,7 +49,9 @@ class SKLearnLinearModelsTrain(MLBaseTraining):
         force_init_as_method=False,
     )
 
-    UIProperties = UIPropertiesMetadata(category="SKLearn")
+    UIProperties = UIPropertiesMetadata(
+        category="SKLearn", tags=[Tags.DATA_ANALYSIS, Tags.LINEAR_REGRESSION, Tags.MODELS, Tags.SKLEARN, Tags.TRAINING]
+    )
 
     def _save_model_implementation(self) -> None:
         """

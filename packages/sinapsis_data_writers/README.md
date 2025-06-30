@@ -7,7 +7,7 @@
 </a>
 
 <br>
-Sinapsis Data Writer
+Sinapsis Data Writers
 <br>
 </h1>
 
@@ -22,13 +22,6 @@ Sinapsis Data Writer
 </p>
 
 <h2 id="installation">🐍 Installation</h2>
-
-This mono repo consists of different packages to handle data:
-
-* <code>sinapsis-data-readers</code>
-* <code>sinapsis-data-visualization</code>
-* <code>sinapsis-data-writers</code>
-* <code>sinapsis-generic-data-tools</code>
 
 Install using your package manager of choice. We encourage the use of <code>uv</code>
 

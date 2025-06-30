@@ -10,6 +10,7 @@ from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
 from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
 
+from sinapsis_data_writers.helpers.tags import Tags
 from sinapsis_data_writers.templates.video_writers.base_video_writer import BaseVideoWriter
 
 
@@ -37,7 +38,11 @@ class VideoWriterFFMPEG(BaseVideoWriter):
         codec: 'hevc_nvenc'
     """
 
-    UIProperties = UIPropertiesMetadata(category="FFMPEG", output_type=OutputTypes.VIDEO)
+    UIProperties = UIPropertiesMetadata(
+        category="FFMPEG",
+        output_type=OutputTypes.VIDEO,
+        tags=[Tags.FFMPEG, *BaseVideoWriter.UIProperties.tags],
+    )
 
     class AttributesBaseModel(BaseVideoWriter.AttributesBaseModel):
         codec: Literal["hevc_nvenc", "hevc_cuvid", "h264_cuvid", "hevc", "h264_nvenc"] = "hevc_nvenc"

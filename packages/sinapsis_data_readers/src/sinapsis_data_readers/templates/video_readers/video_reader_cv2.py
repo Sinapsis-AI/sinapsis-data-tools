@@ -3,14 +3,17 @@
 
 import cv2
 from sinapsis_core.data_containers.data_packet import ImagePacket
-from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
     NotSet,
     NotSetType,
     multi_video_wrapper,
 )
+
+VideoReaderCV2UIProperties = BaseVideoReader.UIProperties
+VideoReaderCV2UIProperties.tags.extend([Tags.OPENCV])
 
 
 class VideoReaderCV2(BaseVideoReader):
@@ -38,7 +41,7 @@ class VideoReaderCV2(BaseVideoReader):
 
     """
 
-    UIProperties = UIPropertiesMetadata(category="OpenCV", output_type=OutputTypes.VIDEO)
+    UIProperties = VideoReaderCV2UIProperties
 
     def make_video_reader(self) -> tuple[cv2.VideoCapture, int] | NotSetType:
         """Attempts to open the video file specified in `self.attributes.video_file_path`

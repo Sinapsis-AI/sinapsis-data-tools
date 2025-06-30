@@ -8,7 +8,12 @@ from typing import Callable, cast
 
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    UIPropertiesMetadata,
+)
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.base_file_data_loader import (
     ContentNotSetException,
     _BaseDataReader,
@@ -30,6 +35,8 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
 
             {example_documentation()}
          """
+
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE, tags=[Tags.IMAGE, Tags.READERS])
 
     class AttributesBaseModel(_BaseDataReader.AttributesBaseModel):
         __doc__ = f"""

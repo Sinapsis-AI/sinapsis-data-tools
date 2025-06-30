@@ -2,12 +2,16 @@
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from torchcodec.decoders import SimpleVideoDecoder
 
+from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
     NotSet,
     NotSetType,
     multi_video_wrapper,
 )
+
+VideoReaderTorchCodecUIProperties = BaseVideoReader.UIProperties
+VideoReaderTorchCodecUIProperties.tags.extend([Tags.TORCHVIDEO])
 
 
 class VideoReaderTorchCodec(BaseVideoReader):
@@ -34,6 +38,8 @@ class VideoReaderTorchCodec(BaseVideoReader):
             device: gpu
             loop_forever: false
     """
+
+    UIProperties = VideoReaderTorchCodecUIProperties
 
     def make_video_reader(self) -> tuple[SimpleVideoDecoder, int] | NotSetType:
         """Initialize the video decoder and retrieve the total number of frames.

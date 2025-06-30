@@ -8,7 +8,11 @@ from sinapsis_core.data_containers.annotations import (
     OrientedBoundingBox,
 )
 from sinapsis_data_visualization.helpers.color_utils import RGB_TYPE
+from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
+
+OrientedBBoxDrawerUIProperties = BBoxDrawer.UIProperties
+OrientedBBoxDrawerUIProperties.tags.extend([Tags.ORIENTED_BBOX])
 
 
 class OrientedBBoxDrawer(BBoxDrawer):
@@ -45,6 +49,8 @@ class OrientedBBoxDrawer(BBoxDrawer):
         text_box_to_border_offset: 0.01
 
     """
+
+    UIProperties = OrientedBBoxDrawerUIProperties
 
     def set_drawing_strategy(self) -> None:
         """
