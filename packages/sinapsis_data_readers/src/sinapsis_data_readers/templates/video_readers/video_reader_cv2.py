@@ -9,6 +9,7 @@ from sinapsis_data_readers.templates.video_readers.base_video_reader import (
     BaseVideoReader,
     NotSet,
     NotSetType,
+    live_video_reader_wrapper,
     multi_video_wrapper,
 )
 
@@ -73,7 +74,7 @@ class VideoReaderCV2(BaseVideoReader):
             list[ImagePacket]: A list of ImagePacket objects representing the read frames.
         """
         video_frames: list[ImagePacket] = []
-        frames_range = self.attributes.batch_size if self.attributes.batch_size != -1 else self.total_frames
+        frames_range = self.get_frames_range()
         for idx in range(frames_range):
             ret_status, frame = self.video_reader.read()
             if not ret_status:
@@ -100,4 +101,12 @@ class MultiVideoReaderCV2(VideoReaderCV2):
     its own DataContainer and to its own reader process.
     Similar to its base class, it supports reading in different color spaces, and distributes
     the resources properly
+    """
+
+
+@live_video_reader_wrapper
+class LiveVideoReaderCV2(VideoReaderCV2):
+    """
+    This template provides functionality to process all the frames captured by video reader. It's
+    expected to be used in agents running in forever_loop mode.
     """

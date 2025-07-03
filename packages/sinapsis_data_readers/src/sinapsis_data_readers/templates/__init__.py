@@ -23,6 +23,7 @@ _template_lookup = {
     "ImageDatasetSplitter": f"{_root_lib_path}.datasets_readers.dataset_splitter",
     "LazyAudioReaderPydub": f"{_root_lib_path}.audio_readers.audio_reader_pydub",
     "LazyAudioReaderSoundfile": f"{_root_lib_path}.audio_readers.audio_reader_soundfile",
+    "LiveVideoReaderCV2": f"{_root_lib_path}.video_readers.video_reader_cv2",
     "MultiVideoReaderCV2": f"{_root_lib_path}.video_readers.video_reader_cv2",
     "MultiVideoReaderDali": f"{_root_lib_path}.video_readers.video_reader_dali",
     "MultiVideoReaderPytorch": f"{_root_lib_path}.video_readers.video_reader_dali",

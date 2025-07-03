@@ -2197,7 +2197,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-readers"
-version = "0.1.11"
+version = "0.1.12"
 source = { editable = "packages/sinapsis_data_readers" }
 dependencies = [
     { name = "sinapsis" },
@@ -2276,7 +2276,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-tools"
-version = "0.2.9"
+version = "0.2.10"
 source = { editable = "." }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -2324,7 +2324,7 @@ dev = [
 
 [[package]]
 name = "sinapsis-data-visualization"
-version = "0.1.7"
+version = "0.1.8"
 source = { editable = "packages/sinapsis_data_visualization" }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -2352,7 +2352,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-writers"
-version = "0.1.10"
+version = "0.1.11"
 source = { editable = "packages/sinapsis_data_writers" }
 dependencies = [
     { name = "sinapsis" },

@@ -91,11 +91,11 @@ class PDFToImage(Template):
             fmt=self.attributes.file_format,
             output_folder=self.attributes.output_folder,
         )
-        for image in images_from_path:
-            image_packet = ImagePacket(
-                content=np.asarray(image),
-                embedding=[],
-            )
+
+        pdf_filename = Path(self.attributes.pdf_path).stem
+
+        for idx, image in enumerate(images_from_path):
+            image_packet = ImagePacket(content=np.asarray(image), embedding=[], source=f"{pdf_filename}_{idx}")
             img_list.append(image_packet)
         return img_list
 

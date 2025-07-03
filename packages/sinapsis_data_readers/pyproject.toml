@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-readers"
-version = "0.1.11"
+version = "0.1.12"
 description = "Templates to read data in different formats"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 

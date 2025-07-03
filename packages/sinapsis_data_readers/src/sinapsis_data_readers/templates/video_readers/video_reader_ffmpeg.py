@@ -111,7 +111,7 @@ class VideoReaderFFMPEG(BaseVideoReader):
         """
 
         video_frames: list[ImagePacket] = []
-        frames_range = self.attributes.batch_size if self.attributes.batch_size != -1 else self.total_frames
+        frames_range = self.get_frames_range()
         video_bytes = self.video_reader.stdout.read(frames_range * self.width * self.height * 3)
         for idx, frame in enumerate(np.frombuffer(video_bytes, np.uint8).reshape([-1, self.height, self.width, 3])):
             video_frames.append(self._make_image_packet(frame, frame_index=self.frame_count + idx))

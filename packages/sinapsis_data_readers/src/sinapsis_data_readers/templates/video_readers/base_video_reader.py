@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Literal, Type, TypeAlias, TypeVar
 
 from numpy import ndarray
+from pydantic import field_validator
 from sinapsis_core.data_containers.data_packet import (
     DataContainer,
     ImageColor,
@@ -139,10 +140,18 @@ class BaseVideoReader(Template):
         """
         return ImagePacket(
             content=frame,
-            source=self.attributes.video_source,
+            source=f"{self.attributes.video_source}_{frame_index}",
             color_space=ImageColor.RGB,
             id=f"{self.attributes.video_source}_{frame_index}",
         )
+
+    def get_frames_range(self) -> int:
+        """Get the number of frames to be captured by video reader according to the specified batch size.
+
+        Returns:
+            int: Number of frames to be captured by video reader.
+        """
+        return self.attributes.batch_size if self.attributes.batch_size != -1 else self.total_frames
 
     def process_frames(self, container: DataContainer) -> None:
         """Reads frames and adds them to DataContainer as ImagePackets
@@ -297,3 +306,76 @@ def multi_video_wrapper(cls: Type[MultiVideoWrapperType]) -> Type[MultiVideoRead
 
     MultiVideoWrapper.__doc__ = f"{getdoc(cls)}, \n{getdoc(MultiVideoWrapper.AttributesBaseModel)}"
     return MultiVideoWrapper
+
+
+def live_video_reader_wrapper(cls: Template) -> Type[Template]:
+    """
+    This decorator wraps a class in a LiveVideoReaderWrapper, enabling it to handle
+    live video reading.
+
+    Args:
+        cls (Type[BaseVideoReader]): The class to be wrapped. It's expected to be a child
+        class of BaseVideoReader.
+
+    Returns:
+        Type[BaseVideoReader]: A new class that override the execute method of BaseVideoReader
+        to be able to process all the captured frames.
+    """
+
+    class LiveVideoReaderWrapperAttributes(cls.AttributesBaseModel):
+        @field_validator("batch_size", mode="after")
+        @classmethod
+        def batch_size_validator(cls, batch_size: int) -> int:
+            """Validate that the provided batch size value is greater than zero.
+
+            Args:
+                batch_size (int): The batch_size value.
+
+            Raises:
+                ValueError: If provided batch size is not greater than zero.
+
+            Returns:
+                int: The validated batch_size value.
+            """
+            if batch_size < 1:
+                raise ValueError(f"Batch size value: {batch_size} must be greater than zero.")
+            return batch_size
+
+    @wraps(cls, updated=())
+    class LiveVideoReaderWrapper(cls):
+        """
+        Wrapper that enables live video reading in video reader templates.
+        """
+
+        AttributesBaseModel = LiveVideoReaderWrapperAttributes
+
+        def get_frames_range(self) -> int:
+            """Get the number of frames to be captured by video reader according to the specified batch size.
+
+            Raises:
+                ValueError: For batch size values non greater than zero.
+
+            Returns:
+                int: The number of frames to be captured by video reader.
+            """
+
+            return self.attributes.batch_size
+
+        def execute(self, container: DataContainer) -> DataContainer:
+            """
+            In live mode all the read frames are processed and added to the data container.
+
+            Args:
+                container (DataContainer): Input data container.
+
+            Returns:
+                DataContainer: Processed data container with read frames encapsulated as image packets.
+
+            """
+
+            self.process_frames(container)
+
+            return container
+
+    LiveVideoReaderWrapper.__doc__ = f"{getdoc(cls)}, \n{getdoc(LiveVideoReaderWrapper.AttributesBaseModel)}"
+    return LiveVideoReaderWrapper
