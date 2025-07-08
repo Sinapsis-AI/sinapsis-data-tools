@@ -150,10 +150,10 @@ class BaseVideoWriter(Template, abc.ABC):
 
         if self.attributes.save_image_batch:
             self.video_writer_is_done()
-
+            self._set_generic_data(container, self.attributes.destination_path)
             return container
 
         if not container.images:
             self.video_writer_is_done()
-
+        self._set_generic_data(container, self.attributes.destination_path)
         return container

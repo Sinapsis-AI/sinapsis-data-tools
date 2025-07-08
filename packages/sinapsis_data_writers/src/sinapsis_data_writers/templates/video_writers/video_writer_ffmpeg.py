@@ -8,7 +8,7 @@ import ffmpeg
 import numpy as np
 from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
 from sinapsis_core.template_base.base_models import OutputTypes, UIPropertiesMetadata
-from sinapsis_generic_data_tools.helpers.image_color_space_converter import convert_color_space
+from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import convert_color_space_cv
 
 from sinapsis_data_writers.helpers.tags import Tags
 from sinapsis_data_writers.templates.video_writers.base_video_writer import BaseVideoWriter
@@ -85,7 +85,7 @@ class VideoWriterFFMPEG(BaseVideoWriter):
         """
         if self.video_writer is not None:
             if image_packet.color_space != ImageColor.GRAY:
-                image_packet = convert_color_space(image_packet, ImageColor.RGB)
+                image_packet = convert_color_space_cv(image_packet, ImageColor.RGB)
             self.video_writer.stdin.write(image_packet.content.astype(np.uint8).tobytes())
         else:
             self.logger.error("Video writer is not initialized.")

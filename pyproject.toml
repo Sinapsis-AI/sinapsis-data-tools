@@ -1,10 +1,9 @@
 [project]
 name = "sinapsis-data-tools"
-version = "0.2.10"
+version = "0.2.11"
 description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 dependencies = [
-    "numpy>=1.26.4",
     "sinapsis>=0.1.1",
 ]
 

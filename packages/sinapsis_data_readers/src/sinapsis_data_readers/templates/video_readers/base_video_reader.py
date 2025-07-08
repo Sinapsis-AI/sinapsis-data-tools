@@ -55,7 +55,7 @@ class BaseVideoReader(Template):
     """
 
     AttributesBaseModel = BaseVideoReaderAttributes
-    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO, tags=[Tags.READERS, Tags.VIDEO])
+    UIProperties = UIPropertiesMetadata(output_type=OutputTypes.IMAGE, tags=[Tags.READERS, Tags.VIDEO])
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
