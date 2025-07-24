@@ -9,6 +9,17 @@ from sinapsis_core.template_base.template import Template
 STOPWORDS = {"and", "the", "or", "is", "in", "to", "of", "a"}
 
 
+
+def has_repetitive_chars(word: str) -> bool:
+	"""Detect if a single character is repeated excessively in a word."""
+	count = 1
+	for i in range(1, len(word)):
+		if word[i] == word[i - 1]:
+			count += 1
+			if count >= 5:
+				return True
+	return False
+
 def is_logical(
     text: str, repeat_threshold: int = 10, unique_ratio_threshold: float = 0.1, window_size: int = 20
 ) -> bool:
@@ -32,6 +43,9 @@ def is_logical(
         for word, count in counts.items():
             if word not in STOPWORDS and count > repeat_threshold:
                 return False
+    for word in words:
+        if has_repetitive_chars(word):
+            return False
     return True
 
 

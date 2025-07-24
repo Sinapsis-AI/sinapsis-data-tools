@@ -6,7 +6,7 @@ import cv2
 from sinapsis_core.data_containers.data_packet import DataContainer, ImageColor, ImagePacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
-from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_core.utils.env_var_keys import WORKING_DIR
 from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import convert_color_space_cv
 
 from sinapsis_data_writers.helpers.tags import Tags
@@ -31,7 +31,7 @@ class ImageSaver(Template):
       attributes:
         save_dir: '/path/to/desired/destination'
         extension: jpg
-        root_dir: $SINAPSIS_CACHE_DIR
+        root_dir: $WORKING_DIR
         save_full_image: true
         save_bbox_crops: false
         save_mask_crops: false
@@ -75,7 +75,7 @@ class ImageSaver(Template):
             "hdr",
             "ras",
         ] = "jpg"
-        root_dir: str = SINAPSIS_CACHE_DIR
+        root_dir: str = WORKING_DIR
         save_full_image: bool = True
         save_bbox_crops: bool = False
         save_mask_crops: bool = False

@@ -3,7 +3,6 @@
 from typing import cast
 
 import numpy as np
-import pandas as pd
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from sinapsis_core.template_base.base_models import (
@@ -12,31 +11,12 @@ from sinapsis_core.template_base.base_models import (
     UIPropertiesMetadata,
 )
 
+from sinapsis_data_readers.helpers.csv_reader import read_file
 from sinapsis_data_readers.helpers.tags import Tags
 from sinapsis_data_readers.templates.base_file_data_loader import (
     ContentNotSetException,
     _BaseDataReader,
 )
-
-
-def read_file(file: str) -> pd.DataFrame:
-    """
-    Reads a CSV file and returns its contents as a pandas DataFrame.
-
-    Args:
-        file (str): The path to the CSV file to be read.
-
-    Returns:
-        pd.DataFrame: The data from the CSV file as a pandas DataFrame.
-
-    Raises:
-        ValueError: If the file does not have a .csv extension.
-    """
-    if not file.endswith("csv"):
-        raise ValueError("The file must have a .csv extension.")
-
-    data = pd.read_csv(file, header=0)
-    return data
 
 
 class CSVImageDataset(_BaseDataReader):

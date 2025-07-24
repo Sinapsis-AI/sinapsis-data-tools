@@ -110,6 +110,10 @@ class LazyAudioReaderSoundfile(AudioReaderSoundfile):
             from_bytes: true
     """
 
+    class AttributesBaseModel(_AudioBaseReader.AttributesBaseModel):
+        generic_key: str
+        audio_file_path: str | None = None  # type:ignore[assignment]
+
     def get_file_path_from_generic_data(self, container: DataContainer) -> None:
         """Method to retrieve the file path from the genetic data field of DataContainer.
         The method extracts the file path from the generic field and sets as attribute
@@ -117,8 +121,12 @@ class LazyAudioReaderSoundfile(AudioReaderSoundfile):
         Args:
             container (DataContainer): The DataContainer to extract the file path from
         """
-        file_path = container.generic_data["audio_path"]
-        self.attributes.audio_file_path = file_path
+        if self.attributes.generic_key:
+            file_path = self._get_generic_data(container, self.attributes.generic_key)
+            if file_path:
+                self.attributes.audio_file_path = file_path
+            else:
+                self.logger.warning("No audio path in the existing container")
 
     def execute(self, container: DataContainer) -> DataContainer:
         self.get_file_path_from_generic_data(container)

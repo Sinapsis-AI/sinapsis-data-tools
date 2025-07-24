@@ -3,6 +3,7 @@ import base64
 from io import BytesIO
 
 import numpy as np
+import requests  # type:ignore[import-untyped]
 from PIL import Image
 
 
@@ -26,3 +27,16 @@ def convert_image_ndarray_to_base64(np_image: np.ndarray, image_format: str = "J
     base64_encoded_data = base64.b64encode(binary_data)
 
     return base64_encoded_data.decode("utf-8")
+
+
+def decode_base64_to_numpy(base64_str: str) -> np.ndarray:
+    image_bytes = base64.b64decode(base64_str)
+    image = Image.open(BytesIO(image_bytes)).convert("RGB")
+    return np.array(image)
+
+
+def fetch_url_to_numpy(url: str) -> np.ndarray:
+    response = requests.get(url)
+    response.raise_for_status()
+    image = Image.open(BytesIO(response.content)).convert("RGB")
+    return np.array(image)

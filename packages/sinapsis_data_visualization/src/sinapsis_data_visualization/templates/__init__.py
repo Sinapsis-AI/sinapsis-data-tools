@@ -12,7 +12,6 @@ _template_lookup = {
     "OrientedBBoxDrawer": f"{_root_lib_path}.oriented_bbox_drawer",
     "SegmentationMaskDrawer": f"{_root_lib_path}.segmentation_mask_drawer",
     "TabularDataVisualization": f"{_root_lib_path}.tabular_data_visualization",
-    "PredictionVisualization": f"{_root_lib_path}.prediction_visualization",
 }
 
 

@@ -88,7 +88,7 @@ class LabelDrawer(BaseAnnotationDrawer):
 
         draw_confidence: bool = True
         draw_extra_labels: bool = True
-        text_style: dict | TextStyle = Field(default_factory=TextStyle)
+        text_style: TextStyle = Field(default_factory=dict)  # type: ignore[arg-type]
         draw_classification_label: bool = False
         classification_label_position: Literal["top_left", "top_right"] = "top_right"
         text_box_to_border_offset: float = 0.01
@@ -227,7 +227,7 @@ class LabelDrawer(BaseAnnotationDrawer):
         if extra_str_labels and text_y_offset:
             image = draw_extra_labels(
                 image,
-                annotation.bbox,
+                bbox,
                 extra_str_labels,
                 text_y_offset,
                 text_color,

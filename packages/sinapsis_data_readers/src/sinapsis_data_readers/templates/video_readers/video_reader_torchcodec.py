@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import torch
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from torchcodec.decoders import SimpleVideoDecoder
 
@@ -84,6 +85,12 @@ class VideoReaderTorchCodec(BaseVideoReader):
             video_frames.append(self._make_image_packet(frame, frame_index=self.frame_count + idx))
         return video_frames
 
+    def reset_state(self, template_name: str | None = None) -> None:
+        _ = template_name
+        if self.attributes.device == "gpu":
+            torch.cuda.empty_cache()
+        super().reset_state(template_name)
+
 
 @multi_video_wrapper
 class MultiVideoReaderTorchCodec(VideoReaderTorchCodec):
@@ -92,5 +99,4 @@ class MultiVideoReaderTorchCodec(VideoReaderTorchCodec):
     by adding as many video_readers as needed depending on the lenght of
     video_file_path list. It appends the dataframes of each of the videos to the
     ImagePacket object in DataContainer
-
     """

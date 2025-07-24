@@ -4,6 +4,7 @@
 from typing import Literal, cast
 
 import nvidia.dali.fn as fn
+import torch
 from nvidia.dali import pipeline_def
 from nvidia.dali.pipeline import DataNode, Pipeline
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
@@ -148,6 +149,12 @@ class VideoReaderDali(BaseVideoReader):
         for idx, frame in enumerate(sequences_out[0]):
             video_frames.append(self._make_image_packet(frame, frame_index=self.frame_count + idx))
         return video_frames
+
+    def reset_state(self, template_name: str | None = None) -> None:
+        _ = template_name
+        if self.attributes.device == "gpu":
+            torch.cuda.empty_cache()
+        super().reset_state(template_name)
 
 
 @multi_video_wrapper

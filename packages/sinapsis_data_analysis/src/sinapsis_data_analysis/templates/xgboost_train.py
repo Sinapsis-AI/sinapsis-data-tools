@@ -15,7 +15,6 @@ INCLUDED_MODELS = [
     "XGBRanker",
     "XGBRFClassifier",
     "XGBRFRegressor",
-    "Booster",
 ]
 
 EXCLUDED_MODELS = [attr for attr in dir(xgb) if attr not in INCLUDED_MODELS]

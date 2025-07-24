@@ -54,10 +54,10 @@ class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
         annotations_path: str
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
-        self.annotations_file = os.path.join(self.attributes.data_dir, self.attributes.annotations_path)
+        self.annotations_file = os.path.join(attributes.get("data_dir"), attributes.get("annotations_path"))
         self.raw_annotations_dict: list[dict[str, dict[str, Any]]] = self.read_annotations_file(self.annotations_file)
         self.annotations = self.images_annotations()
+        super().__init__(attributes)
 
     @staticmethod
     def read_annotations_file(file: str) -> list[dict[str, dict[str, Any]]]:

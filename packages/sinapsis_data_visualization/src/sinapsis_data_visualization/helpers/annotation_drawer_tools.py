@@ -120,8 +120,9 @@ def draw_text(
     Returns:
         np.ndarray: The image with the text drawn.
     """
+    copy_image = image.copy()
     cv2.putText(
-        image,
+        copy_image,
         text,
         (
             int(text_properties.x_position),
@@ -132,7 +133,7 @@ def draw_text(
         text_properties.text_color,
         text_style.thickness,
     )
-    return image
+    return copy_image
 
 
 def draw_extra_labels(
@@ -194,15 +195,15 @@ def draw_annotation_rectangle(
     Returns:
         np.ndarray: The image with the background rectangle drawn.
     """
-
+    copy_image = image.copy()
     cv2.rectangle(
-        image,
+        copy_image,
         (int(bbox.x), int(bbox.y - text_h)),
         (int(bbox.x + text_w), int(bbox.y + 12)),
         ann_color,
         -1,
     )
-    return image
+    return copy_image
 
 
 def get_extra_ann_labels(

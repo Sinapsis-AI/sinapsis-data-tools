@@ -45,7 +45,7 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
     WrapperEntry = WrapperEntryConfig(
         wrapped_object=manifold,
         signature_from_doc_string=True,
-        exclude_module_atts=["locally_linear_embedding"],
+        exclude_module_atts=["locally_linear_embedding", "spectral_embedding", "smacof", "trustworthiness"],
         force_init_as_method=False,
     )
 

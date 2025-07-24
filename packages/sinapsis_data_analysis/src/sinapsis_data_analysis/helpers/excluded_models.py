@@ -8,6 +8,9 @@ excluded_linear_models = [
     "orthogonal_mp_gram",
     "ridge_regression",
     "_sgd_fast",
+    "ElasticNetCV",
+    "LassoCV",
+    "OrthogonalMatchingPursuit",
 ]
 excluded_neighbors_models = [
     "_ball_tree.BallTree",
@@ -18,5 +21,6 @@ excluded_neighbors_models = [
     "sort_graph_by_row_values",
     "VALID_METRICS",
     "VALID_METRICS_SPARSE",
+    "LocalOutlierFactor",
 ]
-excluded_tree_models = ["plot_tree", "export_text", "export_graphviz"]
+excluded_tree_models = ["plot_tree", "export_text", "export_graphviz", "BaseDecisionTree"]

@@ -35,7 +35,7 @@ def pre_process_images(images: list[ImagePacket], size: int = 28) -> np.ndarray 
     Args:
         images (list[ImagePacket]): list of ImagePackets to resize
         size (int): new size for the images.
-        
+
     Returns:
         np.ndarray : The array with flattened and resized image"""
 

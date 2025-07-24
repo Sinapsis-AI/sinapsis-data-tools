@@ -11,7 +11,7 @@ from sinapsis_core.template_base.base_models import TemplateAttributes
 from sklearn.model_selection import train_test_split
 
 ArrayDataFrameType = Union[list[np.ndarray], pd.DataFrame]
-StringDataFrameType = Union[list[str], pd.DataFrame]
+StringDataFrameType = Union[list[str | int], pd.DataFrame]
 OptionalArrayDataFrameType = Union[ArrayDataFrameType, None]
 
 OptionalStringDataFrameType = Union[StringDataFrameType, None]
@@ -30,9 +30,9 @@ class ImageDatasetSplit(BaseModel):
     """
 
     x_train: list[np.ndarray] = []
-    y_train: list[str] = []
+    y_train: list[str | int] = []
     x_test: list[np.ndarray] | None = None
-    y_test: list[str] | None = None
+    y_test: list[str | int] | None = None
 
     class Config:
         """allow arbitrary types"""
@@ -93,7 +93,11 @@ class DatasetSplitterBase(Template):
         x_train, x_test, y_train, y_test = x_data, None, y_data, None
         if self.attributes.train_size:
             x_train, x_test, y_train, y_test = train_test_split(
-                x_data, y_data, train_size=self.attributes.train_size, random_state=0
+                x_data,
+                y_data,
+                train_size=self.attributes.train_size,
+                test_size=1 - self.attributes.train_size,
+                random_state=0,
             )
         split_dataset = self.return_data_splitter_object(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
         return split_dataset
@@ -126,7 +130,9 @@ class DatasetSplitterBase(Template):
         if not packet:
             self.logger.debug("No data to be processed by dataset splitter")
             return container
-
+        if len(packet) == 1:
+            self.logger.debug("Not enough entries to divide dataset, returning original container")
+            return container
         x_data, y_data = self.extract_x_y_from_packet(packet)
 
         custom_dataset = self.store_data_in_data_splitter(x_data, y_data)

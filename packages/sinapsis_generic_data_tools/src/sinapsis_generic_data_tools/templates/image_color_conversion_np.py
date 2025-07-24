@@ -4,9 +4,14 @@ from sinapsis_core.data_containers.data_packet import (
     ImageColor,
 )
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    UIPropertiesMetadata,
+)
 
 from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import convert_color_space_cv
+from sinapsis_generic_data_tools.helpers.tags import Tags
 
 
 class ImageColorConversionNumpy(Template):
@@ -29,6 +34,11 @@ class ImageColorConversionNumpy(Template):
         attributes:
             target_color_space: 2
     """
+
+    UIProperties = UIPropertiesMetadata(
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.COLOR, Tags.CONVERSION, Tags.IMAGE, Tags.SPACE],
+    )
 
     class AttributesBaseModel(TemplateAttributes):
         """Defines the attributes required for the ColorConversion template.

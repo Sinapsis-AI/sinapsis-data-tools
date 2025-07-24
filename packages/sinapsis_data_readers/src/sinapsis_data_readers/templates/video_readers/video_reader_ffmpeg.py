@@ -37,7 +37,6 @@ class VideoReaderFFMPEG(BaseVideoReader):
             video_file_path: '/path/to/video/file'
             batch_size: 1
             video_source: 4d2a355f-cda4-4742-9042-8e6ee842d1cf
-            device: cpu
             loop_forever: false
     """
 

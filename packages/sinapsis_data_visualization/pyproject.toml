@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-visualization"
-version = "0.1.9"
+version = "0.1.10"
 description = "Templates to perform visualization of data distributions and image annotations."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
