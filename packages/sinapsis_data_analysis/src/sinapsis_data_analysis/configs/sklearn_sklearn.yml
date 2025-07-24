@@ -1,0 +1,29 @@
+agent:
+  name: sklearn_linear_models_agent
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: load_diabetesWrapper
+  class_name: load_diabetesWrapper
+  template_input: InputTemplate
+  attributes:
+    split_dataset: true
+    train_size: 0.8
+    load_diabetes:
+      return_X_y: false
+      as_frame: true
+
+- template_name: LinearRegressionWrapper
+  class_name: LinearRegressionWrapper
+  template_input: load_diabetesWrapper
+  attributes:
+    generic_field_key: load_diabetesWrapper
+    model_save_path: "artifacts/linear_regression.joblib"
+    linearregression_init:
+      fit_intercept: true
+      copy_X: true
+      n_jobs: null
+      positive: false

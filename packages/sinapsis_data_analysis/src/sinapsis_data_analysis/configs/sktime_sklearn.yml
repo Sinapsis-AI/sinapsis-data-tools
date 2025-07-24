@@ -1,0 +1,30 @@
+agent:
+  name: sktime_forecasters_agent
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: load_airlineWrapper
+  class_name: load_airlineWrapper
+  template_input: InputTemplate
+  attributes:
+    split_dataset: true
+    train_size: 0.8
+    load_airline:
+      return_X_y: false
+      as_frame: true
+
+- template_name: NaiveForecasterWrapper
+  class_name: NaiveForecasterWrapper
+  template_input: load_airlineWrapper
+  attributes:
+    n_steps_ahead: 10
+    forecast_horizon_in_fit: true
+    generic_field_key: "load_airlineWrapper"
+    model_save_path: "artifacts/naive_forecaster.pkl"
+    naiveforecaster_init:
+      strategy: "last"
+      sp: 1
+      window_length: null

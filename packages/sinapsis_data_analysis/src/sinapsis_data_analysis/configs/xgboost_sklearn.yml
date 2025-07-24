@@ -1,0 +1,28 @@
+agent:
+  name: my_test_agent
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: load_irisWrapper
+  class_name: load_irisWrapper
+  template_input: InputTemplate
+  attributes:
+    split_dataset: true
+    train_size: 0.8
+    load_iris:
+      return_X_y: false
+      as_frame: true
+
+- template_name: XGBRankerWrapper
+  class_name: XGBClassifierWrapper
+  template_input: load_irisWrapper
+  attributes:
+    generic_field_key: load_irisWrapper
+    model_save_path: "artifacts/xgb_classifier.model"
+    xgbclassifier_init:
+      n_estimators: 100
+      max_depth: 3
+      learning_rate: 0.1
