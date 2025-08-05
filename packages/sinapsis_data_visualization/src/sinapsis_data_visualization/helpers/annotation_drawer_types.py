@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pydantic import BaseModel
 from pydantic.dataclasses import dataclass
 
 RGB_TYPE = tuple[int, int, int] | tuple[float, float, float]
@@ -21,8 +22,7 @@ class KeyPointAppearance:
     radius: int = 2
 
 
-@dataclass
-class TextStyle:
+class TextStyle(BaseModel):
     """
     font (int): Style of font
             Available options:
@@ -43,8 +43,7 @@ class TextStyle:
     thickness: int = 2
 
 
-@dataclass
-class TextInstanceProperties:
+class TextInstanceProperties(BaseModel):
     """
     x_position (float): x coordinate for text
     y_position (float): y coordinate for text

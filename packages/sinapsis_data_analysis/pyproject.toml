@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-analysis"
-version = "0.1.7"
+version = "0.1.8"
 description = "Templates to work with models for classification, regression and clustering with xgboost and sklearn."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
