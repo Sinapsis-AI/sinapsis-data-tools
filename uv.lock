@@ -2334,7 +2334,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-tools"
-version = "0.2.13"
+version = "0.2.14"
 source = { editable = "." }
 dependencies = [
     { name = "sinapsis" },
@@ -2379,7 +2379,7 @@ dev = [
 
 [[package]]
 name = "sinapsis-data-visualization"
-version = "0.1.11"
+version = "0.1.12"
 source = { editable = "packages/sinapsis_data_visualization" }
 dependencies = [
     { name = "numpy" },

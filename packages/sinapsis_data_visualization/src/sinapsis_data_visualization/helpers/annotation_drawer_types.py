@@ -43,7 +43,8 @@ class TextStyle(BaseModel):
     thickness: int = 2
 
 
-class TextInstanceProperties(BaseModel):
+@dataclass
+class TextInstanceProperties:
     """
     x_position (float): x coordinate for text
     y_position (float): y coordinate for text
