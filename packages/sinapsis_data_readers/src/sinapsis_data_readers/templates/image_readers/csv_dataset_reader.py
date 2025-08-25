@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from typing import cast
+
+import os
 
 import numpy as np
 from sinapsis_core.data_containers.annotations import ImageAnnotations
@@ -10,6 +11,7 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 from sinapsis_data_readers.helpers.csv_reader import read_file
 from sinapsis_data_readers.helpers.tags import Tags
@@ -75,11 +77,11 @@ class CSVImageDataset(_BaseDataReader):
         """
         # Ensure 'data_dir' is available and convert it to string if it's not None
         data_dir = getattr(self.attributes, "data_dir", None)
-
+        root_dir = getattr(self.attributes, "root_dir", SINAPSIS_CACHE_DIR)
         if data_dir is None:
             raise ValueError("The 'data_dir' attribute cannot be None.")
-
-        self.data_points = read_file(cast(str, data_dir))
+        full_path = os.path.join(root_dir, data_dir)
+        self.data_points = read_file(full_path)
         super().__init__(attributes)
 
     def read_packet_content(self, packet: ImagePacket) -> None:

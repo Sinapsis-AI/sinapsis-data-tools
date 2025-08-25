@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os.path
 import subprocess
 
 import ffmpeg
@@ -54,8 +54,9 @@ class VideoReaderFFMPEG(BaseVideoReader):
         Returns:
             tuple[int, int, int]: the values for height, width and frames as integers
         """
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
         try:
-            probe = ffmpeg.probe(self.attributes.video_file_path)
+            probe = ffmpeg.probe(full_path)
         except ffmpeg.Error as e:
             self.logger.warning("ffmpeg error: %s", str(e))
             return (0, 0, 0)
@@ -72,8 +73,9 @@ class VideoReaderFFMPEG(BaseVideoReader):
 
     def make_video_reader(self) -> tuple[subprocess.Popen, int] | NotSetType:
         """This method asynchronously runs a subprocess to stream the video frames"""
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
         video_reader = (
-            ffmpeg.input(self.attributes.video_file_path)
+            ffmpeg.input(full_path)
             .output(
                 "pipe:",
                 format="rawvideo",

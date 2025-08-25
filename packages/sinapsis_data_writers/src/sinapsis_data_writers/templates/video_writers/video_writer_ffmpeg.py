@@ -2,6 +2,7 @@
 """Video writer Template using ffmpeg-python binding from
 https://github.com/kkroening/ffmpeg-python"""
 
+import os
 from typing import Literal
 
 import ffmpeg
@@ -58,6 +59,7 @@ class VideoWriterFFMPEG(BaseVideoWriter):
         Returns:
             Any: The initialized ffmpeg video writer object.
         """
+        full_path  = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
         video_writer = (
             ffmpeg.input(
                 "pipe:",
@@ -66,7 +68,7 @@ class VideoWriterFFMPEG(BaseVideoWriter):
                 s=f"{self.attributes.width}x{self.attributes.height}",
             )
             .output(
-                self.attributes.destination_path,
+                full_path,
                 pix_fmt="yuv420p",
                 framerate=self.attributes.fps,
                 vcodec=self.attributes.codec,

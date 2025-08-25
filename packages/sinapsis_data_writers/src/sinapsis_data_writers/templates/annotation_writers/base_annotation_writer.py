@@ -14,7 +14,7 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
-from sinapsis_core.utils.env_var_keys import WORKING_DIR
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from sinapsis_data_readers.helpers.coco_dataclasses import CocoJsonKeys
 
 from sinapsis_data_writers.helpers.tags import Tags
@@ -42,7 +42,7 @@ class BaseAnnotationWriter(Template):  # type:ignore
             extension (Literal['json', 'txt']): extension of the file.
         """
 
-        root_dir: str = WORKING_DIR
+        root_dir: str | None = None
         save_dir: str
         output_file: str = "annotations"
         extension: Literal["json", "txt"] = "json"
@@ -65,6 +65,7 @@ class BaseAnnotationWriter(Template):  # type:ignore
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initialize the annotation writer and prepared to accumulate annotations."""
         super().__init__(attributes)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.folder_annotations: dict[str, dict[str, FORMATTED_ANNOTATIONS]] = {}
 
     @staticmethod

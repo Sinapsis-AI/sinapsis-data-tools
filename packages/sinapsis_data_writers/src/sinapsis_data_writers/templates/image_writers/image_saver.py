@@ -5,8 +5,13 @@ from typing import Literal
 import cv2
 from sinapsis_core.data_containers.data_packet import DataContainer, ImageColor, ImagePacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
-from sinapsis_core.utils.env_var_keys import WORKING_DIR
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import convert_color_space_cv
 
 from sinapsis_data_writers.helpers.tags import Tags
@@ -75,11 +80,15 @@ class ImageSaver(Template):
             "hdr",
             "ras",
         ] = "jpg"
-        root_dir: str = WORKING_DIR
+        root_dir: str | None = None
         save_full_image: bool = True
         save_bbox_crops: bool = False
         save_mask_crops: bool = False
         min_bbox_dim: int = 5
+
+    def __init__(self, attributes:TemplateAttributeType)->None:
+        super().__init__(attributes)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
 
     @staticmethod
     def image_has_annotations(image: ImagePacket) -> bool:
@@ -172,10 +181,8 @@ class ImageSaver(Template):
         Returns:
             DataContainer: The modified container.
         """
-
         for image_packet in container.images:
             img_destination = Path(self.attributes.root_dir) / self.attributes.save_dir / Path(image_packet.source).name
-
             # Save the full image if specified
             path_to_source = None
             if self.attributes.save_full_image:

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os.path
+
 import torch
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from torchcodec.decoders import SimpleVideoDecoder
@@ -56,8 +58,9 @@ class VideoReaderTorchCodec(BaseVideoReader):
         Raises:
             ValueError: If there is an issue decoding the video file.
         """
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
         try:
-            video_reader = SimpleVideoDecoder(self.attributes.video_file_path)
+            video_reader = SimpleVideoDecoder(full_path)
         except ValueError as e:
             self.logger.warning(f"Was unable to decode video file: {e}")
             return NotSet

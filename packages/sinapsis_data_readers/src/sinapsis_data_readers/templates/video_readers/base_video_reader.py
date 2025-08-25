@@ -22,6 +22,7 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 from sinapsis_data_readers.helpers.file_path_helpers import parse_file_paths
 from sinapsis_data_readers.helpers.tags import Tags
@@ -40,7 +41,7 @@ class BaseVideoReaderAttributes(TemplateAttributes):
         device (Literal["cpu", "gpu"]): Device to be used for loading the video. Default is "cpu".
         loop_forever (bool): Whether to loop the video indefinitely. Default is False.
     """
-
+    root_dir: str | None = None
     video_file_path: str | list[str]
     batch_size: int = 1
     video_source: int | str | None = str(get_uuid())
@@ -59,6 +60,7 @@ class BaseVideoReader(Template):
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.frame_count = 0
         self.video_reader: Any
         self.total_frames: int

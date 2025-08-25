@@ -21,7 +21,6 @@ def read_image_file(file_path: str | PosixPath | bytes) -> np.ndarray:
         np.ndarray: the image as a numpy array
     """
     np_image: np.ndarray
-
     if isinstance(file_path, bytes):
         image_arr = np.frombuffer(file_path, np.uint8)
         np_image = cv2.imdecode(image_arr, cv2.IMREAD_COLOR)

@@ -11,7 +11,7 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
-from sinapsis_core.utils.env_var_keys import WORKING_DIR
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from sinapsis_data_writers.helpers.tags import Tags
 
 FORMATTED_ANNOTATIONS = list[dict]
@@ -34,7 +34,7 @@ class GenericDataJSONWriter(Template):  # type:ignore
             generic_keys (list[str]): Optional list of keys to look for
         """
 
-        root_dir: str = WORKING_DIR
+        root_dir: str | None = None
         save_dir: str
         output_file: str = "generic_data"
         extension: str = "json"
@@ -48,6 +48,7 @@ class GenericDataJSONWriter(Template):  # type:ignore
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initialize the writer and prepare to accumulate data."""
         super().__init__(attributes)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.data: dict[str, Any] = {}
 
     def save_data(self, data: dict[str, Any]) -> None:

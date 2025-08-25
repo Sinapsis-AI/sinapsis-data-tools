@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 from typing import Literal
 
 import cv2
@@ -55,9 +55,10 @@ class VideoWriterCV2(BaseVideoWriter):
         Returns:
             cv2.VideoWriter: The initialized OpenCV video writer object.
         """
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
         fourcc = cv2.VideoWriter_fourcc(*self.attributes.codec)
         return cv2.VideoWriter(
-            self.attributes.destination_path,
+            full_path,
             fourcc,
             self.attributes.fps,
             (self.attributes.width, self.attributes.height),

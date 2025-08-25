@@ -38,19 +38,19 @@ class AudioReaderToBytes(_AudioBaseReader):
             FileNotFoundError: If the specified audio file does not exist.
             IOError: If there is an error reading the audio file.
         """
-
+        full_path = self.get_full_path()
         try:
-            with open(self.attributes.audio_file_path, "rb") as audio_file:
+            with open(full_path, "rb") as audio_file:
                 audio_content = audio_file.read()
 
             audio_file.close()
             audio_packet = AudioPacket(
-                source=self.attributes.audio_file_path,
+                source=full_path,
                 content=audio_content,
             )
             return audio_packet
         except FileNotFoundError:
-            self.logger.error(f"Audio file not found: {self.attributes.audio_file_path}")
+            self.logger.error(f"Audio file not found: {full_path}")
             return None
         except IOError as e:
             self.logger.error(f"Error reading audio file: {e}")

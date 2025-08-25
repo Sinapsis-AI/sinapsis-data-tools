@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import cast
 
 import soundfile as sf
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
@@ -60,7 +59,7 @@ class AudioReaderSoundfile(_AudioBaseReader):
             AudioPacket|None: An AudioPacket containing the audio data and
             sample rate, or None if the file could not be read or was invalid.
         """
-        audio_path = cast(str, self.attributes.audio_file_path)
+        audio_path = self.get_full_path()
         if os.path.exists(audio_path):
             try:
                 audio_content, sample_rate = sf.read(audio_path)

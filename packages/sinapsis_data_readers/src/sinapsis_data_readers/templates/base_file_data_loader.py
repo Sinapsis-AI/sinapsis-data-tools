@@ -8,6 +8,7 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 
 def base_documentation() -> str:
@@ -80,7 +81,7 @@ class _BaseDataReader(Template, abc.ABC):
         __doc__ = f"""
         {base_attributes_documentation()}
         """
-
+        root_dir : str | None = None
         data_dir: str
         pattern: str = "**/*"
         batch_size: int = 1
@@ -93,7 +94,9 @@ class _BaseDataReader(Template, abc.ABC):
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.counter = 0
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.data_collection = self.make_data_entries()
+
 
     @abc.abstractmethod
     def make_data_entries(self) -> list[Packet]:
@@ -181,4 +184,5 @@ class _BaseDataReader(Template, abc.ABC):
             self.append_packets_to_container(container)
         else:
             self.logger.debug(f"{self.class_name} has no more data to load.")
+
         return container

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import os
 from typing import Any, Literal
 
 import numpy as np
@@ -12,6 +13,7 @@ from sinapsis_core.template_base.base_models import (
     UIPropertiesMetadata,
 )
 from sinapsis_core.template_base.template import Template
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 from sinapsis_data_writers.helpers.tags import Tags
 
@@ -61,7 +63,7 @@ class BaseVideoWriter(Template, abc.ABC):
         Args:
         {base_attributes_documentation()}
         """
-
+        root_dir: str | None = None
         destination_path: str
         height: int = -1
         width: int = -1
@@ -71,6 +73,7 @@ class BaseVideoWriter(Template, abc.ABC):
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.video_writer = None
         self.color_space = None
 
@@ -144,16 +147,17 @@ class BaseVideoWriter(Template, abc.ABC):
         Returns:
             DataContainer: The processed data container.
         """
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
         self.init_if_needed(container)
         for image_packet in container.images:
             self.add_frame_to_video(image_packet)
 
         if self.attributes.save_image_batch:
             self.video_writer_is_done()
-            self._set_generic_data(container, self.attributes.destination_path)
+            self._set_generic_data(container, full_path)
             return container
 
         if not container.images:
             self.video_writer_is_done()
-        self._set_generic_data(container, self.attributes.destination_path)
+        self._set_generic_data(container, full_path)
         return container

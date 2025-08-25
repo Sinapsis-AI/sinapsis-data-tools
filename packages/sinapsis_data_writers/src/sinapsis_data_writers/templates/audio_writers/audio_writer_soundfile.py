@@ -6,8 +6,13 @@ import numpy as np
 import soundfile
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
-from sinapsis_core.utils.env_var_keys import WORKING_DIR
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 from sinapsis_data_writers.helpers.tags import Tags
 
@@ -56,8 +61,13 @@ class AudioWriterSoundfile(Template):
         """
 
         save_dir: str
-        root_dir: str = WORKING_DIR
+        root_dir: str | None = None
         extension: Literal["wav", "flac", "aif", "raw"] = "wav"
+
+    def __init__(self, attributes: TemplateAttributeType)->None:
+        super().__init__(attributes)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+
 
     @staticmethod
     def _process_audio_packet(audio_packet: AudioPacket) -> np.ndarray:

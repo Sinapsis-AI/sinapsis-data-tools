@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import os
+from typing import cast
 from uuid import uuid4
 
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
@@ -28,6 +30,8 @@ class _AudioBaseReader(_BaseDataReader):
             The source identifier, defaults to "streamlit".
         """
 
+
+        root_dir: str | None = None
         audio_file_path: str
         source: str = str(uuid4())
 
@@ -42,6 +46,10 @@ class _AudioBaseReader(_BaseDataReader):
         Returns:
             AudioPacket: The audio data wrapped in an AudioPacket.
         """
+    def get_full_path(self):
+        audio_file_path = cast(str, self.attributes.audio_file_path)
+        full_path = os.path.join(self.attributes.root_dir, audio_file_path)
+        return full_path
 
     def has_elements(self) -> bool:
         """Flag to indicate if there is still content to process"""

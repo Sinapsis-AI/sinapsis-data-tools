@@ -14,7 +14,7 @@ from sinapsis_core.template_base.base_models import (
     TemplateAttributeType,
     UIPropertiesMetadata,
 )
-from sinapsis_core.utils.env_var_keys import WORKING_DIR
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 from sinapsis_data_writers.helpers.tags import Tags
 
@@ -63,7 +63,8 @@ class PDFToImage(Template):
         """
 
         pdf_path: str
-        output_folder: str = WORKING_DIR + "/artifacts"
+        root_dir : str | None = None
+        output_folder: str = "/artifacts"
         file_format: Literal["jpeg", "png", "tiff", "ppm"] = "png"
         dpi: int = 200
 
@@ -74,7 +75,8 @@ class PDFToImage(Template):
             attributes (TemplateAttributeType): The attributes for the PDF to image conversion.
         """
         super().__init__(attributes)
-        output_folder = Path(self.attributes.output_folder)
+        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        output_folder = Path(self.attributes.root_dir / self.attributes.output_folder)
         output_folder.mkdir(parents=True, exist_ok=True)
 
     def convert_to_images(self) -> list[ImagePacket]:

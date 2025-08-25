@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-
+import os.path
 from typing import Literal, cast
 
 import nvidia.dali.fn as fn
@@ -111,13 +110,13 @@ class VideoReaderDali(BaseVideoReader):
             and the number of frames per epoch. If the pipeline cannot be created,
             it returns None and 0.
         """
-
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
         try:
             pipe: Pipeline = video_pipe(
                 batch_size=self.attributes.batch_size,
                 num_threads=self.attributes.num_threads,
                 device_id=0,
-                filenames=self.attributes.video_file_path,
+                filenames=full_path,
                 seed=12345,
                 device=self.attributes.device,
                 random_shuffle=self.attributes.random_shuffle,
@@ -154,6 +153,7 @@ class VideoReaderDali(BaseVideoReader):
         _ = template_name
         if self.attributes.device == "gpu":
             torch.cuda.empty_cache()
+            torch.cuda.ipc_collect()
         super().reset_state(template_name)
 
 

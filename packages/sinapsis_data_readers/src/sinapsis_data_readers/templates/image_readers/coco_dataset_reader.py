@@ -16,6 +16,7 @@ from sinapsis_core.data_containers.annotations import (
 )
 from sinapsis_core.data_containers.data_packet import ImagePacket
 from sinapsis_core.template_base.base_models import TemplateAttributeType
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 from sinapsis_data_readers.helpers.coco_dataclasses import (
     CocoAnnotationsKeys,
@@ -54,7 +55,8 @@ class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
         annotations_path: str
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
-        self.annotations_file = os.path.join(attributes.get("data_dir"), attributes.get("annotations_path"))
+        self.annotations_file = os.path.join(attributes.get("root_dir", SINAPSIS_CACHE_DIR),
+                                             attributes.get("data_dir"), attributes.get("annotations_path"))
         self.raw_annotations_dict: list[dict[str, dict[str, Any]]] = self.read_annotations_file(self.annotations_file)
         self.annotations = self.images_annotations()
         super().__init__(attributes)

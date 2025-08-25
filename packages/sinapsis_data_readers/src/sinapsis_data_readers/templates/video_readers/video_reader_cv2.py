@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+import os
+
 import cv2
 from sinapsis_core.data_containers.data_packet import ImagePacket
 
@@ -55,8 +57,8 @@ class VideoReaderCV2(BaseVideoReader):
                 - If successful, returns (video_reader, num_frames),
                   where video_reader is the OpenCV VideoCapture object.
         """
-
-        video_reader = cv2.VideoCapture(self.attributes.video_file_path)
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
+        video_reader = cv2.VideoCapture(full_path)
         num_frames = int(video_reader.get(cv2.CAP_PROP_FRAME_COUNT))
 
         if not video_reader.isOpened():

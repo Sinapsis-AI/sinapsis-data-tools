@@ -2255,7 +2255,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-readers"
-version = "0.1.14"
+version = "0.1.16"
 source = { editable = "packages/sinapsis_data_readers" }
 dependencies = [
     { name = "sinapsis" },
@@ -2334,7 +2334,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-tools"
-version = "0.2.14"
+version = "0.2.16"
 source = { editable = "." }
 dependencies = [
     { name = "sinapsis" },
@@ -2406,7 +2406,7 @@ requires-dist = [
 
 [[package]]
 name = "sinapsis-data-writers"
-version = "0.1.14"
+version = "0.1.15"
 source = { editable = "packages/sinapsis_data_writers" }
 dependencies = [
     { name = "sinapsis" },

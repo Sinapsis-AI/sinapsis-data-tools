@@ -62,7 +62,7 @@ class AudioReaderPydub(_AudioBaseReader):
         """
 
         sample_rate_khz: int = 16
-        from_bytes: bool = True
+        from_bytes: bool = False
         audio_reader_format: Literal["wav", "raw", "pcm"] | None = None
 
     UIProperties = AudioReaderPydubUIProperties
@@ -84,7 +84,9 @@ class AudioReaderPydub(_AudioBaseReader):
             audio_segment = AudioSegment.from_file(io.BytesIO(audio_bytes))
 
         else:
-            audio_file_path: str = cast(str, self.attributes.audio_file_path)
+
+            audio_file_path = self.get_full_path()
+            #audio_file_path = os.path.join(self.attributes.root_dir, audio_file_path)
             if os.path.exists(audio_file_path):
                 audio_segment = AudioSegment.from_file(audio_file_path, format=self.attributes.audio_reader_format)
 
