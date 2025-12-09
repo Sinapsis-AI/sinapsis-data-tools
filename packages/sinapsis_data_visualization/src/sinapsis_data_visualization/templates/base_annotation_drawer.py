@@ -169,6 +169,7 @@ class BaseAnnotationDrawer(Template, abc.ABC):
         Returns:
             DataContainer: The updated data container with images annotated.
         """
+
         self.process_images(container)
 
         return container

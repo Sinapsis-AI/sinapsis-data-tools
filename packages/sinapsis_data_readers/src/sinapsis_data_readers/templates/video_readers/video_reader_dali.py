@@ -134,19 +134,19 @@ class VideoReaderDali(BaseVideoReader):
             del self.video_reader
 
     def _read_video_frames(self) -> list[ImagePacket]:
-        """Reads video frames from the dali pipeline.
-
-        This method runs the video reader pipeline and adds the frames to a list
-        of ImagePacket objects.
-
-        Returns:
-            list[ImagePacket]: A list of ImagePacket objects representing the video frames.
-        """
+        """Reads video frames from the dali pipeline."""
         video_frames: list[ImagePacket] = []
         sequences_out = self.video_reader.run()
+        tensor_batch = sequences_out[0]
 
-        for idx, frame in enumerate(sequences_out[0]):
+        shape_result = tensor_batch.shape()
+        batch_size = shape_result[0][0]
+
+        for idx in range(batch_size):
+            frame_tensor = tensor_batch.at(idx)
+            frame = torch.as_tensor(frame_tensor, device="cuda")
             video_frames.append(self._make_image_packet(frame, frame_index=self.frame_count + idx))
+
         return video_frames
 
     def reset_state(self, template_name: str | None = None) -> None:

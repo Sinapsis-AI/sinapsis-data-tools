@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-tools"
-version = "0.2.16"
+version = "0.2.23"
 description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 dependencies = [
@@ -22,7 +22,7 @@ all = [
     "sinapsis-data-writers[all]",
     "sinapsis-data-readers[all]",
     "sinapsis-data-visualization[all]",
-    "sinapsis-generic-data-tools",
+    "sinapsis-generic-data-tools[all]",
 ]
 
 [tool.uv.workspace]

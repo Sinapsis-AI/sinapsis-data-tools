@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-writers"
-version = "0.1.15"
+version = "0.1.16"
 description = "Templates to write DataContainer content to file."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 

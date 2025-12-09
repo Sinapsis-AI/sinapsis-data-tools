@@ -94,7 +94,7 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
 
     def initialize_attributes(self):
         return getattr(self.attributes, self.wrapped_callable.__name__)
-    def split_time_series_dataset(self, dataset: Any) -> TabularDatasetSplit:
+    def split_time_series_dataset(self, dataset: Any) -> dict:
         """Split a time series dataset into training and testing sets
 
         Args:
@@ -104,12 +104,13 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
             TabularDatasetSplit: Object containing the split time series data
         """
         y_train, y_test = temporal_train_test_split(dataset, train_size=self.attributes.train_size)
-        return TabularDatasetSplit(
+        split_dataset =  TabularDatasetSplit(
             x_train=pd.DataFrame(index=y_train.index),
             x_test=pd.DataFrame(index=y_test.index),
             y_train=pd.DataFrame(y_train),
             y_test=pd.DataFrame(y_test),
         )
+        return split_dataset.model_dump_json(indent=2)
 
     def split_classification_dataset(self, X: Any, y: Any) -> TabularDatasetSplit:
         """Split a classification dataset into training and testing sets
@@ -125,15 +126,17 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, train_size=self.attributes.train_size, random_state=0
             )
-            return TabularDatasetSplit(
+            split_dataset = TabularDatasetSplit(
                 x_train=pd.DataFrame(X_train),
                 x_test=pd.DataFrame(X_test),
                 y_train=pd.DataFrame(y_train),
                 y_test=pd.DataFrame(y_test),
             )
+            return split_dataset.model_dump_json(indent=2)
         except ValueError:
             self.logger.debug("Wrong format for split. original values")
-            return TabularDatasetSplit(x_train=pd.DataFrame(X), y_train=pd.DataFrame(y))
+            split_dataset = TabularDatasetSplit(x_train=pd.DataFrame(X), y_train=pd.DataFrame(y))
+            return split_dataset.model_dump_json(indent=2)
 
     def create_dataset(self):
         return self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())

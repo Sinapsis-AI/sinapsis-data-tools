@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-""" Excluded sktime loaders"""
 from typing import Callable
 
 from sktime import datasets
 
-class_datasets = [
-"Airline",
-"Longley",
+class_datasets = ["Airline","Longley",
 "Lynx",
 "Macroeconomic",
 "ShampooSales",

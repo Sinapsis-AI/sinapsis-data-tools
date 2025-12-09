@@ -55,8 +55,7 @@ class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
         annotations_path: str
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
-        self.annotations_file = os.path.join(attributes.get("root_dir", SINAPSIS_CACHE_DIR),
-                                             attributes.get("data_dir"), attributes.get("annotations_path"))
+        self.annotations_file = os.path.join(attributes.get("root_dir", SINAPSIS_CACHE_DIR), attributes.get("data_dir"), attributes.get("annotations_path"))
         self.raw_annotations_dict: list[dict[str, dict[str, Any]]] = self.read_annotations_file(self.annotations_file)
         self.annotations = self.images_annotations()
         super().__init__(attributes)

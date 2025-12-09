@@ -148,6 +148,7 @@ class BaseVideoWriter(Template, abc.ABC):
             DataContainer: The processed data container.
         """
         full_path = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
         self.init_if_needed(container)
         for image_packet in container.images:
             self.add_frame_to_video(image_packet)

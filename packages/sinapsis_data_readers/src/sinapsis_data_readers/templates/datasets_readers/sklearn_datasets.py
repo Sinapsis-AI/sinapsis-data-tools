@@ -135,7 +135,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
     @staticmethod
     def split_dataset(
         results: pd.DataFrame, feature_name_cols: list, target_name_cols: list, n_features: int, split_size: float
-    ) -> TabularDatasetSplit:
+    ) -> dict:
         """Method to split the dataset into training and testing samples"""
         if feature_name_cols:
             X = results[feature_name_cols]
@@ -144,8 +144,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             X = results.iloc[:, :n_features]
             y = results.iloc[:, n_features:]
 
-        # x_vals = results.drop(columns=[TARGET], axis=1)
-        # y_vals = results[TARGET]
+
         x_train, x_test, y_train, y_test = train_test_split(X, y, train_size=split_size, random_state=0)
         split_data = TabularDatasetSplit(
             x_train=pd.DataFrame(x_train),
@@ -154,7 +153,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             y_test=pd.DataFrame(y_test),
         )
 
-        return split_data
+        return split_data.model_dump_json(indent=2)
 
     def execute(self, container: DataContainer) -> DataContainer:
         sklearn_dataset = self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())

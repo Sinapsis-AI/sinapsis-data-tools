@@ -61,6 +61,11 @@ class TabularDatasetSplit(BaseModel):
         """allow arbitrary types"""
 
         arbitrary_types_allowed = True
+        json_encoders: dict = {
+            pd.DataFrame: lambda df: df.to_dict(orient="records"),
+            pd.Series: lambda s: s.to_list(),
+            np.ndarray: lambda arr: arr.tolist(),
+        }
 
 
 class DatasetSplitterBase(Template):

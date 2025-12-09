@@ -7,6 +7,7 @@ import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base.base_models import TemplateAttributes
 from sinapsis_core.template_base.dynamic_template import BaseDynamicWrapperTemplate
+from sinapsis_core.utils.env_var_keys import WORKING_DIR
 from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import TabularDatasetSplit
 from sklearn.base import is_classifier, is_regressor
 from sklearn.metrics import (
@@ -34,6 +35,7 @@ class MLBaseAttributes(TemplateAttributes):
     """
 
     generic_field_key: str
+    root_dir : str = WORKING_DIR
     model_save_path: str
 
 
@@ -81,7 +83,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         """
         return dataset is not None
 
-    def process_dataset(self, dataset: TabularDatasetSplit) -> tuple | None:
+    def process_dataset(self, dataset: TabularDatasetSplit | dict) -> tuple | None:
         """
         Extracts x_train, y_train, x_test, y_test from the dataset
 
@@ -92,6 +94,8 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
             tuple | None: A tuple containing (x_train, y_train, x_test, y_test)
                 or None if the dataset doesn't have the expected attributes
         """
+        if isinstance(dataset, dict):
+            dataset = TabularDatasetSplit(**dataset)
         try:
             x_train = dataset.x_train
             y_train = dataset.y_train
@@ -213,9 +217,9 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         if self.trained_model is None:
             self.logger.error("No model to save")
             return
-
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.model_save_path)
         try:
-            os.makedirs(os.path.dirname(self.attributes.model_save_path), exist_ok=True)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
             self._save_model_implementation()
             self.logger.info(f"Model saved at {self.attributes.model_save_path}")
         except (MemoryError, TypeError) as e:
@@ -255,7 +259,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         results = self.handle_model_training(processed_data)
 
         if results is not None:
-            self._set_generic_data(container, results)
+            self._set_generic_data(container, results.model_dump())
             self.save_model()
 
         return container
