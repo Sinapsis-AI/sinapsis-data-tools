@@ -115,7 +115,7 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
         Returns:
             list[str| path]: the path as string or Path object
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.data_dir)
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.data_dir.lstrip("/"))
         data_items = [
             img_path if not return_as_str else str(img_path.resolve())
             for img_path in Path(full_path).glob(self.attributes.pattern)

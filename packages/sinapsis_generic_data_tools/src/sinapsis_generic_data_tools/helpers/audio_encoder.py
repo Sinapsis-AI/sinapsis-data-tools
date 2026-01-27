@@ -6,7 +6,7 @@ from pydub import AudioSegment
 
 
 def audio_bytes_to_numpy(audio_bytes: bytes) -> tuple[np.ndarray, int]:
-    audio = AudioSegment.from_file(BytesIO(audio_bytes), format="mp3")
+    audio = AudioSegment.from_file(BytesIO(audio_bytes))
 
     samples = np.array(audio.get_array_of_samples())
 

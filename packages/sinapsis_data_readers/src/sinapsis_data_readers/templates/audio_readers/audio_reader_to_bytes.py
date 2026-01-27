@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import io
+
+import soundfile as sf
 from sinapsis_core.data_containers.data_packet import AudioPacket
 
 from sinapsis_data_readers.templates.audio_readers.base_audio_reader import (
@@ -44,10 +47,9 @@ class AudioReaderToBytes(_AudioBaseReader):
                 audio_content = audio_file.read()
 
             audio_file.close()
-            audio_packet = AudioPacket(
-                source=full_path,
-                content=audio_content,
-            )
+            _, sample_rate = sf.read(io.BytesIO(audio_content))
+
+            audio_packet = AudioPacket(source=full_path, content=audio_content, sample_rate=sample_rate)
             return audio_packet
         except FileNotFoundError:
             self.logger.error(f"Audio file not found: {full_path}")
