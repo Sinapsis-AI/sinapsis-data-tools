@@ -34,7 +34,7 @@ class MLBaseAttributes(TemplateAttributes):
         model_save_path (str): Path where the trained model will be saved.
     """
 
-    generic_field_key: str
+    generic_field_key: str | None = None
     root_dir : str = WORKING_DIR
     model_save_path: str
 
@@ -220,13 +220,13 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         full_path = os.path.join(self.attributes.root_dir, self.attributes.model_save_path)
         try:
             os.makedirs(os.path.dirname(full_path), exist_ok=True)
-            self._save_model_implementation()
+            self._save_model_implementation(full_path)
             self.logger.info(f"Model saved at {self.attributes.model_save_path}")
         except (MemoryError, TypeError) as e:
             self.logger.error(f"Error saving model: {e}")
 
     @abstractmethod
-    def _save_model_implementation(self) -> None:
+    def _save_model_implementation(self, full_path: str) -> None:
         """Save the trained model using an implementation-specific method.
 
         This abstract method should be implemented by subclasses to define

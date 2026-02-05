@@ -50,6 +50,7 @@ The following model types are supported:
 - **Linear Models**: LinearRegression, Ridge, Lasso, ElasticNet, LogisticRegression, etc.
 - **Neighbors Models**: KNeighborsClassifier, KNeighborsRegressor, RadiusNeighborsClassifier, etc.
 - **Neural Network Models**: MLPClassifier, MLPRegressor, BernoulliRBM
+- **SVM Models**: SVC, SVR, LinearSVC, LinearSVR, NuSVC, NuSVR, OneClassSVM, etc.
 - **Tree Models**: DecisionTreeClassifier, DecisionTreeRegressor, ExtraTreeClassifier, etc.
 
 Each template uses the same base attributes:

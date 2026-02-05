@@ -24,3 +24,4 @@ excluded_neighbors_models = [
     "LocalOutlierFactor",
 ]
 excluded_tree_models = ["plot_tree", "export_text", "export_graphviz", "BaseDecisionTree"]
+excluded_svm_models = ["l1_min_c"]

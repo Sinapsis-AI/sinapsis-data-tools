@@ -153,7 +153,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             y_test=pd.DataFrame(y_test),
         )
 
-        return split_data.model_dump_json(indent=2)
+        return split_data.model_dump()
 
     def execute(self, container: DataContainer) -> DataContainer:
         sklearn_dataset = self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())

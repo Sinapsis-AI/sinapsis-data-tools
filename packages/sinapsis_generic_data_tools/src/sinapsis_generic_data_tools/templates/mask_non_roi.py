@@ -23,8 +23,8 @@ class RegionOfInterest(BaseModel):
     roi: list[KeyPoint]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @cached_property
     @computed_field
+    @cached_property
     def as_numpy_array(self) -> np.ndarray:
         """Returns the roi as a numpy array"""
         coors = [[point.x, point.y] for point in self.roi]

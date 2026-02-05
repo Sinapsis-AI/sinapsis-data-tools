@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from abc import abstractmethod
 from typing import Any
 
@@ -6,6 +7,7 @@ import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base.base_models import TemplateAttributes
 from sinapsis_core.template_base.template import Template
+from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 
 class MLBaseInference(Template):
@@ -24,11 +26,12 @@ class MLBaseInference(Template):
         """
 
         model_path: str
+        root_dir : str = SINAPSIS_CACHE_DIR
         generic_field_key: str
 
     def __init__(self, attributes: TemplateAttributes) -> None:
         super().__init__(attributes)
-        self.model = self.load_model(self.attributes.model_path)
+
 
     def get_data(self, container: DataContainer) -> Any:
         """Get the data from the data container
@@ -111,7 +114,8 @@ class MLBaseInference(Template):
         if not self.data_is_valid(data):
             self.logger.warning("Invalid or missing data")
             return container
-
+        full_path = os.path.join(self.attributes.root_dir, self.attributes.model_path)
+        self.model = self.load_model(full_path)
         data = self.preprocess_data(data)
         predictions = self.predict(data)
 

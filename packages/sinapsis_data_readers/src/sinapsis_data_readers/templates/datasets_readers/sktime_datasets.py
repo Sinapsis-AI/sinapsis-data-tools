@@ -132,11 +132,11 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
                 y_train=pd.DataFrame(y_train),
                 y_test=pd.DataFrame(y_test),
             )
-            return split_dataset.model_dump_json(indent=2)
+            return split_dataset.model_dump()
         except ValueError:
             self.logger.debug("Wrong format for split. original values")
             split_dataset = TabularDatasetSplit(x_train=pd.DataFrame(X), y_train=pd.DataFrame(y))
-            return split_dataset.model_dump_json(indent=2)
+            return split_dataset.model_dump()
 
     def create_dataset(self):
         return self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())
