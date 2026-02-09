@@ -10,8 +10,8 @@ from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes
 from sklearn.model_selection import train_test_split
 
-ArrayDataFrameType = Union[list[np.ndarray], pd.DataFrame]
-StringDataFrameType = Union[list[str | int], pd.DataFrame]
+ArrayDataFrameType = Union[list[np.ndarray], pd.DataFrame, pd.Series]
+StringDataFrameType = Union[list[str | int], pd.DataFrame, pd.Series]
 OptionalArrayDataFrameType = Union[ArrayDataFrameType, None]
 
 OptionalStringDataFrameType = Union[StringDataFrameType, None]
@@ -44,18 +44,18 @@ class TabularDatasetSplit(BaseModel):
     """BaseModel to store the content of the data packets as a list
     x_train (pd.DataFrame) :  Contains the x values for the train set.
         If there is no split, contains the x values for the whole set
-    y_train (pd.DataFrame) :  Contains the y values for the train set.
+    y_train (pd.DataFrame | pd.Series) :  Contains the y values for the train set.
         If there is no split, contains the x values for the whole set
     x_test (pd.DataFrame | None) :  Contains the x values for the test set.
         If there is no split, is set to None
-    y_test (pd.DataFrame | None) :  Contains the y values for the test set.
+    y_test (pd.DataFrame | None | pd.Series) :  Contains the y values for the test set.
         If there is no split, is set to None
     """
 
     x_train: pd.DataFrame
-    y_train: pd.DataFrame
+    y_train: pd.DataFrame  | pd.Series
     x_test: pd.DataFrame | None = None
-    y_test: pd.DataFrame | None = None
+    y_test: pd.DataFrame | pd.Series | None = None
 
     class Config:
         """allow arbitrary types"""
@@ -135,9 +135,9 @@ class DatasetSplitterBase(Template):
         if not packet:
             self.logger.debug("No data to be processed by dataset splitter")
             return container
-        if len(packet) == 1:
-            self.logger.debug("Not enough entries to divide dataset, returning original container")
-            return container
+        # if len(packet) == 1:
+        #     self.logger.debug("Not enough entries to divide dataset, returning original container")
+        #     return container
         x_data, y_data = self.extract_x_y_from_packet(packet)
 
         custom_dataset = self.store_data_in_data_splitter(x_data, y_data)
@@ -171,6 +171,7 @@ class ImageDatasetSplitter(DatasetSplitterBase):
 
     def extract_x_y_from_packet(self, packets: list[Packet] | dict) -> tuple[ArrayDataFrameType, StringDataFrameType]:
         packets = cast(list, packets)
+
         x, y = self.process_images_packet(packets)
         return x, y
 
@@ -221,25 +222,33 @@ class TabularDatasetSplitter(DatasetSplitterBase):
 
     class AttributesBaseModel(DatasetSplitterBase.AttributesBaseModel):
         generic_data_extract_key: str = "SKLearn-Datasets"
-        generic_data_target_key: str = "target"  # labels
-        generic_data_feature_key: str = "data"  # arrays
+        target_key: str = "target"  # labels
+        feature_key: str | None  = None  # arrays
+
 
     def extract_x_y_from_packet(self, packets: list[Packet] | dict) -> tuple[StringDataFrameType, ArrayDataFrameType]:
         packet = cast(dict, packets)
-        dataframe: pd.DataFrame | None = packet.get(self.attributes.generic_data_extract_key, None)
+        dataframe: pd.DataFrame | None = packet.get(self.attributes.generic_data_extract_key, {})
         target: pd.DataFrame = pd.DataFrame()
         feature: pd.DataFrame = pd.DataFrame()
         if isinstance(dataframe, pd.DataFrame):
-            target = dataframe.get(self.attributes.generic_data_target_key)
-            feature = dataframe.get(self.attributes.generic_data_feature_key)
+            target = dataframe.get(self.attributes.target_key)
+            feature =  dataframe.get(self.attributes.feature_key) \
+                if self.attributes.feature_key \
+                else dataframe.drop(columns=[self.attributes.target_key])
 
         return feature, target
 
-    @staticmethod
+
+
     def return_data_splitter_object(
+        self,
         x_train: ArrayDataFrameType,
         y_train: StringDataFrameType,
         x_test: OptionalArrayDataFrameType,
         y_test: OptionalStringDataFrameType,
     ) -> TabularDatasetSplit:
+
+
+
         return TabularDatasetSplit(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)

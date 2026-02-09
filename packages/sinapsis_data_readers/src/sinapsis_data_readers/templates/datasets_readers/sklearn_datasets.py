@@ -144,7 +144,6 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             X = results.iloc[:, :n_features]
             y = results.iloc[:, n_features:]
 
-
         x_train, x_test, y_train, y_test = train_test_split(X, y, train_size=split_size, random_state=0)
         split_data = TabularDatasetSplit(
             x_train=pd.DataFrame(x_train),
