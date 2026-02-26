@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
-from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base.template import Template
+from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket
 from sinapsis_core.template_base.base_models import TemplateAttributes
-
+from sinapsis_core.template_base.template import Template
 
 
 class CategoricalToNumerical(Template):
@@ -11,7 +10,7 @@ class CategoricalToNumerical(Template):
 		generic_key: str
 
 	@staticmethod
-	def map_categorical_to_numerical(df: pd.DataFrame| pd.Series)->pd.DataFrame | pd.Series:
+	def map_categorical_to_numerical(df: pd.DataFrame| pd.Series)->tuple:
 
 		if isinstance(df, pd.Series):
 			categorical_cols =  [df.name] if df.dtype in ["object", "string", "category"] else []
@@ -37,9 +36,11 @@ class CategoricalToNumerical(Template):
 
 
 	def execute(self, container: DataContainer) -> DataContainer:
-		dataset = self._get_generic_data(container)
-		transformed_dataset, labels = self.map_categorical_to_numerical(dataset)
-		self._set_generic_data(container, transformed_dataset)
+		for data_frame in container.data_frames:
+
+			transformed_dataset, labels = self.map_categorical_to_numerical(data_frame.content)
+			container.data_frames.append(DataFramePacket(content=transformed_dataset, generic_data = labels))
+
 		return container
 
 

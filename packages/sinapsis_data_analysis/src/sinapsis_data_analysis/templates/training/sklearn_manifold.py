@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -13,12 +12,8 @@ from sinapsis_core.template_base.dynamic_template import (
 )
 from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
-from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import (
-    TabularDatasetSplit,
-)
-from sklearn import manifold
-
 from sinapsis_data_analysis.helpers.tags import Tags
+from sklearn import manifold
 
 
 class ManifoldResults(BaseModel):
@@ -42,6 +37,14 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
     TSNE, MDS, Isomap, etc.
     """
 
+    class AttributesBaseModel(TemplateAttributes):
+        """Attributes for the MLBaseInference template.
+
+        Attributes:
+            target_key (str): Key of the generic field where data is stored.
+        """
+
+        target_key : str =  'target'
     WrapperEntry = WrapperEntryConfig(
         wrapped_object=manifold,
         signature_from_doc_string=True,
@@ -54,15 +57,6 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         tags=[Tags.DATA_ANALYSIS, Tags.DYNAMIC, Tags.MANIFOLD, Tags.SKLEARN, Tags.MODELS],
     )
 
-    class AttributesBaseModel(TemplateAttributes):
-        """Attributes for the SKLearnManifold template.
-
-        Attributes:
-            generic_field_key (str): Key of the generic field
-                where the input data is stored.
-        """
-
-        generic_field_key: str
 
     def __init__(self, attributes: TemplateAttributes) -> None:
         super().__init__(attributes)
@@ -83,7 +77,7 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         array_data = np.array(feature_arrays)
         return array_data.reshape(array_data.shape[0], -1)
 
-    def get_dataset(self, container: DataContainer) -> TabularDatasetSplit | None:
+    def get_dataset(self, container: DataContainer) -> list:
         """Get the dataset from the data container
 
         Args:
@@ -93,13 +87,10 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
             TabularDatasetSplit | None: The dataset from the generic field,
                 or None if not found
         """
-        dataset = self._get_generic_data(container, self.attributes.generic_field_key)
-        dataset = cast(TabularDatasetSplit, dataset)
-        if dataset:
-            return dataset
-        return None
+        return container.data_frames
 
-    def process_dataset(self, dataset: TabularDatasetSplit) -> ManifoldResults | None:
+
+    def process_dataset(self, dataset: list) -> ManifoldResults | None:
         """
         Extracts the training data, reshapes it, and applies the
         manifold learning transformation
@@ -111,11 +102,17 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
             ManifoldResults | None: Results of the manifold transformation,
                 or None if the dataset is empty
         """
-        x_train = dataset.x_train
-        y_train = dataset.y_train
+        x_train, y_train = None, None
+        for set in dataset:
+            if "x_train" in set.source:
+                x_train = set.content
 
-        if x_train is None or x_train.empty:
-            return None
+            elif "y_train" in set.source:
+                y_train = set.content
+            else:
+                y_train = set.content[self.attributes.target_key]
+                x_train = set.content.pop(self.attributes.target_key)
+
 
         x_train_reshaped = self.reshape_arrays(x_train)
         x_transformed = self.manifold_model.fit_transform(x_train_reshaped)
@@ -141,7 +138,7 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         results = self.process_dataset(dataset)
 
         if results is not None:
-            self._set_generic_data(container, results)
+            self._set_generic_data(container, results.model_dump())
 
         return container
 

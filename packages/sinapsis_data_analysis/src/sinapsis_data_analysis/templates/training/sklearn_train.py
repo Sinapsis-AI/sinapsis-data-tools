@@ -5,9 +5,8 @@ from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import WrapperEntryConfig
 from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
-from sklearn import linear_model, neighbors, neural_network, svm, tree
-
 from sinapsis_data_analysis.helpers.excluded_models import (
+    excluded_cluster_models,
     excluded_linear_models,
     excluded_neighbors_models,
     excluded_svm_models,
@@ -15,6 +14,7 @@ from sinapsis_data_analysis.helpers.excluded_models import (
 )
 from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.training.ml_base_training import MLBaseTraining
+from sklearn import cluster, linear_model, neighbors, neural_network, svm, tree
 
 
 class SKLearnLinearModelsTrain(MLBaseTraining):
@@ -213,6 +213,44 @@ class SKLearnSVMModelsTrain(SKLearnLinearModelsTrain):
     )
 
 
+
+class SKLearnClusterModelsTrain(SKLearnLinearModelsTrain):
+    """
+    This template dynamically wraps sklearn's svm module,
+    providing access to models like SVC, SVR, LinearSVC,
+    LinearSVR, NuSVC, NuSVR, and OneClassSVM.
+
+    Usage example:
+
+    agent:
+      name: my_test_agent
+    templates:
+    - template_name: InputTemplate
+      class_name: InputTemplate
+      attributes: {}
+    - template_name: SVCWrapper
+      class_name: SVCWrapper
+      template_input: DataLoaderTemplate
+      attributes:
+        generic_field_key: 'data_loader_key'
+        model_save_path: 'artifacts/svc_model.joblib'
+        svc_init:
+          C: 1.0
+          kernel: rbf
+          random_state: 42
+
+    """
+
+    WrapperEntry = WrapperEntryConfig(
+        wrapped_object=cluster,
+        signature_from_doc_string=True,
+        exclude_module_atts=excluded_cluster_models,
+        force_init_as_method=False,
+    )
+
+
+
+
 def __getattr__(name: str) -> Template:
     """
     Only create a template if it's imported, this avoids creating all the base models for all templates
@@ -228,6 +266,8 @@ def __getattr__(name: str) -> Template:
         return make_dynamic_template(name, SKLearnTreeModelsTrain)
     if name in SKLearnSVMModelsTrain.WrapperEntry.module_att_names:
         return make_dynamic_template(name, SKLearnSVMModelsTrain)
+    if name in SKLearnClusterModelsTrain.WrapperEntry.module_att_names:
+        return make_dynamic_template(name, SKLearnClusterModelsTrain)
     raise AttributeError(f"template `{name}` not found in {__name__}")
 
 
@@ -237,6 +277,7 @@ __all__ = (
     + SKLearnNNModelsTrain.WrapperEntry.module_att_names
     + SKLearnTreeModelsTrain.WrapperEntry.module_att_names
     + SKLearnSVMModelsTrain.WrapperEntry.module_att_names
++ SKLearnClusterModelsTrain.WrapperEntry.module_att_names
 )
 
 

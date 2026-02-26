@@ -25,3 +25,16 @@ excluded_neighbors_models = [
 ]
 excluded_tree_models = ["plot_tree", "export_text", "export_graphviz", "BaseDecisionTree"]
 excluded_svm_models = ["l1_min_c"]
+excluded_cluster_models = ["affinity_propagation",
+    "cluster_optics_dbscan",
+    "cluster_optics_xi",
+    "compute_optics_graph",
+    "dbscan",
+    "estimate_bandwidth",
+    "get_bin_seeds",
+    "k_means",
+    "kmeans_plusplus",
+    "linkage_tree",
+    "mean_shift",
+    "spectral_clustering",
+    "ward_tree"]

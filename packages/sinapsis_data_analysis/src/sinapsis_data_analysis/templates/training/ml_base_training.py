@@ -4,12 +4,14 @@ from abc import abstractmethod
 from typing import Any
 
 import numpy as np
-import pandas as pd
-from sinapsis_core.data_containers.data_packet import DataContainer
+from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket
 from sinapsis_core.template_base.base_models import TemplateAttributes
 from sinapsis_core.template_base.dynamic_template import BaseDynamicWrapperTemplate
 from sinapsis_core.utils.env_var_keys import WORKING_DIR
-from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import TabularDatasetSplit
+from sinapsis_data_analysis.helpers.model_metrics import (
+    ModelMetrics,
+    ModelPredictionResults,
+)
 from sklearn.base import is_classifier, is_regressor
 from sklearn.metrics import (
     accuracy_score,
@@ -21,21 +23,14 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from sinapsis_data_analysis.helpers.model_metrics import (
-    ModelMetrics,
-    ModelPredictionResults,
-)
-
 
 class MLBaseAttributes(TemplateAttributes):
     """Base attributes for machine learning model templates.
 
     Attributes:
-        generic_field_key (str): Key of the generic field where datasets are stored.
         model_save_path (str): Path where the trained model will be saved.
     """
 
-    generic_field_key: str | None = None
     root_dir : str = WORKING_DIR
     model_save_path: str
 
@@ -70,7 +65,9 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         Returns:
             Any: The dataset from the generic field.
         """
-        return self._get_generic_data(container, self.attributes.generic_field_key)
+
+
+        return container.data_frames
 
     @staticmethod
     def dataset_is_valid(dataset: Any) -> bool:
@@ -84,7 +81,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         """
         return dataset is not None
 
-    def process_dataset(self, dataset: TabularDatasetSplit | dict) -> tuple | None:
+    def process_dataset(self, dataset: list[DataFramePacket]) -> tuple | None:
         """
         Extracts x_train, y_train, x_test, y_test from the dataset
 
@@ -95,19 +92,24 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
             tuple | None: A tuple containing (x_train, y_train, x_test, y_test)
                 or None if the dataset doesn't have the expected attributes
         """
-        if isinstance(dataset, dict):
-            dataset = TabularDatasetSplit(**dataset)
-        try:
-            x_train = dataset.x_train
-            y_train = dataset.y_train
-            x_test = dataset.x_test
-            y_test = dataset.y_test
+        x_train, y_train, x_test, y_test = None, None, None, None
+        for data_set in dataset:
+            if data_set.source:
+                if "x_train" in data_set.source:
+                    x_train = data_set.content
+                elif "x_test" in data_set.source:
+                    x_test = data_set.content
+                elif "y_train" in data_set.source:
+                    y_train = data_set.content
+                elif "y_test" in data_set.source:
+                    y_test = data_set.content
+                else:
+                    if "x_dataset" in data_set.source:
+                        x_train =  data_set.content
+                    elif "y_dataset" in data_set.source:
+                        y_train = data_set.content
 
-            return x_train, y_train, x_test, y_test
-
-        except AttributeError:
-            self.logger.warning("Dataset doesn't have the expected attributes")
-            return None
+        return x_train, y_train, x_test, y_test
 
     def train_model(self, x_train: Any, y_train: Any) -> None:
         """Train the model using the training data
@@ -116,7 +118,6 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
             x_train (Any): The training features
             y_train (Any): The training targets
         """
-
 
         self.trained_model = self.model.fit(x_train, y_train)
 
@@ -156,7 +157,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
 
         return metrics
 
-    def calculate_metrics(self, y_true: np.ndarray, y_pred: np.ndarray) -> ModelMetrics:
+    def calculate_metrics(self, y_true: np.ndarray, y_pred: np.ndarray) -> ModelMetrics | None:
         """
         Detects whether the model is a classifier or regressor and calculates
         the appropriate metrics
@@ -173,7 +174,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
                 return self.calculate_classification_metrics(y_true, y_pred)
             elif is_regressor(self.trained_model):
                 return self.calculate_regression_metrics(y_true, y_pred)
-        return ModelMetrics()
+        return None
 
     def generate_predictions(self, x_test: np.ndarray, y_test: np.ndarray) -> ModelPredictionResults | None:
         """
@@ -187,7 +188,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         Returns:
             ModelPredictionResults: Object containing predictions and metrics
         """
-        if self.trained_model is not None:
+        if self.trained_model is not None and x_test is not None:
             predictions = self.trained_model.predict(x_test)
 
             metrics = self.calculate_metrics(y_test, predictions)
@@ -208,7 +209,6 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
             ModelPredictionResults: Object containing predictions and metrics.
         """
         x_train, y_train, x_test, y_test = processed_data
-
         self.train_model(x_train, y_train)
 
         return self.generate_predictions(x_test, y_test)
@@ -226,7 +226,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         try:
             os.makedirs(os.path.dirname(full_path), exist_ok=True)
             self._save_model_implementation(full_path)
-            self.logger.info(f"Model saved at {self.attributes.model_save_path}")
+            self.logger.info(f"Model saved at {full_path}")
         except (MemoryError, TypeError) as e:
             self.logger.error(f"Error saving model: {e}")
 

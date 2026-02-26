@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-from sinapsis_core.data_containers.data_packet import DataContainer, TimeSeriesPacket
+from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket, TimeSeriesPacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
@@ -19,9 +19,6 @@ from sklearn.utils import Bunch
 
 from sinapsis_data_readers.helpers import sklearn_dataset_subset
 from sinapsis_data_readers.helpers.tags import Tags
-from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import (
-    TabularDatasetSplit,
-)
 
 TARGET: str = "target"
 
@@ -137,7 +134,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
         results: pd.DataFrame, feature_name_cols: list, target_name_cols: list, n_features: int, split_size: float
     ) -> dict:
         """Method to split the dataset into training and testing samples"""
-        if feature_name_cols:
+        if feature_name_cols is not None:
             X = results[feature_name_cols]
             y = results[target_name_cols]
         else:
@@ -145,30 +142,32 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             y = results.iloc[:, n_features:]
 
         x_train, x_test, y_train, y_test = train_test_split(X, y, train_size=split_size, random_state=0)
-        split_data = TabularDatasetSplit(
-            x_train=pd.DataFrame(x_train),
-            x_test=pd.DataFrame(x_test),
-            y_train=pd.DataFrame(y_train),
-            y_test=pd.DataFrame(y_test),
-        )
-
-        return split_data.model_dump()
+        data_map = {
+            "x_train": x_train,
+            "y_train": y_train,
+            "x_test": x_test,
+            "y_test": y_test
+        }
+        return data_map
 
     def execute(self, container: DataContainer) -> DataContainer:
         sklearn_dataset = self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())
         dataset, feature_columns, target_columns, n_features = self.parse_results(sklearn_dataset)
+
         if self.attributes.store_as_time_series:
             time_series_packet = TimeSeriesPacket(content=dataset)
             container.time_series.append(time_series_packet)
 
         if self.attributes.split_dataset:
-            split_dataset = self.split_dataset(
+            data_map = self.split_dataset(
                 dataset, feature_columns, target_columns, n_features, split_size=self.attributes.train_size
             )
-            self._set_generic_data(container, split_dataset)
-        if sklearn_dataset and not self.attributes.split_dataset:
-            self._set_generic_data(container, dataset)
 
+            for name, df  in data_map.items():
+                container.data_frames.append(DataFramePacket(content=df, source=f"{self.instance_name}_{name}"))
+
+        if sklearn_dataset and not self.attributes.split_dataset:
+            container.data_frames.append(DataFramePacket(content=dataset, source=self.instance_name))
         return container
 
 

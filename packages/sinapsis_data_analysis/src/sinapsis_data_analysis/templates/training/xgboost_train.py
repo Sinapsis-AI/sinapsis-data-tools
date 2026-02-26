@@ -5,7 +5,6 @@ from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import WrapperEntryConfig
 from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
-
 from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.training.sklearn_train import SKLearnLinearModelsTrain
 

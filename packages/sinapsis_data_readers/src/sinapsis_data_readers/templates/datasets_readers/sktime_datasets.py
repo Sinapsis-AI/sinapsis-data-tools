@@ -3,7 +3,7 @@ from types import NoneType
 from typing import Any
 
 import pandas as pd
-from sinapsis_core.data_containers.data_packet import DataContainer, TimeSeriesPacket
+from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket, TimeSeriesPacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
@@ -22,9 +22,6 @@ from sktime.split import temporal_train_test_split
 from sinapsis_data_readers.helpers import sktime_datasets_subset
 from sinapsis_data_readers.helpers.sktime_datasets_subset import class_datasets
 from sinapsis_data_readers.helpers.tags import Tags
-from sinapsis_data_readers.templates.datasets_readers.dataset_splitter import (
-    TabularDatasetSplit,
-)
 
 EXCLUDE_MODULES = ["load_forecastingdata", "DATASET_NAMES_FPP3", "BaseDataset",
                    "load_gun_point_segmentation", "load_electric_devices_segments",
@@ -86,13 +83,13 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
 
         split_dataset: bool = True
         train_size: float = 0.7
-        store_as_time_series: bool = False
+        store_as_data_frame: bool = False
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.dataset_attributes = self.initialize_attributes()
 
-    def initialize_attributes(self):
+    def initialize_attributes(self)->Any:
         return getattr(self.attributes, self.wrapped_callable.__name__)
     def split_time_series_dataset(self, dataset: Any) -> dict:
         """Split a time series dataset into training and testing sets
@@ -104,15 +101,10 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
             TabularDatasetSplit: Object containing the split time series data
         """
         y_train, y_test = temporal_train_test_split(dataset, train_size=self.attributes.train_size)
-        split_dataset =  TabularDatasetSplit(
-            x_train=pd.DataFrame(index=y_train.index),
-            x_test=pd.DataFrame(index=y_test.index),
-            y_train=pd.DataFrame(y_train),
-            y_test=pd.DataFrame(y_test),
-        )
-        return split_dataset.model_dump_json(indent=2)
+        data_map = {"x_train": None, "y_train": y_train, "x_test": None, "y_test": y_test}
+        return data_map
 
-    def split_classification_dataset(self, X: Any, y: Any) -> TabularDatasetSplit:
+    def split_classification_dataset(self, X: Any, y: Any) -> dict:
         """Split a classification dataset into training and testing sets
 
         Args:
@@ -123,23 +115,27 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
             TabularDatasetSplit: Object containing the split dataset.
         """
         try:
-            X_train, X_test, y_train, y_test = train_test_split(
+            x_train, x_test, y_train, y_test = train_test_split(
                 X, y, train_size=self.attributes.train_size, random_state=0
             )
-            split_dataset = TabularDatasetSplit(
-                x_train=pd.DataFrame(X_train),
-                x_test=pd.DataFrame(X_test),
-                y_train=pd.DataFrame(y_train),
-                y_test=pd.DataFrame(y_test),
-            )
-            return split_dataset.model_dump()
+
         except ValueError:
             self.logger.debug("Wrong format for split. original values")
-            split_dataset = TabularDatasetSplit(x_train=pd.DataFrame(X), y_train=pd.DataFrame(y))
-            return split_dataset.model_dump()
+            x_train, y_train = pd.DataFrame(X), pd.DataFrame(y)
+            x_test, y_test = None, None
+        data_map = {
+            "x_train": x_train,
+            "y_train": y_train,
+            "x_test": x_test,
+            "y_test": y_test
+    }
+        return data_map
 
-    def create_dataset(self):
+    def create_dataset(self)->Any:
         return self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())
+
+
+
     def execute(self, container: DataContainer) -> DataContainer:
         """Execute the SKTimeDatasets template to load and process a dataset.
 
@@ -152,23 +148,29 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
         Returns:
             DataContainer: The container with the dataset added to it.
         """
-        dataset = self.create_dataset()
-        split_dataset = dataset
-        if isinstance(dataset, tuple):
-            if self.attributes.split_dataset:
-                split_dataset = self.split_classification_dataset(dataset[0], dataset[1])
-        else:
-            if self.attributes.split_dataset:
-                split_dataset = self.split_time_series_dataset(dataset)
 
-        if self.attributes.store_as_time_series:
-            time_series_packet = TimeSeriesPacket(content=split_dataset)
-            container.time_series.append(time_series_packet)
+        dataset = self.create_dataset()
+
+        if self.attributes.split_dataset:
+            if isinstance(dataset, tuple):
+                data_map = self.split_classification_dataset(dataset[0], dataset[1])
+            else:
+                data_map = self.split_time_series_dataset(dataset)
         else:
-            self._set_generic_data(container, split_dataset)
+            # no split → single entry
+            data_map = {"full": dataset}
+        # ---- Step 2: choose packet class ----
+        PacketCls = DataFramePacket if self.attributes.store_as_data_frame else TimeSeriesPacket
+        target_list = container.data_frames if self.attributes.store_as_data_frame else container.time_series
+
+        # ---- Step 3: store ----
+        for name, data in data_map.items():
+            if data is None:
+                continue
+            packet = PacketCls(content=data, source=f"{self.instance_name}_{name}")
+            target_list.append(packet)
 
         return container
-
 
 @execute_template_n_times_wrapper
 class ExecuteNTimesSKTimeDatasets(SKTimeDatasets):
@@ -192,8 +194,9 @@ class SKTimeClassDatasets(SKTimeDatasets):
         wrapped_object=sktime_datasets_subset,
         signature_from_doc_string=True,
     )
-    def initialize_attributes(self):
+    def initialize_attributes(self)->None:
         return None
+
     def create_dataset(self):
         dataset = self.wrapped_callable.load("X", "y")
         if isinstance(dataset[0], NoneType):

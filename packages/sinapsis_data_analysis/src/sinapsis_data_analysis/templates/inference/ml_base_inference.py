@@ -7,7 +7,7 @@ import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base.base_models import TemplateAttributes
 from sinapsis_core.template_base.template import Template
-from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_core.utils.env_var_keys import WORKING_DIR
 
 
 class MLBaseInference(Template):
@@ -26,7 +26,7 @@ class MLBaseInference(Template):
         """
 
         model_path: str
-        root_dir : str = SINAPSIS_CACHE_DIR
+        root_dir : str = WORKING_DIR
         generic_field_key: str
         target_key : str
 
@@ -43,7 +43,7 @@ class MLBaseInference(Template):
         Returns:
             Any: The data from the generic field
         """
-        return self._get_generic_data(container, self.attributes.generic_field_key)
+        return container.data_frames[-1].content
 
     @staticmethod
     def data_is_valid(data: Any) -> bool:
@@ -96,7 +96,6 @@ class MLBaseInference(Template):
         Returns:
             np.ndarray: The model's predictions
         """
-
         return self.model.predict(data)
 
     def execute(self, container: DataContainer) -> DataContainer:

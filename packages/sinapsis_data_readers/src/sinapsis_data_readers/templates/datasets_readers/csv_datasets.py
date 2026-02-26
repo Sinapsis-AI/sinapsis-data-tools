@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from sinapsis_core.data_containers.data_packet import DataContainer, TimeSeriesPacket
+from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket, TimeSeriesPacket
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_core.template_base.template import Template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
@@ -25,6 +25,7 @@ class CSVDatasetReader(Template):
             packet = TimeSeriesPacket(content=self.csv_file)
             container.time_series.append(packet)
         else:
-            self._set_generic_data(container, self.csv_file)
+            packet = DataFramePacket(content=self.csv_file, source=f"{self.instance_name}_x_dataset")
+            container.data_frames.append(packet)
 
         return container
