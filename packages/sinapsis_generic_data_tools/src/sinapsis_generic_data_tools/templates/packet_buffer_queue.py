@@ -70,6 +70,8 @@ class PacketBufferQueue(Template):
         tail_size: int
         packet_to_store: Literal["audios", "images", "texts", "time_series", "binary_data"]
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
 
@@ -121,7 +123,7 @@ def multi_source_template(cls: Type[Template]) -> Type[Template]:
     """
 
     @wraps(cls, updated=())
-    class MultiSourceReader(cls):
+    class MultiSourceReader(cls):  # ty: ignore[unsupported-base]
         """Wrapper for Templates that read from multiple sources"""
 
         def __init__(self, attributes: TemplateAttributeType) -> None:

@@ -26,13 +26,14 @@ class MLBaseInference(Template):
         """
 
         model_path: str
-        root_dir : str = WORKING_DIR
+        root_dir: str = WORKING_DIR
         generic_field_key: str
-        target_key : str
+        target_key: str
+
+    attributes: AttributesBaseModel
 
     def __init__(self, attributes: TemplateAttributes) -> None:
         super().__init__(attributes)
-
 
     def get_data(self, container: DataContainer) -> Any:
         """Get the data from the data container

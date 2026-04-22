@@ -236,17 +236,18 @@ def get_extra_ann_labels(
     """
     text_y_offsets = []
     extra_str_repr = []
-    for label_k, label_v in annotation.extra_labels.items():
-        extra_text: str = label_k
-        if isinstance(label_v, (float, int)):
-            extra_text = get_numeric_str(extra_text, label_v)
-        else:
-            extra_text = f"{label_k}: {label_v}"
-        extra_text_w, extra_text_h = get_text_size(extra_text, text_style)
+    if annotation.extra_labels is not None:
+        for label_k, label_v in annotation.extra_labels.items():
+            extra_text: str = label_k
+            if isinstance(label_v, (float, int)):
+                extra_text = get_numeric_str(extra_text, label_v)
+            else:
+                extra_text = f"{label_k}: {label_v}"
+            extra_text_w, extra_text_h = get_text_size(extra_text, text_style)
 
-        extra_text_h += spacing
-        text_h += extra_text_h
-        text_w = max(extra_text_w, text_w)
-        text_y_offsets.append(extra_text_h)
-        extra_str_repr.append(extra_text)
+            extra_text_h += spacing
+            text_h += extra_text_h
+            text_w = max(extra_text_w, text_w)
+            text_y_offsets.append(extra_text_h)
+            extra_str_repr.append(extra_text)
     return text_y_offsets, extra_str_repr, text_h, text_w

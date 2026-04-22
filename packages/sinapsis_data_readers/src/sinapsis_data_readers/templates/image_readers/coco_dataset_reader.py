@@ -31,13 +31,16 @@ from sinapsis_data_readers.templates.image_readers.image_folder_reader_cv2 impor
 )
 
 CocoImageDatasetBaseCV2UIProperties = FolderImageDatasetCV2.UIProperties
-CocoImageDatasetBaseCV2UIProperties.tags.extend([Tags.COCO, Tags.DETECTION])
+if CocoImageDatasetBaseCV2UIProperties.tags is not None:
+    CocoImageDatasetBaseCV2UIProperties.tags.extend([Tags.COCO, Tags.DETECTION])
 
 CocoSegmentationDatasetCV2UIProperties = FolderImageDatasetCV2.UIProperties
-CocoSegmentationDatasetCV2UIProperties.tags.extend([Tags.COCO, Tags.SEGMENTATION])
+if CocoSegmentationDatasetCV2UIProperties.tags is not None:
+    CocoSegmentationDatasetCV2UIProperties.tags.extend([Tags.COCO, Tags.SEGMENTATION])
 
 CocoKeypointsDatasetCV2UIProperties = FolderImageDatasetCV2.UIProperties
-CocoSegmentationDatasetCV2UIProperties.tags.extend([Tags.COCO, Tags.KEYPOINTS])
+if CocoSegmentationDatasetCV2UIProperties.tags is not None:
+    CocoSegmentationDatasetCV2UIProperties.tags.extend([Tags.COCO, Tags.KEYPOINTS])
 
 
 class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
@@ -54,8 +57,14 @@ class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
         """
         annotations_path: str
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
-        self.annotations_file = os.path.join(attributes.get("root_dir", SINAPSIS_CACHE_DIR), attributes.get("data_dir"), attributes.get("annotations_path"))
+        self.annotations_file = os.path.join(
+            getattr(self.attributes, "root_dir", SINAPSIS_CACHE_DIR),
+            getattr(self.attributes, "data_dir"),
+            getattr(self.attributes, "annotations_path"),
+        )
         self.raw_annotations_dict: list[dict[str, dict[str, Any]]] = self.read_annotations_file(self.annotations_file)
         self.annotations = self.images_annotations()
         super().__init__(attributes)
@@ -115,7 +124,10 @@ class CocoImageDatasetBaseCV2(FolderImageDatasetCV2):
         """
         super().read_packet_content(data_packet)
         height, width, _ = data_packet.content.shape
-        image_id = str(int(data_packet.annotations[0].label_str.split(".")[0]))
+        label_str = data_packet.annotations[0].label_str
+        if label_str is None:
+            return
+        image_id = str(int(label_str.split(".")[0]))
 
         annotations: list[ImageAnnotations] = self.get_annotations(self.annotations.get(image_id, []))
         data_packet.annotations = self._handle_masks(annotations, height, width)
@@ -311,10 +323,12 @@ class CocoSegmentationDatasetCV2(CocoDetectionDatasetCV2):
         """
         for ann in annotations:
             if ann.segmentation:
-                if ann.segmentation.polygon:
-                    ann.segmentation.mask = self.get_binary_mask(ann.segmentation.polygon, height, width, ann.label)
-                elif ann.segmentation.rle:
-                    ann.segmentation.mask = self.get_binary_mask(ann.segmentation.rle, height, width, ann.label)
+                if ann.segmentation.polygon and ann.label is not None:
+                    ann.segmentation.mask = self.get_binary_mask(
+                        ann.segmentation.polygon, height, width, int(ann.label)
+                    )
+                elif ann.segmentation.rle and ann.label is not None:
+                    ann.segmentation.mask = self.get_binary_mask(ann.segmentation.rle, height, width, int(ann.label))
                 ann.segmentation.polygon = None
                 ann.segmentation.rle = None
 

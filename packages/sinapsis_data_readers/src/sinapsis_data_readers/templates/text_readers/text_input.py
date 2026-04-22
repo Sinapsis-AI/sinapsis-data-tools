@@ -50,6 +50,7 @@ class TextInput(Template):
         output_type=OutputTypes.TEXT,
         tags=[Tags.INPUT, Tags.READERS, Tags.TEXT],
     )
+    attributes: AttributesBaseModel
 
     def execute(self, container: DataContainer) -> DataContainer:
         """

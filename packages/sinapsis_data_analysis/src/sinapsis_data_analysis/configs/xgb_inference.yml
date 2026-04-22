@@ -19,5 +19,7 @@ templates:
   class_name: XGBoostInference
   template_input: fetch_california_housingWrapper
   attributes:
-    model_path: 'artifacts/xgb_regressor.model'
+    model_path: artifacts/xgb_regressor.model
     generic_field_key: 'fetch_california_housingWrapper'
+    target_key: target
+    root_dir: .

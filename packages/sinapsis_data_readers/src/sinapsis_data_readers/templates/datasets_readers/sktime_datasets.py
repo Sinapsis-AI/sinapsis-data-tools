@@ -4,7 +4,6 @@ from typing import Any
 
 import pandas as pd
 from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket, TimeSeriesPacket
-from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
@@ -23,17 +22,22 @@ from sinapsis_data_readers.helpers import sktime_datasets_subset
 from sinapsis_data_readers.helpers.sktime_datasets_subset import class_datasets
 from sinapsis_data_readers.helpers.tags import Tags
 
-EXCLUDE_MODULES = ["load_forecastingdata", "DATASET_NAMES_FPP3", "BaseDataset",
-                   "load_gun_point_segmentation", "load_electric_devices_segments",
-                   "write_dataframe_to_tsfile",
-                   "write_ndarray_to_tsfile",
-                   "write_results_to_uea_format",
-                   "write_tabular_transformation_to_arff",
-                   "write_panel_to_tsfileWrapper",
-                   "_load_fpp3",
-                   "load_hierarchical_sales_toydata",
-                   "load_unitest_tsf"
-                   ] + class_datasets
+EXCLUDE_MODULES = [
+    "load_forecastingdata",
+    "DATASET_NAMES_FPP3",
+    "BaseDataset",
+    "load_gun_point_segmentation",
+    "load_electric_devices_segments",
+    "write_dataframe_to_tsfile",
+    "write_ndarray_to_tsfile",
+    "write_results_to_uea_format",
+    "write_tabular_transformation_to_arff",
+    "write_panel_to_tsfileWrapper",
+    "_load_fpp3",
+    "load_hierarchical_sales_toydata",
+    "load_unitest_tsf",
+    *class_datasets,
+]
 
 
 class SKTimeDatasets(BaseDynamicWrapperTemplate):
@@ -85,12 +89,16 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
         train_size: float = 0.7
         store_as_data_frame: bool = False
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.dataset_attributes = self.initialize_attributes()
 
-    def initialize_attributes(self)->Any:
-        return getattr(self.attributes, self.wrapped_callable.__name__)
+    def initialize_attributes(self) -> Any:
+        name = getattr(self.wrapped_callable, "__name__")
+        return getattr(self.attributes, name)
+
     def split_time_series_dataset(self, dataset: Any) -> dict:
         """Split a time series dataset into training and testing sets
 
@@ -100,7 +108,8 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
         Returns:
             TabularDatasetSplit: Object containing the split time series data
         """
-        y_train, y_test = temporal_train_test_split(dataset, train_size=self.attributes.train_size)
+        split = temporal_train_test_split(dataset, train_size=self.attributes.train_size)
+        y_train, y_test = split[:2]
         data_map = {"x_train": None, "y_train": y_train, "x_test": None, "y_test": y_test}
         return data_map
 
@@ -123,18 +132,13 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
             self.logger.debug("Wrong format for split. original values")
             x_train, y_train = pd.DataFrame(X), pd.DataFrame(y)
             x_test, y_test = None, None
-        data_map = {
-            "x_train": x_train,
-            "y_train": y_train,
-            "x_test": x_test,
-            "y_test": y_test
-    }
+        data_map = {"x_train": x_train, "y_train": y_train, "x_test": x_test, "y_test": y_test}
         return data_map
 
-    def create_dataset(self)->Any:
-        return self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())
-
-
+    def create_dataset(self) -> Any:
+        return self.wrapped_callable.__func__(  # ty: ignore[unresolved-attribute]
+            **self.dataset_attributes.model_dump()
+        )
 
     def execute(self, container: DataContainer) -> DataContainer:
         """Execute the SKTimeDatasets template to load and process a dataset.
@@ -168,9 +172,10 @@ class SKTimeDatasets(BaseDynamicWrapperTemplate):
             if data is None:
                 continue
             packet = PacketCls(content=data, source=f"{self.instance_name}_{name}")
-            target_list.append(packet)
+            target_list.append(packet)  # ty: ignore[invalid-argument-type]
 
         return container
+
 
 @execute_template_n_times_wrapper
 class ExecuteNTimesSKTimeDatasets(SKTimeDatasets):
@@ -194,16 +199,18 @@ class SKTimeClassDatasets(SKTimeDatasets):
         wrapped_object=sktime_datasets_subset,
         signature_from_doc_string=True,
     )
-    def initialize_attributes(self)->None:
+
+    def initialize_attributes(self) -> None:
         return None
 
-    def create_dataset(self):
-        dataset = self.wrapped_callable.load("X", "y")
+    def create_dataset(self) -> Any:
+        dataset = self.wrapped_callable.load("X", "y")  # ty: ignore[unresolved-attribute]
         if isinstance(dataset[0], NoneType):
             return dataset[1]
         elif isinstance(dataset[1], NoneType):
             return dataset[0]
         return dataset
+
 
 @execute_template_n_times_wrapper
 class ExecuteNTimesSKTimeClassDatasets(SKTimeDatasets):
@@ -220,7 +227,8 @@ class ExecuteNTimesSKTimeClassDatasets(SKTimeDatasets):
         template_name_suffix="ExecuteNTimes",
     )
 
-def __getattr__(name: str) -> Template:
+
+def __getattr__(name: str) -> type[BaseDynamicWrapperTemplate]:
     """
     Only create a template if it's imported, this avoids creating all the base models for all templates
     and potential import errors due to not available packages.
@@ -236,9 +244,12 @@ def __getattr__(name: str) -> Template:
     raise AttributeError(f"template `{name}` not found in {__name__}")
 
 
-__all__ = (SKTimeDatasets.WrapperEntry.module_att_names + ExecuteNTimesSKTimeDatasets.WrapperEntry.module_att_names +
-           SKTimeClassDatasets.WrapperEntry.module_att_names +
-           ExecuteNTimesSKTimeClassDatasets.WrapperEntry.module_att_names)
+__all__ = (
+    SKTimeDatasets.WrapperEntry.module_att_names
+    + ExecuteNTimesSKTimeDatasets.WrapperEntry.module_att_names
+    + SKTimeClassDatasets.WrapperEntry.module_att_names
+    + ExecuteNTimesSKTimeClassDatasets.WrapperEntry.module_att_names
+)
 
 
 if SINAPSIS_BUILD_DOCS:

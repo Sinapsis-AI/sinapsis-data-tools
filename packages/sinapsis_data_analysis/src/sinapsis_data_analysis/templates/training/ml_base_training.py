@@ -31,7 +31,7 @@ class MLBaseAttributes(TemplateAttributes):
         model_save_path (str): Path where the trained model will be saved.
     """
 
-    root_dir : str = WORKING_DIR
+    root_dir: str = WORKING_DIR
     model_save_path: str
 
 
@@ -45,6 +45,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
     """
 
     AttributesBaseModel = MLBaseAttributes
+    attributes: MLBaseAttributes
 
     def __init__(self, attributes: TemplateAttributes) -> None:
         """Initialize the MLBase template.
@@ -65,7 +66,6 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
         Returns:
             Any: The dataset from the generic field.
         """
-
 
         return container.data_frames
 
@@ -105,7 +105,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
                     y_test = data_set.content
                 else:
                     if "x_dataset" in data_set.source:
-                        x_train =  data_set.content
+                        x_train = data_set.content
                     elif "y_dataset" in data_set.source:
                         y_train = data_set.content
 
@@ -119,7 +119,7 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
             y_train (Any): The training targets
         """
 
-        self.trained_model = self.model.fit(x_train, y_train)
+        self.trained_model = self.model.fit(x_train, y_train)  # ty: ignore[unresolved-attribute]
 
     @staticmethod
     def calculate_classification_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> ModelMetrics:
@@ -192,8 +192,8 @@ class MLBaseTraining(BaseDynamicWrapperTemplate):
             predictions = self.trained_model.predict(x_test)
 
             metrics = self.calculate_metrics(y_test, predictions)
-
-            return ModelPredictionResults(predictions=predictions, metrics=metrics)
+            if metrics is not None:
+                return ModelPredictionResults(predictions=predictions, metrics=metrics)
         return None
 
     def handle_model_training(self, processed_data: tuple) -> ModelPredictionResults | None:

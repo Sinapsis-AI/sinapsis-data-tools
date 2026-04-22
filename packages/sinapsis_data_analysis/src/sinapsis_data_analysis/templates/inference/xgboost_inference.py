@@ -5,6 +5,8 @@ from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.inference.sklearn_inference import SKLearnInference
 
+tags = SKLearnInference.UIProperties.tags if SKLearnInference.UIProperties.tags is not None else []
+
 
 class XGBoostInference(SKLearnInference):
     """Dynamic templates to perform inference using XGBoost models.
@@ -27,4 +29,4 @@ class XGBoostInference(SKLearnInference):
 
     """
 
-    UIProperties = UIPropertiesMetadata(category="XGBoost", tags=[Tags.XGBOOST, *SKLearnInference.UIProperties.tags])
+    UIProperties = UIPropertiesMetadata(category="XGBoost", tags=[Tags.XGBOOST, *tags])

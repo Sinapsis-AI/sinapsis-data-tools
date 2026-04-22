@@ -36,7 +36,8 @@ def read_image_file(file_path: str | PosixPath | bytes) -> np.ndarray:
 
 
 FolderImageDatasetCV2UIProperties = ImageBaseDataReader.UIProperties
-FolderImageDatasetCV2UIProperties.tags.extend([Tags.OPENCV, Tags.DATASET])
+if FolderImageDatasetCV2UIProperties.tags is not None:
+    FolderImageDatasetCV2UIProperties.tags.extend([Tags.OPENCV, Tags.DATASET])
 
 
 class FolderImageDatasetCV2(ImageBaseDataReader):

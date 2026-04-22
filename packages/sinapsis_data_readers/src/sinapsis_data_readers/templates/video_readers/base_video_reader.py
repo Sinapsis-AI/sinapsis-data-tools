@@ -41,6 +41,7 @@ class BaseVideoReaderAttributes(TemplateAttributes):
         device (Literal["cpu", "gpu"]): Device to be used for loading the video. Default is "cpu".
         loop_forever (bool): Whether to loop the video indefinitely. Default is False.
     """
+
     root_dir: str | None = None
     video_file_path: str | list[str]
     batch_size: int = 1
@@ -57,10 +58,12 @@ class BaseVideoReader(Template):
 
     AttributesBaseModel = BaseVideoReaderAttributes
     UIProperties = UIPropertiesMetadata(output_type=OutputTypes.VIDEO, tags=[Tags.READERS, Tags.VIDEO])
+    attributes: BaseVideoReaderAttributes
+    video_reader: Any
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.frame_count = 0
         self.video_reader: Any
         self.total_frames: int
@@ -192,6 +195,8 @@ class MultiVideoReaderBase(Template):
         interleaved: bool = False
         parallel_exec: bool = False
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.data_collection: list[BaseVideoReader] = self._make_video_readers(attributes)
@@ -296,10 +301,12 @@ def multi_video_wrapper(cls: Type[MultiVideoWrapperType]) -> Type[MultiVideoRead
                 if not Path(vid_path).is_file():
                     self.logger.warning(f"{vid_path} is not a valid file path, will skip")
                     continue
-
-                attributes["video_file_path"] = vid_path
+                if isinstance(attributes, dict):
+                    attributes["video_file_path"] = vid_path
+                else:
+                    setattr(attributes, "video_file_path", vid_path)
                 template_cls = cls(attributes)
-                if template_cls.video_reader is None:
+                if getattr(template_cls, "video_reader", None) is None:
                     self.logger.warning(f"skipping video reader for {vid_path}, please verify path")
                     continue
                 video_readers.append(template_cls)
@@ -344,7 +351,7 @@ def live_video_reader_wrapper(cls: Template) -> Type[Template]:
             return batch_size
 
     @wraps(cls, updated=())
-    class LiveVideoReaderWrapper(cls):
+    class LiveVideoReaderWrapper(cls):  # ty: ignore[invalid-base]
         """
         Wrapper that enables live video reading in video reader templates.
         """

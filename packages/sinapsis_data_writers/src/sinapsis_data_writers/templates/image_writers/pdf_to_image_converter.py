@@ -63,10 +63,12 @@ class PDFToImage(Template):
         """
 
         pdf_path: str
-        root_dir : str | None = None
+        root_dir: str | None = None
         output_folder: str = "/artifacts"
         file_format: Literal["jpeg", "png", "tiff", "ppm"] = "png"
         dpi: int = 200
+
+    attributes: AttributesBaseModel
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initializes the PDFToImage template with given attributes.
@@ -75,8 +77,8 @@ class PDFToImage(Template):
             attributes (TemplateAttributeType): The attributes for the PDF to image conversion.
         """
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
-        output_folder = Path(self.attributes.root_dir / self.attributes.output_folder)
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        output_folder = Path(self.root_dir) / self.attributes.output_folder
         output_folder.mkdir(parents=True, exist_ok=True)
 
     def convert_to_images(self) -> list[ImagePacket]:

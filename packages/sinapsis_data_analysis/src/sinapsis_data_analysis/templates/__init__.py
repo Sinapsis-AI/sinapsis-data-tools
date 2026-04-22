@@ -10,7 +10,6 @@ _ADDITIONAL_TEMPLATE_MODULES = [
     f"{_root_lib_path}.training.sklearn_manifold",
     f"{_root_lib_path}.training.sklearn_train",
     f"{_root_lib_path}.training.xgboost_train",
-
 ]
 _template_lookup: dict = {
     "SKLearnInference": f"{_root_lib_path}.inference.sklearn_inference",
@@ -21,7 +20,7 @@ for t_module in _ADDITIONAL_TEMPLATE_MODULES:
     _template_lookup |= _import_template_package(t_module)
 
 
-def __getattr__(name: str) -> Template:
+def __getattr__(name: str) -> Template | None:
     if name in _template_lookup:
         module = importlib.import_module(_template_lookup[name])
         return getattr(module, name)

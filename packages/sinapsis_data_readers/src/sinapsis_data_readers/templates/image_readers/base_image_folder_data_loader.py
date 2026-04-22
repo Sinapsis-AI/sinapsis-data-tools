@@ -51,6 +51,8 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
         label_path_index: int = -2
         is_ground_truth: bool = False
 
+    attributes: AttributesBaseModel
+
     PACKET_ATT_NAME = "images"
 
     @staticmethod
@@ -115,7 +117,7 @@ class ImageBaseDataReader(_BaseDataReader, abc.ABC):
         Returns:
             list[str| path]: the path as string or Path object
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.data_dir.lstrip("/"))
+        full_path = os.path.join(self.root_dir, self.attributes.data_dir.lstrip("/"))
         data_items = [
             img_path if not return_as_str else str(img_path.resolve())
             for img_path in Path(full_path).glob(self.attributes.pattern)

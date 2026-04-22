@@ -8,7 +8,8 @@ from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.label_drawer import LabelDrawer
 
 BBoxDrawerUIProperties = LabelDrawer.UIProperties
-BBoxDrawerUIProperties.tags.extend([Tags.BBOX])
+if BBoxDrawerUIProperties.tags is not None:
+    BBoxDrawerUIProperties.tags.extend([Tags.BBOX])
 
 
 class BBoxDrawer(LabelDrawer):

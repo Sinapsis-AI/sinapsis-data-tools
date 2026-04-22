@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-
 from functools import cached_property
+from typing import cast
 
 import cv2
 import numpy as np
 from pydantic import BaseModel, ConfigDict, computed_field
-from sinapsis_core.data_containers.annotations import KeyPoint
+from sinapsis_core.data_containers.annotations import ImageAnnotations, KeyPoint, Segmentation
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
@@ -49,8 +49,20 @@ class MaskNonROIs(Template):
       class_name: MaskNonROIs
       template_input: InputTemplate
       attributes:
-        rois_to_keep: '[[657,619],[1220,580],[1343,733],[682,789],...]'
+        rois_to_keep:
+            - roi:
+            - x: 657
+                y: 619
+            - x: 1220
+                y: 580
+            - x: 1343
+                y: 733
+            - x: 682
+                y: 789
+            - roi:
+                -x ....;
         return_in_generic: false
+        return_as_mask: false
 
     """
 
@@ -78,6 +90,9 @@ class MaskNonROIs(Template):
 
         rois_to_keep: list[RegionOfInterest]
         return_in_generic: bool = False
+        return_as_mask: bool = False
+
+    attributes: AttributesBaseModel
 
     def mask_non_rois(self, image: np.ndarray, use_bitwise: bool = True) -> np.ndarray:
         """
@@ -103,9 +118,15 @@ class MaskNonROIs(Template):
     def execute(self, container: DataContainer) -> DataContainer:
         for image_packet in container.images:
             image = image_packet.content
-            masked_img = self.mask_non_rois(image)
-            if self.attributes.return_in_generic:
-                image_packet.generic_data[self.class_name] = masked_img
+            if self.attributes.return_as_mask:
+                mask = np.zeros(image.shape[:2], dtype=np.uint8)
+                for roi in self.attributes.rois_to_keep:
+                    cv2.fillPoly(mask, [roi.as_numpy_array], (1, 1, 1))
+                    image_packet.annotations.append(ImageAnnotations(segmentation=Segmentation(mask=mask)))
             else:
-                image_packet.content = masked_img
+                masked_img = self.mask_non_rois(image)
+                if self.attributes.return_in_generic:
+                    image_packet.generic_data[cast(str, self.class_name)] = masked_img
+                else:
+                    image_packet.content = masked_img
         return container

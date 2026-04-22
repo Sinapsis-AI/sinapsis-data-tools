@@ -15,7 +15,7 @@ _template_lookup = {
 }
 
 
-def __getattr__(name: str) -> Callable:  # type:ignore
+def __getattr__(name: str) -> Callable:
     if name in _template_lookup:
         module = importlib.import_module(_template_lookup[name])
         return getattr(module, name)

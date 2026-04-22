@@ -17,13 +17,13 @@ from sinapsis_data_writers.helpers.tags import Tags
 FORMATTED_ANNOTATIONS = list[dict]
 
 
-class GenericDataJSONWriter(Template):  # type:ignore
+class GenericDataJSONWriter(Template):
     """
     Base Generic Data Writer that saves generic data to a specified format.
     This template defines the base classes for storing data in a structured format
     """
 
-    class AttributesBaseModel(TemplateAttributes):  # type:ignore
+    class AttributesBaseModel(TemplateAttributes):
         """Attributes for the Base Generic Data Writer.
 
         Attributes:
@@ -40,6 +40,8 @@ class GenericDataJSONWriter(Template):  # type:ignore
         extension: str = "json"
         generic_key: str
 
+    attributes: AttributesBaseModel
+
     UIProperties = UIPropertiesMetadata(
         output_type=OutputTypes.TEXT,
         tags=[Tags.JSON, Tags.WRITERS],
@@ -48,7 +50,7 @@ class GenericDataJSONWriter(Template):  # type:ignore
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initialize the writer and prepare to accumulate data."""
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.data: dict[str, Any] = {}
 
     def save_data(self, data: dict[str, Any]) -> None:
@@ -57,7 +59,7 @@ class GenericDataJSONWriter(Template):  # type:ignore
         Args:
             data (dict[str, Any]): the dictionary with data from the data packets
         """
-        save_path = Path(self.attributes.root_dir) / self.attributes.save_dir
+        save_path = Path(self.root_dir) / self.attributes.save_dir
         save_path.mkdir(parents=True, exist_ok=True)
         output_file = save_path / f"{Path(self.attributes.output_file).stem}.{self.attributes.extension}"
         with open(output_file, "w", encoding="utf-8") as f:

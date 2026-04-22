@@ -29,7 +29,7 @@ def perform_k_means_analysis(feature_vec: np.ndarray) -> tuple[np.ndarray, np.nd
     return labels, reduced_vectors
 
 
-def pre_process_images(images: list[ImagePacket], size: int = 28) -> np.ndarray | None:
+def pre_process_images(images: list[ImagePacket], size: int = 28) -> np.ndarray:
     """Resizes and flatten images to homogenize them
 
     Args:

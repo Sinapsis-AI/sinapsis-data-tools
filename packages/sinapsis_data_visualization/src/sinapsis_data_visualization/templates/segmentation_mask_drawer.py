@@ -7,7 +7,8 @@ from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
 
 SegmentationMaskDrawerUIProperties = BBoxDrawer.UIProperties
-SegmentationMaskDrawerUIProperties.tags.extend([Tags.SEGMENTATION, Tags.MASKS])
+if SegmentationMaskDrawerUIProperties.tags is not None:
+    SegmentationMaskDrawerUIProperties.tags.extend([Tags.SEGMENTATION, Tags.MASKS])
 
 
 class SegmentationMaskDrawer(BBoxDrawer):
@@ -58,6 +59,8 @@ class SegmentationMaskDrawer(BBoxDrawer):
         """
 
         alpha: float = 0.5
+
+    attributes: AttributesBaseModel
 
     def set_drawing_strategy(self) -> None:
         """

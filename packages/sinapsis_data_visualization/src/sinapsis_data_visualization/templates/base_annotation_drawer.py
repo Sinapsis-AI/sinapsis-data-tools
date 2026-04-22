@@ -53,6 +53,8 @@ class BaseAnnotationDrawer(Template, abc.ABC):
         overwrite: bool = False
         randomized_color: bool = True
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initializes the Image Annotation Drawer with the given attributes."""
         super().__init__(attributes)
@@ -88,7 +90,7 @@ class BaseAnnotationDrawer(Template, abc.ABC):
         """
         return get_color_rgb_tuple(
             color_map=self.COLOR_MAP,
-            class_id=ann.label,
+            class_id=int(ann.label) if ann.label is not None else None,
             randomized=self.attributes.randomized_color,
         )
 
@@ -154,7 +156,7 @@ class BaseAnnotationDrawer(Template, abc.ABC):
                         ImagePacket(
                             content=annotated_image,
                             color_space=image_packet.color_space,
-                            source=f"a_{Path(image_packet.source).name}",
+                            source=f"a_{Path(getattr(image_packet, 'source')).name}",
                         )
                     )
             container.images.extend(annotated_images)

@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-readers"
-version = "0.1.28"
+version = "0.1.29"
 description = "Templates to read data in different formats"
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 
@@ -23,7 +23,7 @@ coco-dataset = ["pycocotools>=2.0.8"]
 soundfile = ["soundfile>=0.12.1"]
 pydub = ["pydub>=0.25.1", "soundfile>=0.12.1"]
 all = [
-    "sinapsis-data-readers[coco-dataset,nvidia-dali,pydub,sklearn-datasets,sktime-datareaders,soundfile,torch-codec,opencv,ffmpeg]",
+    "sinapsis-data-readers[coco-dataset,nvidia-dali,pydub,sklearn-datasets,sktime-datareaders,soundfile,torch-codec,opencv,ffmpeg,kornia]",
 ]
 opencv = [
     "opencv-python-headless>=4.11.0.86",

@@ -4,17 +4,18 @@ from typing import Sequence
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure
 from sinapsis_core.utils.logging_utils import sinapsis_logger
 from sklearn.metrics import ConfusionMatrixDisplay
 
 
 def plot_distribution(
-    figure: matplotlib.figure.Figure,
+    figure: Figure,
     labels: Sequence[str] | np.ndarray,
     counts: list[float] | np.ndarray,
     plot_type: str,
     kwargs: dict,
-) -> matplotlib.figure.Figure:
+) -> Figure:
     """
     Base method to plot a distribution.
 
@@ -168,7 +169,7 @@ def plot_confusion_matrix(labels: Sequence[str], counts: np.ndarray, kwargs: dic
         kwargs (dict): Additional keyword arguments (cmap, etc.)
     """
 
-    cmap = kwargs.pop("cmap", plt.cm.Blues)
+    cmap = kwargs.pop("cmap", matplotlib.colormaps["Blues"])
     disp = ConfusionMatrixDisplay(confusion_matrix=counts, display_labels=labels)
     disp.plot(cmap=cmap, **kwargs)
     plt.tight_layout()

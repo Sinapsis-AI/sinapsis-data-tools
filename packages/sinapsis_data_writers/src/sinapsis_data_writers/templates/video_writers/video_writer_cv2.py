@@ -10,6 +10,8 @@ from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import c
 from sinapsis_data_writers.helpers.tags import Tags
 from sinapsis_data_writers.templates.video_writers.base_video_writer import BaseVideoWriter
 
+base_tags = BaseVideoWriter.UIProperties.tags if BaseVideoWriter.UIProperties.tags is not None else []
+
 
 class VideoWriterCV2(BaseVideoWriter):
     """
@@ -38,11 +40,13 @@ class VideoWriterCV2(BaseVideoWriter):
     """
 
     UIProperties = UIPropertiesMetadata(
-        category="OpenCV", output_type=OutputTypes.VIDEO, tags=[Tags.OPENCV, *BaseVideoWriter.UIProperties.tags]
+        category="OpenCV", output_type=OutputTypes.VIDEO, tags=[Tags.OPENCV, *base_tags]
     )
 
     class AttributesBaseModel(BaseVideoWriter.AttributesBaseModel):
         codec: Literal["mp4v", "avc1"] = "mp4v"
+
+    attributes: AttributesBaseModel
 
     SUPPORTED_CODECS: set[str] = {"mp4v", "avc1"}  # noqa: RUF012
 
@@ -55,8 +59,8 @@ class VideoWriterCV2(BaseVideoWriter):
         Returns:
             cv2.VideoWriter: The initialized OpenCV video writer object.
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
-        fourcc = cv2.VideoWriter_fourcc(*self.attributes.codec)
+        full_path = os.path.join(self.root_dir, self.attributes.destination_path)
+        fourcc = cv2.VideoWriter_fourcc(*self.attributes.codec)  # ty: ignore[unresolved-attribute]
         return cv2.VideoWriter(
             full_path,
             fourcc,

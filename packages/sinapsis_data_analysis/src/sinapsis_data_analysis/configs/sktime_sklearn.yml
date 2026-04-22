@@ -12,9 +12,7 @@ templates:
   attributes:
     split_dataset: true
     train_size: 0.8
-    load_airline:
-      return_X_y: false
-      as_frame: true
+    load_airline: {}
 
 - template_name: NaiveForecasterWrapper
   class_name: NaiveForecasterWrapper

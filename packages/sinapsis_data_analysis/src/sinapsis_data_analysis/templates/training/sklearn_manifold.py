@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel, ConfigDict
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
@@ -44,7 +43,8 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
             target_key (str): Key of the generic field where data is stored.
         """
 
-        target_key : str =  'target'
+        target_key: str = "target"
+
     WrapperEntry = WrapperEntryConfig(
         wrapped_object=manifold,
         signature_from_doc_string=True,
@@ -56,7 +56,7 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         category="SKLearn",
         tags=[Tags.DATA_ANALYSIS, Tags.DYNAMIC, Tags.MANIFOLD, Tags.SKLEARN, Tags.MODELS],
     )
-
+    attributes: AttributesBaseModel
 
     def __init__(self, attributes: TemplateAttributes) -> None:
         super().__init__(attributes)
@@ -89,7 +89,6 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         """
         return container.data_frames
 
-
     def process_dataset(self, dataset: list) -> ManifoldResults | None:
         """
         Extracts the training data, reshapes it, and applies the
@@ -113,11 +112,12 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
                 y_train = set.content[self.attributes.target_key]
                 x_train = set.content.pop(self.attributes.target_key)
 
+        if x_train is not None and y_train is not None:
+            x_train_reshaped = self.reshape_arrays(x_train)
+            x_transformed = self.manifold_model.fit_transform(x_train_reshaped)  # ty: ignore[unresolved-attribute]
 
-        x_train_reshaped = self.reshape_arrays(x_train)
-        x_transformed = self.manifold_model.fit_transform(x_train_reshaped)
-
-        return ManifoldResults(labels=y_train, x_transformed=x_transformed)
+            return ManifoldResults(labels=y_train, x_transformed=x_transformed)
+        return None
 
     def execute(self, container: DataContainer) -> DataContainer:
         """
@@ -143,7 +143,7 @@ class SKLearnManifold(BaseDynamicWrapperTemplate):
         return container
 
 
-def __getattr__(name: str) -> Template:
+def __getattr__(name: str) -> type[BaseDynamicWrapperTemplate]:
     """
     Only create a template if it's imported, this avoids creating all the base models for all templates
     and potential import errors due to not available packages.

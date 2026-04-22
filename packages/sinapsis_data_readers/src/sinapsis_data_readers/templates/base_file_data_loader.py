@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import abc
-from typing import Generator
+from typing import Any, Generator
 
 from sinapsis_core.data_containers.data_packet import DataContainer, Packet
 from sinapsis_core.template_base import Template
@@ -81,7 +81,7 @@ class _BaseDataReader(Template, abc.ABC):
         __doc__ = f"""
         {base_attributes_documentation()}
         """
-        root_dir : str | None = None
+        root_dir: str | None = None
         data_dir: str
         pattern: str = "**/*"
         batch_size: int = 1
@@ -89,17 +89,18 @@ class _BaseDataReader(Template, abc.ABC):
         samples_to_load: int = -1
         load_on_init: bool = False
 
+    attributes: AttributesBaseModel
+
     PACKET_ATT_NAME: str
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.counter = 0
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.data_collection = self.make_data_entries()
 
-
     @abc.abstractmethod
-    def make_data_entries(self) -> list[Packet]:
+    def make_data_entries(self) -> list[Any]:
         """
         This method creates the data entries for this template. Each data entry
         consists of a `Packet` type.
@@ -109,7 +110,7 @@ class _BaseDataReader(Template, abc.ABC):
             list[Packet]: list of ImagePacket
         """
 
-    def read_packet_content(self, data_packet: Packet) -> None:
+    def read_packet_content(self, data_packet: Any) -> None:
         """
         Sets the value for data_packet.content where data packets can be ImagePacket|TextPacket...
 
@@ -142,7 +143,7 @@ class _BaseDataReader(Template, abc.ABC):
                 )
                 yield image_packets
 
-    def __next__(self) -> StopIteration | Generator:  # type:ignore #the yield method returns the Generator object
+    def __next__(self) -> StopIteration | Generator:
         if not self.has_elements():
             raise StopIteration("No more data to load")
         if self.attributes.batch_size == -1:

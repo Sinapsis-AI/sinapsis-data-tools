@@ -5,10 +5,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image
+from matplotlib.figure import Figure
 from pydantic import Field
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
@@ -90,6 +90,7 @@ class BaseVisualizationTemplate(Template, ABC):
         tags=[Tags.IMAGE, Tags.MATPLOTLIB, Tags.VISUALIZATION],
     )
     AttributesBaseModel = BasePlotAttributes
+    attributes: BasePlotAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -97,7 +98,7 @@ class BaseVisualizationTemplate(Template, ABC):
         if self.attributes.save_image_dir and not os.path.exists(self.attributes.save_image_dir):
             os.makedirs(self.attributes.save_image_dir)
 
-    def create_figure(self, text: str | None = None, rotate_x_ticks: bool = False) -> matplotlib.figure.Figure:
+    def create_figure(self, text: str | None = None, rotate_x_ticks: bool = False) -> Figure:
         """
         Creates a matplotlib figure with basic configuration.
 
@@ -106,7 +107,7 @@ class BaseVisualizationTemplate(Template, ABC):
             rotate_x_ticks (bool): Whether to rotate x-axis tick labels.
 
         Returns:
-            matplotlib.figure.Figure: The configured figure.
+            Figure: The configured figure.
         """
         figure = plt.figure(figsize=(self.attributes.fig_width, self.attributes.fig_height))
         plt.xlabel(self.attributes.x_label or "X-Axis")
@@ -123,7 +124,7 @@ class BaseVisualizationTemplate(Template, ABC):
 
     def save_figure(
         self,
-        figure: matplotlib.figure.Figure,
+        figure: Figure,
         name: str,
         container_id: str | None = None,
     ) -> str:
@@ -131,7 +132,7 @@ class BaseVisualizationTemplate(Template, ABC):
         Saves the figure to disk and records the path.
 
         Args:
-            figure (matplotlib.figure.Figure): The figure to save.
+            figure (Figure): The figure to save.
             name (str): Base name for the figure file.
             container_id (str | None): Optional container ID to append to filename.
 
@@ -156,13 +157,13 @@ class BaseVisualizationTemplate(Template, ABC):
 
         return fig_path
 
-    def add_figure_to_container(self, container: DataContainer, figure: matplotlib.figure.Figure, name: str) -> None:
+    def add_figure_to_container(self, container: DataContainer, figure: Figure, name: str) -> None:
         """
         Adds the figure to the container as an image packet if requested.
 
         Args:
             container (DataContainer): The data container to update.
-            figure (matplotlib.figure.Figure): The figure to add.
+            figure (Figure): The figure to add.
             name (str): Name key for the figure.
         """
         if self.attributes.add_to_image_packets:
@@ -185,7 +186,7 @@ class BaseVisualizationTemplate(Template, ABC):
         counts: list[float] | np.ndarray,
         text: str | None = None,
         rotate_x_ticks: bool = False,
-    ) -> matplotlib.figure.Figure:
+    ) -> Figure:
         """
         Creates a figure, plots data, saves it, and adds it to the container.
 
@@ -198,7 +199,7 @@ class BaseVisualizationTemplate(Template, ABC):
             rotate_x_ticks (bool): Whether to rotate x-axis tick labels.
 
         Returns:
-            matplotlib.figure.Figure: The created figure.
+            Figure: The created figure.
         """
         figure = self.create_figure(text=text, rotate_x_ticks=rotate_x_ticks)
 
@@ -211,7 +212,7 @@ class BaseVisualizationTemplate(Template, ABC):
         )
 
         plot_name = f"{plot_type}" if not text else f"{plot_type}_{text}"
-        self.save_figure(figure, plot_name, container.container_id)
+        self.save_figure(figure, plot_name, str(container.container_id))
         self.add_figure_to_container(container, figure, plot_name)
         return figure
 

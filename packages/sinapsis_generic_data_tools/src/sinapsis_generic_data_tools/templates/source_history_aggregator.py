@@ -43,6 +43,8 @@ class SourceHistoryAggregator(Template):
         )
         context_max_length: int = 5
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
 

@@ -38,7 +38,8 @@ def read_image_file(file_path: str | PosixPath | bytes) -> Tensor:
 
 
 FolderImageDatasetKorniaUIProperties = ImageBaseDataReader.UIProperties
-FolderImageDatasetKorniaUIProperties.tags.extend([Tags.KORNIA, Tags.OPENCV, Tags.DATASET])
+if FolderImageDatasetKorniaUIProperties.tags is not None:
+    FolderImageDatasetKorniaUIProperties.tags.extend([Tags.KORNIA, Tags.OPENCV, Tags.DATASET])
 
 
 class FolderImageDatasetKornia(ImageBaseDataReader):

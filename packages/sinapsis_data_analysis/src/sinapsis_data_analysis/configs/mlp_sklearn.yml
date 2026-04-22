@@ -28,7 +28,7 @@ templates:
       activation: 'relu'
       solver: 'adam'
       alpha: 0.0001
-      batch_size: 'auto'
+      batch_size: "2"
       learning_rate: 'constant'
       learning_rate_init: 0.001
       max_iter: 200

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import joblib
-from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import WrapperEntryConfig
-from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
+from sinapsis_core.template_base.dynamic_template_factory import BaseDynamicWrapperTemplate, make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
 from sinapsis_data_analysis.helpers.excluded_models import (
     excluded_cluster_models,
@@ -54,7 +53,7 @@ class SKLearnLinearModelsTrain(MLBaseTraining):
         category="SKLearn", tags=[Tags.DATA_ANALYSIS, Tags.LINEAR_REGRESSION, Tags.MODELS, Tags.SKLEARN, Tags.TRAINING]
     )
 
-    def _save_model_implementation(self, full_path:str) -> None:
+    def _save_model_implementation(self, full_path: str) -> None:
         """
         Implements the abstract method from the base class to
         save the model to the path specified in attributes.
@@ -213,7 +212,6 @@ class SKLearnSVMModelsTrain(SKLearnLinearModelsTrain):
     )
 
 
-
 class SKLearnClusterModelsTrain(SKLearnLinearModelsTrain):
     """
     This template dynamically wraps sklearn's svm module,
@@ -249,9 +247,7 @@ class SKLearnClusterModelsTrain(SKLearnLinearModelsTrain):
     )
 
 
-
-
-def __getattr__(name: str) -> Template:
+def __getattr__(name: str) -> type[BaseDynamicWrapperTemplate]:
     """
     Only create a template if it's imported, this avoids creating all the base models for all templates
     and potential import errors due to not available packages.
@@ -277,7 +273,7 @@ __all__ = (
     + SKLearnNNModelsTrain.WrapperEntry.module_att_names
     + SKLearnTreeModelsTrain.WrapperEntry.module_att_names
     + SKLearnSVMModelsTrain.WrapperEntry.module_att_names
-+ SKLearnClusterModelsTrain.WrapperEntry.module_att_names
+    + SKLearnClusterModelsTrain.WrapperEntry.module_att_names
 )
 
 

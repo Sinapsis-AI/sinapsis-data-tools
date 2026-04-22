@@ -2,7 +2,7 @@
 from enum import Enum
 
 
-class Tags(Enum):
+class Tags(str, Enum):
     DATA_ANALYSIS = "data_analysis"
     DYNAMIC = "dynamic"
     INFERENCE = "inference"

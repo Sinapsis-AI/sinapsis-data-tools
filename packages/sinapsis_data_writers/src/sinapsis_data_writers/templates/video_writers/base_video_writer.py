@@ -2,7 +2,7 @@
 
 import abc
 import os
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
@@ -71,9 +71,11 @@ class BaseVideoWriter(Template, abc.ABC):
         codec: Literal["mp4v", "avc1", "hevc_cuvid", "h264_cuvid", "hevc", "h264_nvenc", "hevc_nvenc"]
         save_image_batch: bool = False
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.video_writer = None
         self.color_space = None
 
@@ -129,10 +131,10 @@ class BaseVideoWriter(Template, abc.ABC):
         """
         if self.video_writer is None and container.images:
             first_image = container.images[0]
-            if len(first_image.shape) == 2:
-                height, width = first_image.shape
+            if len(cast(tuple, first_image.shape)) == 2:
+                height, width = cast(tuple, first_image.shape)
             else:
-                height, width, _ = first_image.shape
+                height, width, _ = cast(tuple, first_image.shape)
             self.color_space = first_image.color_space
             self.attributes.height = height
             self.attributes.width = width
@@ -147,7 +149,7 @@ class BaseVideoWriter(Template, abc.ABC):
         Returns:
             DataContainer: The processed data container.
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
+        full_path = os.path.join(self.root_dir, self.attributes.destination_path)
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         self.init_if_needed(container)
         for image_packet in container.images:

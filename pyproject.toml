@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-data-tools"
-version = "0.2.29"
+version = "0.2.31"
 description = "Module that contains different packages to perform data-related operations through Sinapsis templates."
 authors = [{ name = "SinapsisAI", email = "dev@sinapsis.tech" }]
 dependencies = [
@@ -67,6 +67,7 @@ show-fixes = true
 dev = [
     "ruff>=0.8.3",
     "pre-commit>=4.0.1",
+    "ty>=0.0.31",
 ]
 [build-system]
 requires = ["setuptools"]

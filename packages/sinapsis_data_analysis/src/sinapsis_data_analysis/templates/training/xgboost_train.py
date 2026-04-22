@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import xgboost as xgb
-from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import WrapperEntryConfig
-from sinapsis_core.template_base.dynamic_template_factory import make_dynamic_template
+from sinapsis_core.template_base.dynamic_template_factory import BaseDynamicWrapperTemplate, make_dynamic_template
 from sinapsis_core.utils.env_var_keys import SINAPSIS_BUILD_DOCS
 from sinapsis_data_analysis.helpers.tags import Tags
 from sinapsis_data_analysis.templates.training.sklearn_train import SKLearnLinearModelsTrain
@@ -61,7 +60,7 @@ class XGBoostModelsTraining(SKLearnLinearModelsTrain):
     )
 
 
-def __getattr__(name: str) -> Template:
+def __getattr__(name: str) -> type[BaseDynamicWrapperTemplate]:
     if name in XGBoostModelsTraining.WrapperEntry.module_att_names:
         return make_dynamic_template(name, XGBoostModelsTraining)
     raise AttributeError(f"template `{name}` not found in {__name__}")

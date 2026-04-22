@@ -3,7 +3,7 @@
 https://github.com/kkroening/ffmpeg-python"""
 
 import os
-from typing import Literal
+from typing import Any, Literal
 
 import ffmpeg
 import numpy as np
@@ -13,6 +13,8 @@ from sinapsis_generic_data_tools.helpers.image_color_space_converter_cv import c
 
 from sinapsis_data_writers.helpers.tags import Tags
 from sinapsis_data_writers.templates.video_writers.base_video_writer import BaseVideoWriter
+
+base_tags = BaseVideoWriter.UIProperties.tags if BaseVideoWriter.UIProperties.tags is not None else []
 
 
 class VideoWriterFFMPEG(BaseVideoWriter):
@@ -42,24 +44,26 @@ class VideoWriterFFMPEG(BaseVideoWriter):
     UIProperties = UIPropertiesMetadata(
         category="FFMPEG",
         output_type=OutputTypes.VIDEO,
-        tags=[Tags.FFMPEG, *BaseVideoWriter.UIProperties.tags],
+        tags=[Tags.FFMPEG, *base_tags],
     )
 
     class AttributesBaseModel(BaseVideoWriter.AttributesBaseModel):
         codec: Literal["hevc_nvenc", "hevc_cuvid", "h264_cuvid", "hevc", "h264_nvenc"] = "hevc_nvenc"
+
+    attributes: AttributesBaseModel
 
     SUPPORTED_CODECS: set[str] = {"hevc_nvenc", "hevc_cuvid", "h264_cuvid", "hevc", "h264_nvenc"}  # noqa: RUF012
 
     def get_supported_codecs(self) -> set[str]:
         return self.SUPPORTED_CODECS
 
-    def make_video_writer(self) -> ffmpeg.input:
+    def make_video_writer(self) -> Any:
         """Creates a video writer using ffmpeg.
 
         Returns:
             Any: The initialized ffmpeg video writer object.
         """
-        full_path  = os.path.join(self.attributes.root_dir, self.attributes.destination_path)
+        full_path = os.path.join(self.root_dir, self.attributes.destination_path)
         video_writer = (
             ffmpeg.input(
                 "pipe:",

@@ -53,6 +53,8 @@ class ImageColorConversionNumpy(Template):
 
         target_color_space: ImageColor
 
+    attributes: AttributesBaseModel
+
     def execute(self, container: DataContainer) -> DataContainer:
         """Executes the color space conversion on all image packets within the provided DataContainer.
 

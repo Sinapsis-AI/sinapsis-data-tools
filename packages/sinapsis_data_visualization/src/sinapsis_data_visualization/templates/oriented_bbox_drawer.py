@@ -12,7 +12,8 @@ from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
 
 OrientedBBoxDrawerUIProperties = BBoxDrawer.UIProperties
-OrientedBBoxDrawerUIProperties.tags.extend([Tags.ORIENTED_BBOX])
+if OrientedBBoxDrawerUIProperties.tags is not None:
+    OrientedBBoxDrawerUIProperties.tags.extend([Tags.ORIENTED_BBOX])
 
 
 class OrientedBBoxDrawer(BBoxDrawer):

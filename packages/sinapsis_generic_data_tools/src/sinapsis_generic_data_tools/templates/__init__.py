@@ -5,11 +5,12 @@ from typing import Callable
 _root_lib_path = "sinapsis_generic_data_tools.templates"
 
 _template_lookup = {
-    "ImageColorConversion": f"{_root_lib_path}.image_color_conversion",
+    "ImageColorConversionNumpy": f"{_root_lib_path}.image_color_conversion_np",
     "MaskNonROIs": f"{_root_lib_path}.mask_non_roi",
     "PacketBufferQueue": f"{_root_lib_path}.packet_buffer_queue",
     "SourceHistoryAggregator": f"{_root_lib_path}.source_history_aggregator",
     "TextContentFilter": f"{_root_lib_path}.text_content_filter",
+    "ContextChunker": f"{_root_lib_path}.context_chunker",
 }
 
 

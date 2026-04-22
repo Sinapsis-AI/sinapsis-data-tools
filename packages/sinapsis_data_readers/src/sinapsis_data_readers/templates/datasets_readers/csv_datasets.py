@@ -11,14 +11,16 @@ from sinapsis_data_readers.helpers.csv_reader import read_file
 
 class CSVDatasetReader(Template):
     class AttributesBaseModel(TemplateAttributes):
-        root_dir : str | None = None
+        root_dir: str | None = None
         path_to_csv: str
         store_as_time_series: bool = False
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
-        self.csv_file = read_file(os.path.join(self.attributes.root_dir, self.attributes.path_to_csv))
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.csv_file = read_file(os.path.join(self.root_dir, self.attributes.path_to_csv))
 
     def execute(self, container: DataContainer) -> DataContainer:
         if self.attributes.store_as_time_series:

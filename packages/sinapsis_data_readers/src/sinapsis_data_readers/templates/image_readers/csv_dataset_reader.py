@@ -5,7 +5,7 @@ import os
 
 import numpy as np
 from sinapsis_core.data_containers.annotations import ImageAnnotations
-from sinapsis_core.data_containers.data_packet import ImagePacket
+from sinapsis_core.data_containers.data_packet import ImageColor, ImagePacket
 from sinapsis_core.template_base.base_models import (
     OutputTypes,
     TemplateAttributeType,
@@ -57,7 +57,7 @@ class CSVImageDataset(_BaseDataReader):
         category="CSV", output_type=OutputTypes.IMAGE, tags=[Tags.CSV, Tags.IMAGE, Tags.DATASET, Tags.READERS]
     )
 
-    class AttributesBaseModel(_BaseDataReader.AttributesBaseModel):  # type:ignore
+    class AttributesBaseModel(_BaseDataReader.AttributesBaseModel):
         """Attributes for the CSV Image template.
 
         Attributes:
@@ -67,6 +67,9 @@ class CSVImageDataset(_BaseDataReader):
 
         height: int = 28
         width: int = 28
+        color_space: ImageColor | None = None
+
+    attributes: AttributesBaseModel
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """
@@ -84,7 +87,7 @@ class CSVImageDataset(_BaseDataReader):
         self.data_points = read_file(full_path)
         super().__init__(attributes)
 
-    def read_packet_content(self, packet: ImagePacket) -> None:
+    def read_packet_content(self, data_packet: ImagePacket) -> None:
         """
         Reads and processes the content of a given ImagePacket by reshaping the image data.
 
@@ -94,9 +97,9 @@ class CSVImageDataset(_BaseDataReader):
         Raises:
             ContentNotSetException: If the content of the packet is not properly set.
         """
-        image = np.array(packet.content, dtype="uint8")
+        image = np.array(data_packet.content, dtype="uint8")
         image = image.reshape(self.attributes.height, self.attributes.width)
-        packet.content = image
+        data_packet.content = image
 
     def make_data_entries(self) -> list[ImagePacket]:
         """

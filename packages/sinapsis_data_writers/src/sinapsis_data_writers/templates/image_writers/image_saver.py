@@ -86,9 +86,11 @@ class ImageSaver(Template):
         save_mask_crops: bool = False
         min_bbox_dim: int = 5
 
-    def __init__(self, attributes:TemplateAttributeType)->None:
+    attributes: AttributesBaseModel
+
+    def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
 
     @staticmethod
     def image_has_annotations(image: ImagePacket) -> bool:
@@ -182,18 +184,19 @@ class ImageSaver(Template):
             DataContainer: The modified container.
         """
         for image_packet in container.images:
-            img_destination = Path(self.attributes.root_dir) / self.attributes.save_dir / Path(image_packet.source).name
-            # Save the full image if specified
-            path_to_source = None
-            if self.attributes.save_full_image:
-                path_to_source = self.save_image(img_destination, image_packet)
+            if image_packet.source is not None:
+                img_destination = Path(self.root_dir) / self.attributes.save_dir / Path(image_packet.source).name
+                # Save the full image if specified
+                path_to_source = None
+                if self.attributes.save_full_image:
+                    path_to_source = self.save_image(img_destination, image_packet)
 
-            # Save bounding box crops if specified and annotations exist
-            if self.attributes.save_bbox_crops and image_packet.annotations:
-                self.save_ann_box_crops(image_packet, img_destination)
+                # Save bounding box crops if specified and annotations exist
+                if self.attributes.save_bbox_crops and image_packet.annotations:
+                    self.save_ann_box_crops(image_packet, img_destination)
 
-            # Update the source of the image packet with the saved path
-            if path_to_source:
-                image_packet.source = str(path_to_source)
+                # Update the source of the image packet with the saved path
+                if path_to_source:
+                    image_packet.source = str(path_to_source)
 
         return container

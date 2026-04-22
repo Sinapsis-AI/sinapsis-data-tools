@@ -28,7 +28,8 @@ from sinapsis_data_visualization.templates.base_annotation_drawer import (
 )
 
 LabelDrawerUIProperties = BaseAnnotationDrawer.UIProperties
-LabelDrawerUIProperties.tags.extend([Tags.LABELS, Tags.CLASSIFICATION])
+if LabelDrawerUIProperties.tags is not None:
+    LabelDrawerUIProperties.tags.extend([Tags.LABELS, Tags.CLASSIFICATION])
 
 
 class LabelDrawer(BaseAnnotationDrawer):
@@ -96,6 +97,8 @@ class LabelDrawer(BaseAnnotationDrawer):
         def model_post_init(self, _: Any) -> None:
             if isinstance(self.text_style, dict):
                 self.text_style = TextStyle(**self.text_style)
+
+    attributes: AttributesBaseModel
 
     def set_drawing_strategy(self) -> None:
         """Appends the annotation to be drawn (i.e., label)
@@ -270,7 +273,7 @@ class LabelDrawer(BaseAnnotationDrawer):
         image = image_info[0]
         font_scale, font_thickness = get_dynamic_text_properties(image)
         self.attributes.text_style.font_scale = font_scale
-        self.attributes.text_style.thickness = font_thickness
+        self.attributes.text_style.thickness = int(font_thickness)
 
         image = self.add_label(image_info=image_info, class_label=class_label, spacing=int(5 * font_scale))
 

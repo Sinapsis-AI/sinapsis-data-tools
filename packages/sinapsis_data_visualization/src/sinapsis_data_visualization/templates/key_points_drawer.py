@@ -11,7 +11,8 @@ from sinapsis_data_visualization.helpers.tags import Tags
 from sinapsis_data_visualization.templates.bbox_drawer import BBoxDrawer
 
 KeyPointsDrawerUIProperties = BBoxDrawer.UIProperties
-KeyPointsDrawerUIProperties.tags.extend([Tags.KEYPOINTS])
+if KeyPointsDrawerUIProperties.tags is not None:
+    KeyPointsDrawerUIProperties.tags.extend([Tags.KEYPOINTS])
 
 
 class KeyPointsDrawer(BBoxDrawer):

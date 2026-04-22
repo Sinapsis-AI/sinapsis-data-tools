@@ -64,10 +64,11 @@ class AudioWriterSoundfile(Template):
         root_dir: str | None = None
         extension: Literal["wav", "flac", "aif", "raw"] = "wav"
 
-    def __init__(self, attributes: TemplateAttributeType)->None:
-        super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+    attributes: AttributesBaseModel
 
+    def __init__(self, attributes: TemplateAttributeType) -> None:
+        super().__init__(attributes)
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
 
     @staticmethod
     def _process_audio_packet(audio_packet: AudioPacket) -> np.ndarray:
@@ -89,7 +90,7 @@ class AudioWriterSoundfile(Template):
         Returns:
             str: Path to the destination directory.
         """
-        destination_dir = os.path.join(self.attributes.root_dir, self.attributes.save_dir)
+        destination_dir = os.path.join(self.root_dir, self.attributes.save_dir)
         os.makedirs(destination_dir, exist_ok=True)
         return destination_dir
 
@@ -104,7 +105,7 @@ class AudioWriterSoundfile(Template):
         Returns:
             str: Full path to the destination file.
         """
-        filename = f"{audio_packet.source}-{audio_packet.id.split('-')[0]}"
+        filename = f"{audio_packet.source}-{str(audio_packet.id).split('-')[0]}"
         destination_path = os.path.join(destination_dir, f"{filename}.{self.attributes.extension}")
         return destination_path
 

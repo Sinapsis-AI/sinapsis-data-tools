@@ -14,7 +14,8 @@ from sinapsis_data_readers.templates.video_readers.base_video_reader import (
 )
 
 VideoReaderTorchCodecUIProperties = BaseVideoReader.UIProperties
-VideoReaderTorchCodecUIProperties.tags.extend([Tags.TORCHVIDEO])
+if VideoReaderTorchCodecUIProperties.tags is not None:
+    VideoReaderTorchCodecUIProperties.tags.extend([Tags.TORCHVIDEO])
 
 
 class VideoReaderTorchCodec(BaseVideoReader):
@@ -58,13 +59,17 @@ class VideoReaderTorchCodec(BaseVideoReader):
         Raises:
             ValueError: If there is an issue decoding the video file.
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
+        video_path = self.attributes.video_file_path if isinstance(self.attributes.video_file_path, str) else ""
+        full_path = os.path.join(self.root_dir, video_path)
+
         try:
             video_reader = SimpleVideoDecoder(full_path)
         except ValueError as e:
             self.logger.warning(f"Was unable to decode video file: {e}")
             return NotSet
-        return video_reader, video_reader.metadata.num_frames
+        if video_reader.metadata.num_frames is not None:
+            return video_reader, video_reader.metadata.num_frames
+        return NotSet
 
     def close_video_reader(self) -> None:
         """Clean up resources associated with the video reader."""
@@ -95,7 +100,7 @@ class VideoReaderTorchCodec(BaseVideoReader):
         super().reset_state(template_name)
 
 
-@multi_video_wrapper
+@multi_video_wrapper  # ty: ignore[invalid-argument-type]
 class MultiVideoReaderTorchCodec(VideoReaderTorchCodec):
     """Template to process multiple videos using Torch Codec
     The template extends the functionality of the VideoReaderTorchCodec template

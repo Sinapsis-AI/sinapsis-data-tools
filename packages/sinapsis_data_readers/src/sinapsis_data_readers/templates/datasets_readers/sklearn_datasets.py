@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from typing import Any
 
 import numpy as np
 import pandas as pd
 from sinapsis_core.data_containers.data_packet import DataContainer, DataFramePacket, TimeSeriesPacket
-from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_core.template_base.dynamic_template import (
     BaseDynamicWrapperTemplate,
@@ -67,9 +67,12 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
         train_size: float = 0.9
         store_as_time_series: bool = False
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.dataset_attributes = getattr(self.attributes, self.wrapped_callable.__name__)
+        name = getattr(self.wrapped_callable, "__name__")
+        self.dataset_attributes = getattr(self.attributes, name)
 
     @staticmethod
     def process_bunch(bunch: Bunch) -> tuple:
@@ -88,7 +91,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             target_column = [f"target_{i}" for i in range(target.shape[1])]
         return data, target, feature_column, target_column
 
-    def parse_results(self, results: pd.DataFrame) -> tuple[pd.DataFrame, list, list, int]:
+    def parse_results(self, results: Any) -> tuple[pd.DataFrame | None, list | None, list | None, int | None]:
         """Parses the dataset as a pandas dataframe with the feature names as columns
 
         Args:
@@ -122,19 +125,25 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             except AttributeError:
                 feature_column = None
                 target_column = None
-        _, n_features = data.shape
+        if data is not None:
+            _, n_features = data.shape
 
-        feature_data_frame = pd.DataFrame(data=data, columns=feature_column)
-        target_data_frame = pd.DataFrame(data=target, columns=target_column)
-        data_frame = pd.concat([feature_data_frame, target_data_frame], axis=1)
-        return data_frame, feature_column, target_column, n_features
+            feature_data_frame = pd.DataFrame(data=data, columns=feature_column)
+            target_data_frame = pd.DataFrame(data=target, columns=target_column)
+            data_frame = pd.concat([feature_data_frame, target_data_frame], axis=1)
+            return data_frame, feature_column, target_column, n_features
+        return None, None, None, None
 
     @staticmethod
     def split_dataset(
-        results: pd.DataFrame, feature_name_cols: list, target_name_cols: list, n_features: int, split_size: float
+        results: pd.DataFrame,
+        feature_name_cols: list | None,
+        target_name_cols: list | None,
+        n_features: int,
+        split_size: float,
     ) -> dict:
         """Method to split the dataset into training and testing samples"""
-        if feature_name_cols is not None:
+        if feature_name_cols is not None and target_name_cols is not None:
             X = results[feature_name_cols]
             y = results[target_name_cols]
         else:
@@ -142,17 +151,19 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
             y = results.iloc[:, n_features:]
 
         x_train, x_test, y_train, y_test = train_test_split(X, y, train_size=split_size, random_state=0)
-        data_map = {
-            "x_train": x_train,
-            "y_train": y_train,
-            "x_test": x_test,
-            "y_test": y_test
-        }
+        data_map = {"x_train": x_train, "y_train": y_train, "x_test": x_test, "y_test": y_test}
         return data_map
 
     def execute(self, container: DataContainer) -> DataContainer:
-        sklearn_dataset = self.wrapped_callable.__func__(**self.dataset_attributes.model_dump())
+        sklearn_dataset = self.wrapped_callable.__func__(  # ty: ignore[unresolved-attribute]
+            **self.dataset_attributes.model_dump()
+        )
+        if sklearn_dataset is None:
+            return container
         dataset, feature_columns, target_columns, n_features = self.parse_results(sklearn_dataset)
+        if dataset is None or n_features is None:
+            self.logger.warning("No dataset found, returning container")
+            return container
 
         if self.attributes.store_as_time_series:
             time_series_packet = TimeSeriesPacket(content=dataset)
@@ -163,7 +174,7 @@ class SKLearnDatasets(BaseDynamicWrapperTemplate):
                 dataset, feature_columns, target_columns, n_features, split_size=self.attributes.train_size
             )
 
-            for name, df  in data_map.items():
+            for name, df in data_map.items():
                 container.data_frames.append(DataFramePacket(content=df, source=f"{self.instance_name}_{name}"))
 
         if sklearn_dataset and not self.attributes.split_dataset:
@@ -184,7 +195,7 @@ class ExecuteNTimesSkLearnDatasets(SKLearnDatasets):
     )
 
 
-def __getattr__(name: str) -> Template:
+def __getattr__(name: str) -> type[BaseDynamicWrapperTemplate]:
     """
     Only create a template if it's imported, this avoids creating all the base models for all templates
     and potential import errors due to not available packages.

@@ -21,7 +21,7 @@ from sinapsis_data_readers.templates.video_readers.base_video_reader import (
 
 
 @pipeline_def
-def video_pipe(filenames: list[str], device: str, random_shuffle: bool) -> DataNode:
+def video_pipe(filenames: list[str], device: Literal["gpu"], random_shuffle: bool) -> DataNode:
     """Pipeline for reading video files using NVIDIA DALI.
 
     This pipeline reads video files from the specified list of filenames
@@ -55,7 +55,8 @@ def video_pipe(filenames: list[str], device: str, random_shuffle: bool) -> DataN
 
 
 VideoReaderDaliUIProperties = BaseVideoReader.UIProperties
-VideoReaderDaliUIProperties.tags.extend([Tags.NVIDIA, Tags.DALI])
+if VideoReaderDaliUIProperties.tags is not None:
+    VideoReaderDaliUIProperties.tags.extend([Tags.NVIDIA, Tags.DALI])
 
 
 class VideoReaderDali(BaseVideoReader):
@@ -99,6 +100,8 @@ class VideoReaderDali(BaseVideoReader):
         num_threads: int = 64
         random_shuffle: bool = False
 
+    attributes: AttributesBaseModel
+
     def make_video_reader(self) -> tuple[DALIGenericIterator | Pipeline, int] | NotSetType:
         """Creates a dali pipeline for reading video files.
 
@@ -110,7 +113,9 @@ class VideoReaderDali(BaseVideoReader):
             and the number of frames per epoch. If the pipeline cannot be created,
             it returns None and 0.
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
+        video_path = self.attributes.video_file_path if isinstance(self.attributes.video_file_path, str) else ""
+        full_path = os.path.join(self.root_dir, video_path)
+
         try:
             pipe: Pipeline = video_pipe(
                 batch_size=self.attributes.batch_size,
@@ -145,7 +150,7 @@ class VideoReaderDali(BaseVideoReader):
         for idx in range(batch_size):
             frame_tensor = tensor_batch.at(idx)
             frame = torch.as_tensor(frame_tensor, device="cuda")
-            video_frames.append(self._make_image_packet(frame, frame_index=self.frame_count + idx))
+            video_frames.append(self._make_image_packet(frame.cpu().numpy(), frame_index=self.frame_count + idx))
 
         return video_frames
 
@@ -157,7 +162,7 @@ class VideoReaderDali(BaseVideoReader):
         super().reset_state(template_name)
 
 
-@multi_video_wrapper
+@multi_video_wrapper  # ty: ignore[invalid-argument-type]
 class MultiVideoReaderDali(VideoReaderDali):
     """
     This template provides functionality to read multiple videos, each of them assigned to
@@ -231,7 +236,7 @@ class VideoReaderDaliPytorch(VideoReaderDali):
         return video_frames
 
 
-@multi_video_wrapper
+@multi_video_wrapper  # ty: ignore[invalid-argument-type]
 class MultiVideoReaderPytorch(VideoReaderDaliPytorch):
     """
     This template provides functionality to read multiple videos, each of them assigned to

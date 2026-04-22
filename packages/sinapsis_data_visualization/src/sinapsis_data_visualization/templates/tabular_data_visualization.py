@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from typing import Sequence
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.figure import Figure
 from pydantic import Field
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_data_visualization.helpers.tags import Tags
@@ -40,7 +40,8 @@ class TabularDataVisualizationAttributes(BasePlotAttributes):
 
 
 TabularDataVisualizationUIProperties = BaseVisualizationTemplate.UIProperties
-TabularDataVisualizationUIProperties.tags.extend([Tags.CHARTS, Tags.PLOTS, Tags.CORRELATION, Tags.PANDAS])
+if TabularDataVisualizationUIProperties.tags is not None:
+    TabularDataVisualizationUIProperties.tags.extend([Tags.CHARTS, Tags.PLOTS, Tags.CORRELATION, Tags.PANDAS])
 
 
 class TabularDataVisualization(BaseVisualizationTemplate):
@@ -52,6 +53,8 @@ class TabularDataVisualization(BaseVisualizationTemplate):
     """
 
     AttributesBaseModel = TabularDataVisualizationAttributes
+
+    attributes: TabularDataVisualizationAttributes
 
     def get_data_for_visualization(self, container: DataContainer) -> pd.DataFrame | None:
         """
@@ -67,20 +70,21 @@ class TabularDataVisualization(BaseVisualizationTemplate):
             self.logger.warning("No generic_field_key specified")
             return None
 
-        data_dict = self._get_generic_data(container, self.attributes.generic_field_key)
+        dataframes = getattr(container, "data_frames", None)
 
-        if data_dict is None:
+        if dataframes is None:
             self.logger.warning(f"No data found with key '{self.attributes.generic_field_key}'")
             return None
+        dataframe = dataframes[0].content
 
-        if isinstance(data_dict, pd.DataFrame):
-            dataset = data_dict
+        if isinstance(dataframe, pd.DataFrame):
+            data = dataframe
         else:
-            self.logger.warning(f"Data format not recognized: {type(data_dict)}")
+            self.logger.warning(f"Data format not recognized: {type(dataframe)}")
             return None
 
-        self.logger.info(f"Available columns: {dataset.columns}")
-        return dataset
+        self.logger.info(f"Available columns: {data.columns}")
+        return data
 
     def identify_feature_types(self, df: pd.DataFrame) -> tuple[list[str], list[str]]:
         """
@@ -114,7 +118,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
 
         return numeric_cols, categorical_cols
 
-    def prepare_histogram_data(self, df: pd.DataFrame, feature: str) -> tuple[list[float], list[float]]:
+    def prepare_histogram_data(self, df: pd.DataFrame, feature: str) -> tuple[list[str], list[float]]:
         """
         Prepares data for a histogram plot.
 
@@ -131,9 +135,9 @@ class TabularDataVisualization(BaseVisualizationTemplate):
         bins = np.linspace(min_val, max_val, 20)
         counts, edges = np.histogram(df[feature].to_numpy(), bins=bins)
 
-        labels = [(edges[i] + edges[i + 1]) / 2 for i in range(len(edges) - 1)]
+        labels = [str((edges[i] + edges[i + 1]) / 2) for i in range(len(edges) - 1)]
 
-        return labels, counts
+        return labels, counts.tolist()
 
     def prepare_boxplot_data(self, df: pd.DataFrame, feature: str) -> tuple[list[str], list[np.ndarray]]:
         """
@@ -187,7 +191,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
 
         return features_to_correlate, corr_matrix
 
-    def prepare_categorical_data(self, df: pd.DataFrame, feature: str) -> tuple[list[str], list[int]]:
+    def prepare_categorical_data(self, df: pd.DataFrame, feature: str) -> tuple[list[str], list[int | float]]:
         """
         Prepares data for a categorical distribution plot.
 
@@ -203,7 +207,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
         counts = value_counts.values.tolist()
         return labels, counts
 
-    def prepare_target_pie_data(self, df: pd.DataFrame) -> tuple[list[str], list[int]]:
+    def prepare_target_pie_data(self, df: pd.DataFrame) -> tuple[list[str], list[int | float]]:
         """
         Prepares data for a target distribution pie chart.
 
@@ -224,7 +228,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
 
     def create_boxplot(
         self, labels: Sequence[str], data_points: Sequence[np.ndarray], title: str | None = None
-    ) -> matplotlib.figure.Figure:
+    ) -> Figure:
         """
         Creates a boxplot figure.
 
@@ -237,21 +241,21 @@ class TabularDataVisualization(BaseVisualizationTemplate):
             matplotlib.figure.Figure: The created boxplot.
         """
         fig = self.create_figure(text=title)
-        plt.boxplot(data_points, labels=labels)
+        plt.boxplot(data_points, labels=labels)  # ty: ignore[unknown-argument]
         plt.ylabel("Value")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         return fig
 
-    def generate_visualizations(self, container: DataContainer, dataset: pd.DataFrame) -> None:
+    def generate_visualizations(self, container: DataContainer, data: pd.DataFrame) -> None:
         """
         Generates all requested visualizations for the tabular data.
 
         Args:
             container (DataContainer): Data container.
-            dataset (pd.DataFrame): The tabular data.
+            data (pd.DataFrame): The tabular data.
         """
-        numeric_cols, categorical_cols = self.identify_feature_types(dataset)
+        numeric_cols, categorical_cols = self.identify_feature_types(data)
         self.logger.info(f"Found {len(numeric_cols)} numeric features and {len(categorical_cols)} categorical features")
 
         if not numeric_cols and not categorical_cols:
@@ -260,7 +264,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
 
         if self.attributes.histogram:
             for feature in numeric_cols:
-                labels, counts = self.prepare_histogram_data(dataset, feature)
+                labels, counts = self.prepare_histogram_data(data, feature)
                 if len(labels) > 0 and len(counts) > 0:
                     self.plot_and_save(
                         container=container,
@@ -272,14 +276,14 @@ class TabularDataVisualization(BaseVisualizationTemplate):
 
         if self.attributes.box_plot:
             for feature in numeric_cols:
-                box_labels, data_points = self.prepare_boxplot_data(dataset, feature)
+                box_labels, data_points = self.prepare_boxplot_data(data, feature)
                 if len(box_labels) > 0 and len(data_points) > 0:
                     fig = self.create_boxplot(labels=box_labels, data_points=data_points, title=f"{feature}")
-                    self.save_figure(fig, f"boxplot_{feature}", container.container_id)
+                    self.save_figure(fig, f"boxplot_{feature}", str(container.container_id))
                     self.add_figure_to_container(container, fig, f"boxplot_{feature}")
 
         if self.attributes.correlation and len(numeric_cols) > 1:
-            corr_labels, corr_matrix = self.prepare_correlation_data(dataset, numeric_cols)
+            corr_labels, corr_matrix = self.prepare_correlation_data(data, numeric_cols)
             if len(corr_labels) > 0 and corr_matrix.size > 0:
                 self.plot_and_save(
                     container=container,
@@ -291,7 +295,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
 
         if self.attributes.categorical_dist and categorical_cols:
             for feature in categorical_cols:
-                cat_labels, cat_counts = self.prepare_categorical_data(dataset, feature)
+                cat_labels, cat_counts = self.prepare_categorical_data(data, feature)
                 if len(cat_labels) > 0 and len(cat_counts) > 0:
                     self.plot_and_save(
                         container=container,
@@ -303,7 +307,7 @@ class TabularDataVisualization(BaseVisualizationTemplate):
                     )
 
         if self.attributes.pie_chart:
-            pie_labels, pie_counts = self.prepare_target_pie_data(dataset)
+            pie_labels, pie_counts = self.prepare_target_pie_data(data)
             if len(pie_labels) > 0 and len(pie_counts) > 0:
                 self.plot_and_save(
                     container=container,

@@ -22,7 +22,7 @@ from sinapsis_data_writers.helpers.tags import Tags
 FORMATTED_ANNOTATIONS = list[dict]
 
 
-class BaseAnnotationWriter(Template):  # type:ignore
+class BaseAnnotationWriter(Template):
     """
     Base Image Annotation Writer that saves annotations to a specified format.
     This template defines the base classes for storing data annotations in a
@@ -31,7 +31,7 @@ class BaseAnnotationWriter(Template):  # type:ignore
     folders.
     """
 
-    class AttributesBaseModel(TemplateAttributes):  # type:ignore
+    class AttributesBaseModel(TemplateAttributes):
         """Attributes for the Base Annotation Writer.
 
         Attributes:
@@ -61,11 +61,12 @@ class BaseAnnotationWriter(Template):  # type:ignore
             Tags.TXT,
         ],
     )
+    attributes: AttributesBaseModel
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initialize the annotation writer and prepared to accumulate annotations."""
         super().__init__(attributes)
-        self.attributes.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
+        self.root_dir = self.attributes.root_dir or SINAPSIS_CACHE_DIR
         self.folder_annotations: dict[str, dict[str, FORMATTED_ANNOTATIONS]] = {}
 
     @staticmethod
@@ -126,7 +127,7 @@ class BaseAnnotationWriter(Template):  # type:ignore
             folder_name (str): The name of the folder where the annotations file
                 is saved.
         """
-        save_path = Path(self.attributes.root_dir) / self.attributes.save_dir
+        save_path = Path(self.root_dir) / self.attributes.save_dir
         save_path.mkdir(parents=True, exist_ok=True)
         output_file = save_path / f"{Path(self.attributes.output_file).stem}_{folder_name}.{self.attributes.extension}"
         with open(output_file, "w", encoding="utf-8") as f:
@@ -159,15 +160,19 @@ class BaseAnnotationWriter(Template):  # type:ignore
 
         formatted_annotations = self._annotations_to_format(image_packet)
 
-        if not any(
-            img[CocoJsonKeys.IMAGE_ID] == image_packet.id for img in self.folder_annotations[folder_name]["images"]
+        if (
+            not any(
+                img[CocoJsonKeys.IMAGE_ID] == image_packet.id for img in self.folder_annotations[folder_name]["images"]
+            )
+            and image_packet.source is not None
         ):
             file_name = Path(image_packet.source).name
+            shape = cast(tuple, image_packet.shape)
             self.folder_annotations[folder_name]["images"].append(
                 {
                     CocoJsonKeys.IMAGE_ID: str(image_packet.id),
-                    CocoJsonKeys.WIDTH: image_packet.shape[0],
-                    CocoJsonKeys.HEIGHT: image_packet.shape[1],
+                    CocoJsonKeys.WIDTH: shape[0],
+                    CocoJsonKeys.HEIGHT: shape[1],
                     CocoJsonKeys.FILE_NAME: file_name,
                     CocoJsonKeys.COCO_URL: "",
                 }
@@ -187,7 +192,7 @@ class BaseAnnotationWriter(Template):  # type:ignore
 
             if folder_name not in self.folder_annotations:
                 output_file = (
-                    Path(self.attributes.root_dir)
+                    Path(self.root_dir)
                     / self.attributes.save_dir
                     / f"{Path(self.attributes.output_file).stem}_{folder_name}.{self.attributes.extension}"
                 )

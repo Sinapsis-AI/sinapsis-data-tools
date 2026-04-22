@@ -16,7 +16,8 @@ from sinapsis_data_readers.templates.video_readers.base_video_reader import (
 )
 
 VideoReaderCV2UIProperties = BaseVideoReader.UIProperties
-VideoReaderCV2UIProperties.tags.extend([Tags.OPENCV])
+if VideoReaderCV2UIProperties.tags is not None:
+    VideoReaderCV2UIProperties.tags.extend([Tags.OPENCV])
 
 
 class VideoReaderCV2(BaseVideoReader):
@@ -44,6 +45,7 @@ class VideoReaderCV2(BaseVideoReader):
 
     """
 
+    attributes: BaseVideoReader.AttributesBaseModel
     UIProperties = VideoReaderCV2UIProperties
 
     def make_video_reader(self) -> tuple[cv2.VideoCapture, int] | NotSetType:
@@ -57,10 +59,10 @@ class VideoReaderCV2(BaseVideoReader):
                 - If successful, returns (video_reader, num_frames),
                   where video_reader is the OpenCV VideoCapture object.
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
+        video_path = self.attributes.video_file_path if isinstance(self.attributes.video_file_path, str) else ""
+        full_path = os.path.join(self.root_dir, video_path)
         video_reader = cv2.VideoCapture(full_path)
         num_frames = int(video_reader.get(cv2.CAP_PROP_FRAME_COUNT))
-
         if not video_reader.isOpened():
             return NotSet
         return video_reader, num_frames
@@ -96,7 +98,7 @@ class VideoReaderCV2(BaseVideoReader):
             self.video_reader.release()
 
 
-@multi_video_wrapper
+@multi_video_wrapper  # ty: ignore[invalid-argument-type]
 class MultiVideoReaderCV2(VideoReaderCV2):
     """
     This template provides functionality to read multiple videos, each of them assigned to
@@ -106,7 +108,7 @@ class MultiVideoReaderCV2(VideoReaderCV2):
     """
 
 
-@live_video_reader_wrapper
+@live_video_reader_wrapper  # ty: ignore[invalid-argument-type]
 class LiveVideoReaderCV2(VideoReaderCV2):
     """
     This template provides functionality to process all the frames captured by video reader. It's

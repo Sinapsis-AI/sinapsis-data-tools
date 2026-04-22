@@ -31,7 +31,8 @@ class DataDistributionAttributes(BasePlotAttributes):
 
 
 DataDistributionUIProperties = BaseVisualizationTemplate.UIProperties
-DataDistributionUIProperties.tags.extend([Tags.CHARTS, Tags.CLUSTERING, Tags.DISTRIBUTION, Tags.PLOTS])
+if DataDistributionUIProperties.tags is not None:
+    DataDistributionUIProperties.tags.extend([Tags.CHARTS, Tags.CLUSTERING, Tags.DISTRIBUTION, Tags.PLOTS])
 
 
 class DataDistributionVisualization(BaseVisualizationTemplate):
@@ -46,8 +47,9 @@ class DataDistributionVisualization(BaseVisualizationTemplate):
 
     AttributesBaseModel = DataDistributionAttributes
     UIProperties = DataDistributionUIProperties
+    attributes: DataDistributionAttributes
 
-    def retrieve_labels_from_images(self, container: DataContainer) -> tuple[list[str | int], list[int]]:
+    def retrieve_labels_from_images(self, container: DataContainer) -> tuple[list[str], list[int]]:
         """
         Iterates through the ImagePackets, extracting each of the
         annotations for all of them.
@@ -55,18 +57,23 @@ class DataDistributionVisualization(BaseVisualizationTemplate):
         with that label.
 
         Returns:
-            tuple[list[str | int], list[int]]: list of labels and number of coincidences for each label
+            tuple[list[str], list[int]]: list of labels and number of coincidences for each label
         """
-        labels: list[str | int] = [ann.label_str for image in container.images for ann in image.annotations]
 
-        label_count: dict[str | int, int] = {}
+        labels: list[str] = []
+        for image in container.images:
+            for ann in image.annotations:
+                if ann.label_str is not None:
+                    labels.extend([ann.label_str])
+
+        label_count: dict[str, int] = {}
         for label in labels:
             label_count[label] = label_count.get(label, 0) + 1
 
         labels, counts = list(label_count.keys()), list(label_count.values())
         return labels, counts
 
-    def process_cluster(self, container: DataContainer) -> tuple[list[int | str], np.ndarray]:
+    def process_cluster(self, container: DataContainer) -> tuple[list[str], np.ndarray]:
         """
         For the k-means clustering, the images need to be flattened first
         and then returned as a reduced vector. This method calls the pre_process_images
@@ -79,15 +86,15 @@ class DataDistributionVisualization(BaseVisualizationTemplate):
             container (DataContainer): Container to extract the images from
 
         Returns:
-            list[str | int]: list of labels
+            list[str]: list of labels
             np.ndarray : transformed values from the pca analysis
         """
         images = container.images
         feature_arr = pre_process_images(images)
         label, counts = perform_k_means_analysis(feature_arr)
-        return label, counts
+        return label.tolist(), counts.tolist()
 
-    def get_data_for_visualization(self, container: DataContainer) -> tuple[list[str | int], list[int]]:
+    def get_data_for_visualization(self, container: DataContainer) -> tuple[list[str], list[int]]:
         """
         Gets labels and counts from images in the container.
 
@@ -99,7 +106,7 @@ class DataDistributionVisualization(BaseVisualizationTemplate):
         """
         return self.retrieve_labels_from_images(container)
 
-    def generate_visualizations(self, container: DataContainer, data: tuple[list[str | int], list[int]]) -> None:
+    def generate_visualizations(self, container: DataContainer, data: tuple[list[str], list[int | float]]) -> None:
         """
         Generates all requested visualizations.
 

@@ -17,7 +17,8 @@ from sinapsis_data_readers.templates.audio_readers.base_audio_reader import (
 )
 
 AudioReaderPydubUIProperties = _AudioBaseReader.UIProperties
-AudioReaderPydubUIProperties.tags.extend([Tags.PYDUB])
+if AudioReaderPydubUIProperties.tags is not None:
+    AudioReaderPydubUIProperties.tags.extend([Tags.PYDUB])
 
 
 class AudioReaderPydub(_AudioBaseReader):
@@ -66,6 +67,7 @@ class AudioReaderPydub(_AudioBaseReader):
         audio_reader_format: Literal["wav", "raw", "pcm"] | None = None
 
     UIProperties = AudioReaderPydubUIProperties
+    attributes: AttributesBaseModel
 
     def read_file(self) -> AudioPacket | None:
         """Reads audio data from a file path or bytes and returns an AudioPacket.
@@ -84,9 +86,7 @@ class AudioReaderPydub(_AudioBaseReader):
             audio_segment = AudioSegment.from_file(io.BytesIO(audio_bytes))
 
         else:
-
             audio_file_path = self.get_full_path()
-            #audio_file_path = os.path.join(self.attributes.root_dir, audio_file_path)
             if os.path.exists(audio_file_path):
                 audio_segment = AudioSegment.from_file(audio_file_path, format=self.attributes.audio_reader_format)
 
@@ -138,7 +138,9 @@ class LazyAudioReaderPydub(AudioReaderPydub):
 
     class AttributesBaseModel(AudioReaderPydub.AttributesBaseModel):
         generic_key: str
-        audio_file_path: str | None = None  # type:ignore[assignment]
+        audio_file_path: str | None = None
+
+    attributes: AttributesBaseModel
 
     def get_file_path_from_generic_data(self, container: DataContainer) -> None:
         """Method to retrieve the file path from the genetic data field of DataContainer.
@@ -148,7 +150,8 @@ class LazyAudioReaderPydub(AudioReaderPydub):
             container (DataContainer): The DataContainer to extract the file path from
         """
         if self.attributes.generic_key:
-            file_path = self._get_generic_data(container, self.attributes.generic_key)
+            generic_data = self._get_generic_data(container)
+            file_path = getattr(generic_data, self.attributes.generic_key, None)
             if file_path:
                 self.attributes.audio_file_path = file_path
             else:

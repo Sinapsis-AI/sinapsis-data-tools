@@ -15,7 +15,8 @@ from sinapsis_data_readers.templates.video_readers.base_video_reader import (
 )
 
 VideoReaderFFMPEGUIProperties = BaseVideoReader.UIProperties
-VideoReaderFFMPEGUIProperties.tags.extend([Tags.FFMPEG])
+if VideoReaderFFMPEGUIProperties.tags is not None:
+    VideoReaderFFMPEGUIProperties.tags.extend([Tags.FFMPEG])
 
 
 class VideoReaderFFMPEG(BaseVideoReader):
@@ -41,6 +42,7 @@ class VideoReaderFFMPEG(BaseVideoReader):
     """
 
     UIProperties = VideoReaderFFMPEGUIProperties
+    attributes: BaseVideoReader.AttributesBaseModel
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -54,7 +56,9 @@ class VideoReaderFFMPEG(BaseVideoReader):
         Returns:
             tuple[int, int, int]: the values for height, width and frames as integers
         """
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
+        video_path = self.attributes.video_file_path if isinstance(self.attributes.video_file_path, str) else ""
+        full_path = os.path.join(self.root_dir, video_path)
+
         try:
             probe = ffmpeg.probe(full_path)
         except ffmpeg.Error as e:
@@ -73,7 +77,9 @@ class VideoReaderFFMPEG(BaseVideoReader):
 
     def make_video_reader(self) -> tuple[subprocess.Popen, int] | NotSetType:
         """This method asynchronously runs a subprocess to stream the video frames"""
-        full_path = os.path.join(self.attributes.root_dir, self.attributes.video_file_path)
+        video_path = self.attributes.video_file_path if isinstance(self.attributes.video_file_path, str) else ""
+        full_path = os.path.join(self.root_dir, video_path)
+
         video_reader = (
             ffmpeg.input(full_path)
             .output(
@@ -119,7 +125,7 @@ class VideoReaderFFMPEG(BaseVideoReader):
         return video_frames
 
 
-@multi_video_wrapper
+@multi_video_wrapper  # ty: ignore[invalid-argument-type]
 class MultiVideoReaderFFMPEG(VideoReaderFFMPEG):
     """Template to read multiple videos using the FFMPEG library,
     This template expands the functionality of VideoReaderFFMPEG

@@ -81,6 +81,8 @@ class COCOAnnotationWriter(BaseAnnotationWriter):
         visibility_threshold: int = 0
         contour_threshold: int = 4
 
+    attributes: AttributesBaseModel
+
     @staticmethod
     def _get_bbox(annotation: ImageAnnotations) -> list[float]:
         """Extracts the bounding box from the annotation.

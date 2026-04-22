@@ -14,7 +14,8 @@ from sinapsis_data_readers.templates.audio_readers.base_audio_reader import (
 )
 
 AudioReaderSoundfileUIProperties = _AudioBaseReader.UIProperties
-AudioReaderSoundfileUIProperties.tags.extend([Tags.SOUNDFILE])
+if AudioReaderSoundfileUIProperties.tags is not None:
+    AudioReaderSoundfileUIProperties.tags.extend([Tags.SOUNDFILE])
 
 
 class AudioReaderSoundfile(_AudioBaseReader):
@@ -111,7 +112,9 @@ class LazyAudioReaderSoundfile(AudioReaderSoundfile):
 
     class AttributesBaseModel(_AudioBaseReader.AttributesBaseModel):
         generic_key: str
-        audio_file_path: str | None = None  # type:ignore[assignment]
+        audio_file_path: str | None = None
+
+    attributes: AttributesBaseModel
 
     def get_file_path_from_generic_data(self, container: DataContainer) -> None:
         """Method to retrieve the file path from the genetic data field of DataContainer.
@@ -121,8 +124,9 @@ class LazyAudioReaderSoundfile(AudioReaderSoundfile):
             container (DataContainer): The DataContainer to extract the file path from
         """
         if self.attributes.generic_key:
-            file_path = self._get_generic_data(container, self.attributes.generic_key)
-            if file_path:
+            generic_data = self._get_generic_data(container)
+            file_path = getattr(generic_data, self.attributes.generic_key, None)
+            if file_path is not None:
                 self.attributes.audio_file_path = file_path
             else:
                 self.logger.warning("No audio path in the existing container")
