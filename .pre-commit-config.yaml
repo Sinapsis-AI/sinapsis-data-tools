@@ -2,10 +2,9 @@ fail_fast: True
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
-    -   id: fix-encoding-pragma
-        exclude: 'docs/.*'
+
     -   id: check-yaml
         exclude: 'docs/.*'
     -   id: trailing-whitespace
@@ -34,13 +33,11 @@ repos:
     - id: ruff
     - id: ruff-format
 
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
+-   repo: local
     hooks:
-    -   id: mypy
-        name: mypy
-        entry: mypy
+    -   id: local-ty
+        name: ty check
+        entry: uv run ty check .
+        require_serial: true
         language: python
-        types: [python]
-        additional_dependencies:
-            - "pydantic>=2.8.2"
+        pass_filenames: false
